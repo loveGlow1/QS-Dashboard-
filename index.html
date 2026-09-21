@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root=".">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickStark — Build your portfolio. Track your progress.</title>
+<meta name="description" content="QuickStark is an investment platform where you can invest, follow your portfolio's performance and manage eligible withdrawals from one account.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/chart.css">
+<link rel="stylesheet" href="assets/css/landing.css">
+</head>
+<body class="qs-landing">
+
+<a class="qs-skip" href="#main">Skip to content</a>
+
+<!-- ======================================================================
+     Header
+     ====================================================================== -->
+<header class="qs-header" data-site-header>
+  <div class="qs-container qs-header__inner">
+    <div data-qs-logo></div>
+
+    <nav class="qs-header__nav" aria-label="Primary">
+      <a href="#how" data-nav-link>How It Works</a>
+      <a href="#investments" data-nav-link>Investments</a>
+      <a href="#about" data-nav-link>About</a>
+      <a href="#faq" data-nav-link>FAQ</a>
+    </nav>
+
+    <div class="qs-header__actions">
+      <a class="qs-btn qs-btn--quiet" data-route="login">Login</a>
+      <a class="qs-btn qs-btn--primary qs-btn--sm" data-route="login">Get Started</a>
+    </div>
+
+    <button class="qs-nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="qs-mobile-nav" aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="qs-nav-backdrop" data-nav-backdrop aria-hidden="true"></div>
+
+<div class="qs-drawer" id="qs-mobile-nav" data-nav-drawer data-open="false">
+  <nav class="qs-drawer__nav" aria-label="Mobile">
+    <a href="#how">How It Works</a>
+    <a href="#investments">Investments</a>
+    <a href="#about">About</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="qs-drawer__actions">
+    <a class="qs-btn qs-btn--ghost qs-btn--block" data-route="login">Login</a>
+    <a class="qs-btn qs-btn--primary qs-btn--block" data-route="login">Get Started</a>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ====================================================================
+       Hero
+       ==================================================================== -->
+  <section class="qs-hero">
+    <div class="qs-hero__glow" aria-hidden="true"></div>
+    <div class="qs-hero__grid-lines" aria-hidden="true"></div>
+
+    <div class="qs-container qs-hero__inner">
+      <span class="qs-hero__eyebrow" data-reveal>
+        <span class="qs-dot"></span> Investment platform
+      </span>
+
+      <h1 class="qs-display qs-hero__title" data-reveal data-reveal-delay="60">
+        Build your portfolio.<br>
+        <span class="qs-hero__title-accent">Track your progress.</span>
+      </h1>
+
+      <p class="qs-lede qs-hero__lede" data-reveal data-reveal-delay="120">
+        Invest, follow how your portfolio is performing over time, and manage
+        eligible withdrawals — all from one account, with every transaction
+        recorded.
+      </p>
+
+      <div class="qs-hero__cta" data-reveal data-reveal-delay="180">
+        <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="login">Get Started</a>
+        <a class="qs-btn qs-btn--ghost qs-btn--lg" href="#investments">Explore Investments</a>
+      </div>
+
+      <!-- Product window: a real interface, built from the same components
+           as the dashboard rather than a stock illustration. -->
+      <div class="qs-window" data-reveal data-reveal-delay="240">
+        <div class="qs-window__chrome">
+          <span class="qs-window__dots"><i></i><i></i><i></i></span>
+          <span class="qs-window__url">app.quickstark.tech/dashboard</span>
+          <span class="qs-window__chrome-spacer"></span>
+        </div>
+
+        <div class="qs-window__body">
+          <aside class="qs-window__rail" aria-hidden="true">
+            <div class="qs-window__rail-logo" data-qs-logo="sm" data-href="none"></div>
+            <ul class="qs-window__rail-nav">
+              <li data-active="true"><span data-icon="grid"></span>Dashboard</li>
+              <li><span data-icon="chart"></span>Investments</li>
+              <li><span data-icon="list"></span>Transactions</li>
+              <li><span data-icon="download"></span>Withdraw</li>
+            </ul>
+          </aside>
+
+          <div class="qs-window__main">
+            <div class="qs-window__head">
+              <div>
+                <p class="qs-window__label">
+                  Total portfolio
+                  <span class="qs-demo-tag">Demo data</span>
+                </p>
+                <p class="qs-window__value qs-num" data-window-total>&#8358;1,284,500</p>
+              </div>
+              <span class="qs-badge qs-badge--up"><span class="qs-dot"></span>+7.04%</span>
+            </div>
+            <div class="qs-window__chart" data-hero-chart></div>
+            <div class="qs-window__stats">
+              <div><p>Invested</p><strong class="qs-num">&#8358;1,200,000</strong></div>
+              <div><p>Growth</p><strong class="qs-num qs-window__up">+&#8358;84,500</strong></div>
+              <div><p>Active plan</p><strong>Growth</strong></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       Product introduction
+       ==================================================================== -->
+  <section class="qs-section qs-pillars">
+    <div class="qs-container">
+      <div class="qs-section-head" data-reveal>
+        <span class="qs-eyebrow">The QuickStark experience</span>
+        <h2 class="qs-h2">One account, a clear view of everything in it.</h2>
+        <p class="qs-lede">
+          QuickStark brings your investment, its performance and its history
+          into a single place, so you always know where you stand.
+        </p>
+      </div>
+
+      <div class="qs-pillars__grid">
+        <article class="qs-pillar" data-reveal>
+          <span class="qs-pillar__icon" data-icon="chart"></span>
+          <h3 class="qs-h3">Track your portfolio</h3>
+          <p>See your investment value and activity in one place, updated as your account changes.</p>
+        </article>
+        <article class="qs-pillar" data-reveal data-reveal-delay="80">
+          <span class="qs-pillar__icon" data-icon="bell"></span>
+          <h3 class="qs-h3">Stay informed</h3>
+          <p>Follow portfolio activity and investment milestones as they happen, without chasing updates.</p>
+        </article>
+        <article class="qs-pillar" data-reveal data-reveal-delay="160">
+          <span class="qs-pillar__icon" data-icon="bank"></span>
+          <h3 class="qs-h3">Simple withdrawals</h3>
+          <p>Manage eligible withdrawals directly from your account, with each request recorded end to end.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       How it works
+       ==================================================================== -->
+  <section class="qs-section qs-how" id="how">
+    <div class="qs-container">
+      <div class="qs-section-head" data-reveal>
+        <span class="qs-eyebrow">How it works</span>
+        <h2 class="qs-h2">Four steps, start to finish.</h2>
+      </div>
+
+      <ol class="qs-steps">
+        <li class="qs-step" data-reveal>
+          <span class="qs-step__num">01</span>
+          <span class="qs-step__icon" data-icon="user"></span>
+          <h3 class="qs-h3">Create your account</h3>
+          <p>Sign up and complete verification to get access to your dashboard.</p>
+        </li>
+        <li class="qs-step" data-reveal data-reveal-delay="70">
+          <span class="qs-step__num">02</span>
+          <span class="qs-step__icon" data-icon="layers"></span>
+          <h3 class="qs-h3">Choose an investment</h3>
+          <p>Review the available plans, their minimums and their terms, then fund the one you choose.</p>
+        </li>
+        <li class="qs-step" data-reveal data-reveal-delay="140">
+          <span class="qs-step__num">03</span>
+          <span class="qs-step__icon" data-icon="trendUp"></span>
+          <h3 class="qs-h3">Track your portfolio</h3>
+          <p>Follow your portfolio value, activity and milestones from your dashboard.</p>
+        </li>
+        <li class="qs-step" data-reveal data-reveal-delay="210">
+          <span class="qs-step__num">04</span>
+          <span class="qs-step__icon" data-icon="bank"></span>
+          <h3 class="qs-h3">Withdraw when eligible</h3>
+          <p>Request a withdrawal once your investment reaches its eligibility terms.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       Investment plans
+       ==================================================================== -->
+  <section class="qs-section qs-plans" id="investments">
+    <div class="qs-container">
+      <div class="qs-plans__head">
+        <div class="qs-section-head" data-reveal>
+          <span class="qs-eyebrow">Investments</span>
+          <h2 class="qs-h2">Plans with terms stated up front.</h2>
+          <p class="qs-lede">
+            Each plan sets out its minimum, its duration and who can access it.
+            Availability is shown on every card.
+          </p>
+        </div>
+      </div>
+
+      <div class="qs-plans__grid" data-plans-grid>
+        <!-- rendered by assets/js/pages/landing.js -->
+      </div>
+
+      <p class="qs-plans__note" data-reveal>
+        <span data-icon="info"></span>
+        QuickStark does not promise or guarantee a return. Investment values can
+        go down as well as up, and past performance does not indicate future
+        results. Plan details above are illustrative for this preview.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       Portfolio preview
+       ==================================================================== -->
+  <section class="qs-section qs-preview" id="portfolio">
+    <div class="qs-container">
+      <div class="qs-preview__layout">
+        <div class="qs-preview__copy" data-reveal>
+          <span class="qs-eyebrow">Your dashboard</span>
+          <h2 class="qs-h2">The whole picture, at a glance.</h2>
+          <p class="qs-lede">
+            Your portfolio total, how it has moved, what you are currently
+            invested in and every transaction behind it — on one screen, on any
+            device.
+          </p>
+          <ul class="qs-preview__list">
+            <li><span data-icon="check"></span> Portfolio value over 1M, 3M, 6M and 1Y</li>
+            <li><span data-icon="check"></span> Active investment terms and maturity dates</li>
+            <li><span data-icon="check"></span> A full, dated record of every transaction</li>
+          </ul>
+          <a class="qs-btn qs-btn--ghost" data-route="login">
+            See the dashboard <span data-icon="arrowRight"></span>
+          </a>
+        </div>
+
+        <div class="qs-preview__panel" data-reveal data-reveal-delay="100">
+          <div class="qs-preview__panel-head">
+            <div>
+              <p class="qs-preview__label">
+                Total portfolio
+                <span class="qs-demo-tag">Demo</span>
+              </p>
+              <p class="qs-preview__value qs-num">&#8358;1,284,500</p>
+              <p class="qs-preview__delta">
+                <span class="qs-delta"><span data-icon="trendUp"></span>+&#8358;84,500</span>
+                <span class="qs-badge qs-badge--up">+7.04%</span>
+              </p>
+            </div>
+            <div class="qs-ranges qs-preview__ranges" data-preview-ranges role="tablist" aria-label="Chart range">
+              <!-- rendered by landing.js -->
+            </div>
+          </div>
+          <div class="qs-preview__chart" data-preview-chart></div>
+          <p class="qs-preview__footnote">
+            Sample figures shown for preview purposes only — not a real account.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       About
+       ==================================================================== -->
+  <section class="qs-section qs-about" id="about">
+    <div class="qs-container">
+      <div class="qs-about__layout">
+        <div class="qs-section-head" data-reveal>
+          <span class="qs-eyebrow">About</span>
+          <h2 class="qs-h2">Built to be understood, not decoded.</h2>
+          <p class="qs-lede">
+            QuickStark is an investment platform for people who want to know
+            exactly what they hold and what it is doing. The product is designed
+            around three commitments.
+          </p>
+        </div>
+
+        <div class="qs-about__points">
+          <div class="qs-about__point" data-reveal>
+            <h3 class="qs-h3"><span data-icon="globe"></span> Clarity</h3>
+            <p>Terms, minimums and durations are stated before you commit, in plain language.</p>
+          </div>
+          <div class="qs-about__point" data-reveal data-reveal-delay="70">
+            <h3 class="qs-h3"><span data-icon="file"></span> A complete record</h3>
+            <p>Every deposit, investment, return and withdrawal is recorded and visible in your account.</p>
+          </div>
+          <div class="qs-about__point" data-reveal data-reveal-delay="140">
+            <h3 class="qs-h3"><span data-icon="shield"></span> Control</h3>
+            <p>Your portfolio, your documents and your withdrawal requests stay under your own account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       FAQ
+       ==================================================================== -->
+  <section class="qs-section qs-faq" id="faq">
+    <div class="qs-container qs-faq__inner">
+      <div class="qs-section-head" data-reveal>
+        <span class="qs-eyebrow">FAQ</span>
+        <h2 class="qs-h2">Questions, answered.</h2>
+      </div>
+
+      <div class="qs-faq__list" data-accordion data-reveal>
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            What is QuickStark? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            QuickStark is an investment platform. You open an account, choose an
+            investment plan, fund it, and then track its value and activity from
+            your dashboard.
+          </p></div>
+        </div>
+
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            How do investments work? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            You select a plan, review its minimum and duration, and fund it from
+            your account balance. The investment then runs for its stated term
+            and appears in your dashboard with its start and maturity dates.
+          </p></div>
+        </div>
+
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            How can I track my investment? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            Your dashboard shows your total portfolio value, how it has changed
+            over 1M, 3M, 6M and 1Y, your active investment and a dated list of
+            every transaction on the account.
+          </p></div>
+        </div>
+
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            When can I withdraw? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            Withdrawal eligibility follows the terms of the plan you invested in.
+            Each plan states its duration, and your dashboard shows the maturity
+            date for your active investment. Requests are made from your account.
+          </p></div>
+        </div>
+
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            How are transactions recorded? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            Deposits, investments, returns and withdrawals are each recorded as
+            a dated entry with an amount and a status. The full history is
+            available in your account.
+          </p></div>
+        </div>
+
+        <div class="qs-faq__item">
+          <button class="qs-faq__q" aria-expanded="false">
+            How do I verify my account? <span class="qs-faq__chev" data-icon="chevronDown"></span>
+          </button>
+          <div class="qs-faq__a"><p>
+            Verification is completed from your account after you sign up. Your
+            dashboard shows your current verification status and what, if
+            anything, is still outstanding.
+          </p></div>
+        </div>
+      </div>
+
+      <p class="qs-faq__note" data-reveal>
+        This is an early preview of the platform. Nothing on this page is
+        financial advice, and no figure shown here describes a real account.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====================================================================
+       Final CTA
+       ==================================================================== -->
+  <section class="qs-section qs-cta">
+    <div class="qs-container">
+      <div class="qs-cta__panel" data-reveal>
+        <div class="qs-cta__glow" aria-hidden="true"></div>
+        <h2 class="qs-h2">Ready to take control of your portfolio?</h2>
+        <p class="qs-lede">
+          Create your account, choose a plan and follow every step from one
+          dashboard.
+        </p>
+        <div class="qs-cta__actions">
+          <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="login">Get Started</a>
+          <a class="qs-btn qs-btn--ghost qs-btn--lg" data-route="login">Login</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ======================================================================
+     Footer
+     ====================================================================== -->
+<footer class="qs-footer">
+  <div class="qs-container">
+    <div class="qs-footer__top">
+      <div class="qs-footer__brand">
+        <div data-qs-logo></div>
+        <p>
+          An investment platform for building a portfolio, tracking how it
+          performs and managing eligible withdrawals from one account.
+        </p>
+      </div>
+
+      <nav class="qs-footer__cols" aria-label="Footer">
+        <div class="qs-footer__col">
+          <h4>Platform</h4>
+          <a href="#how">How It Works</a>
+          <a href="#investments">Investments</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="qs-footer__col">
+          <h4>Company</h4>
+          <a href="#about">About</a>
+          <a href="#" data-placeholder="Contact">Contact</a>
+        </div>
+        <div class="qs-footer__col">
+          <h4>Legal</h4>
+          <a href="#" data-placeholder="Terms">Terms</a>
+          <a href="#" data-placeholder="Privacy">Privacy</a>
+          <a href="#" data-placeholder="Risk Disclosure">Risk Disclosure</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="qs-footer__bottom">
+      <p>&copy; <span data-year>2026</span> QuickStark. All rights reserved.</p>
+      <p class="qs-footer__disclaimer">
+        Preview build — all figures shown are sample data.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/core/config.js"></script>
+<script src="assets/js/core/utils.js"></script>
+<script src="assets/js/core/icons.js"></script>
+<script src="assets/js/core/demo-data.js"></script>
+<script src="assets/js/core/api.js"></script>
+<script src="assets/js/core/auth.js"></script>
+<script src="assets/js/core/payments.js"></script>
+<script src="assets/js/components/brand.js"></script>
+<script src="assets/js/components/toast.js"></script>
+<script src="assets/js/components/reveal.js"></script>
+<script src="assets/js/components/accordion.js"></script>
+<script src="assets/js/components/site-nav.js"></script>
+<script src="assets/js/components/chart.js"></script>
+<script src="assets/js/core/bootstrap.js"></script>
+<script src="assets/js/pages/landing.js"></script>
+</body>
+</html>

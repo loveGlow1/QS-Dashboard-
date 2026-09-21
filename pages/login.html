@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — QuickStark</title>
+<meta name="description" content="Sign in to your QuickStark account to access your portfolio.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/auth.css">
+</head>
+<body class="qs-auth">
+
+<div class="qs-auth__glow" aria-hidden="true"></div>
+<div class="qs-auth__grid-lines" aria-hidden="true"></div>
+
+<a class="qs-auth__back" data-route="home">
+  <span data-icon="chevronLeft" data-icon-size="16"></span> Back to site
+</a>
+
+<main class="qs-auth__stage">
+  <section class="qs-auth__panel" aria-labelledby="qs-auth-title">
+
+    <div class="qs-auth__brand" data-qs-logo="lg"></div>
+
+    <header class="qs-auth__head">
+      <h1 id="qs-auth-title">Welcome back</h1>
+      <p>Access your portfolio</p>
+    </header>
+
+    <div class="qs-alert qs-alert--error" data-login-error hidden role="alert">
+      <span data-icon="alert" data-icon-size="16"></span>
+      <span data-login-error-text></span>
+    </div>
+
+    <form class="qs-auth__form" data-login-form novalidate>
+      <div class="qs-field" data-field="email">
+        <label class="qs-label" for="qs-email">Email</label>
+        <div class="qs-input-wrap">
+          <input class="qs-input" id="qs-email" name="email" type="email"
+                 autocomplete="email" placeholder="you@example.com"
+                 spellcheck="false" required>
+        </div>
+        <span class="qs-field-error" data-error-for="email">Enter a valid email address.</span>
+      </div>
+
+      <div class="qs-field" data-field="password">
+        <label class="qs-label" for="qs-password">Password</label>
+        <div class="qs-input-wrap">
+          <input class="qs-input" id="qs-password" name="password" type="password"
+                 autocomplete="current-password" placeholder="Enter your password" required>
+          <button class="qs-input-btn" type="button" data-toggle-password
+                  aria-label="Show password" aria-pressed="false"></button>
+        </div>
+        <span class="qs-field-error" data-error-for="password">Enter your password.</span>
+      </div>
+
+      <div class="qs-auth__row">
+        <label class="qs-checkbox">
+          <input type="checkbox" name="remember" checked> Keep me signed in
+        </label>
+        <a href="#" class="qs-auth__link" data-placeholder="Password reset">Forgot password?</a>
+      </div>
+
+      <button class="qs-btn qs-btn--primary qs-btn--lg qs-btn--block" type="submit" data-login-submit>
+        Sign in
+      </button>
+    </form>
+
+    <!-- Preview-build notice: this is a mocked sign-in, not real
+         authentication, and the credentials below are public on purpose. -->
+    <div class="qs-auth__demo">
+      <p class="qs-auth__demo-head">
+        <span class="qs-demo-tag">Preview build</span>
+        Sign-in is simulated — no real account is created or accessed.
+      </p>
+      <button class="qs-auth__demo-fill" type="button" data-fill-demo>
+        <span>
+          <code>demo@quickstark.tech</code>
+          <code>quickstark</code>
+        </span>
+        <span class="qs-auth__demo-action">Use demo account</span>
+      </button>
+    </div>
+
+    <p class="qs-auth__foot">
+      Don't have an account?
+      <a href="#" class="qs-auth__link" data-placeholder="Account creation">Create account</a>
+    </p>
+
+  </section>
+</main>
+
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/demo-data.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/login.js"></script>
+</body>
+</html>

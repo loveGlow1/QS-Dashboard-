@@ -1,0 +1,205 @@
+/* ==========================================================================
+   QuickStark — login / authentication
+   Shares the landing page's atmosphere: deep navy, one cool light source.
+   ========================================================================== */
+
+.qs-auth {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--qs-bg);
+  overflow-x: hidden;
+}
+
+/* --- Atmosphere ------------------------------------------------------- */
+
+.qs-auth__glow {
+  position: fixed;
+  z-index: 0;
+  top: -30%;
+  left: 50%;
+  width: min(1000px, 140vw);
+  aspect-ratio: 1.2 / 1;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(46% 46% at 50% 44%, rgba(77, 124, 243, 0.26) 0%, rgba(77, 124, 243, 0) 70%),
+    radial-gradient(40% 42% at 24% 34%, rgba(46, 86, 196, 0.2) 0%, rgba(46, 86, 196, 0) 74%);
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.qs-auth__grid-lines {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(148, 168, 214, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 168, 214, 0.045) 1px, transparent 1px);
+  background-size: 74px 74px;
+  mask-image: radial-gradient(58% 52% at 50% 36%, #000 0%, transparent 80%);
+  -webkit-mask-image: radial-gradient(58% 52% at 50% 36%, #000 0%, transparent 80%);
+  pointer-events: none;
+}
+
+/* --- Back link -------------------------------------------------------- */
+
+.qs-auth__back {
+  position: relative;
+  z-index: 2;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 22px 0 0 22px;
+  padding: 8px 14px 8px 10px;
+  border-radius: var(--qs-r-pill);
+  border: 1px solid var(--qs-line-soft);
+  background: rgba(15, 22, 41, 0.6);
+  backdrop-filter: blur(8px);
+  font-size: 0.8125rem;
+  color: var(--qs-text-3);
+  transition: color var(--qs-fast), border-color var(--qs-fast), background var(--qs-fast);
+}
+.qs-auth__back:hover {
+  color: var(--qs-text);
+  border-color: var(--qs-line-strong);
+  background: var(--qs-surface-2);
+}
+.qs-auth__back svg { width: 16px; height: 16px; }
+
+/* --- Stage ------------------------------------------------------------ */
+
+.qs-auth__stage {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: clamp(28px, 5vw, 56px) 20px clamp(40px, 6vw, 72px);
+}
+
+.qs-auth__panel {
+  width: 100%;
+  max-width: 424px;
+  padding: clamp(28px, 4vw, 38px);
+  border-radius: var(--qs-r-xl);
+  background: linear-gradient(180deg, rgba(20, 28, 51, 0.72) 0%, rgba(11, 17, 34, 0.94) 100%);
+  border: 1px solid var(--qs-line-strong);
+  box-shadow: var(--qs-shadow-lg);
+  backdrop-filter: blur(20px);
+  animation: qs-auth-in 520ms var(--qs-ease) both;
+}
+
+@keyframes qs-auth-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+.qs-auth__brand { display: flex; justify-content: center; }
+
+.qs-auth__head { margin: 26px 0 24px; text-align: center; }
+.qs-auth__head h1 {
+  font-size: 1.625rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.qs-auth__head p { margin-top: 7px; font-size: 0.875rem; color: var(--qs-text-3); }
+
+/* --- Form ------------------------------------------------------------- */
+
+.qs-auth__form { display: grid; gap: 16px; }
+.qs-auth__form .qs-alert { margin-bottom: 2px; }
+
+.qs-auth__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: -2px;
+}
+
+.qs-auth__link {
+  font-size: 0.8125rem;
+  color: var(--qs-text-2);
+  transition: color var(--qs-fast);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+.qs-auth__link:hover { color: var(--qs-accent-hover); text-decoration-color: currentColor; }
+
+.qs-auth__form .qs-btn--primary { margin-top: 4px; }
+
+.qs-alert[data-login-error] { margin-bottom: 18px; }
+
+/* --- Demo credentials ------------------------------------------------- */
+
+.qs-auth__demo {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--qs-line-soft);
+}
+
+.qs-auth__demo-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--qs-text-4);
+}
+
+.qs-auth__demo-fill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 11px;
+  padding: 11px 13px;
+  border-radius: var(--qs-r-md);
+  background: var(--qs-surface-2);
+  border: 1px dashed var(--qs-line-strong);
+  text-align: left;
+  transition: border-color var(--qs-fast), background var(--qs-fast);
+}
+.qs-auth__demo-fill:hover { border-color: var(--qs-accent-line); background: var(--qs-surface-3); }
+.qs-auth__demo-fill > span:first-child { display: grid; gap: 3px; min-width: 0; }
+.qs-auth__demo-fill code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--qs-text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.qs-auth__demo-action {
+  flex: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--qs-accent-hover);
+  white-space: nowrap;
+}
+
+/* --- Footer ----------------------------------------------------------- */
+
+.qs-auth__foot {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--qs-text-3);
+}
+.qs-auth__foot .qs-auth__link { margin-left: 4px; color: var(--qs-accent-hover); }
+
+@media (max-width: 560px) {
+  .qs-auth__back { margin: 16px 0 0 16px; }
+  .qs-auth__panel {
+    border-radius: var(--qs-r-lg);
+    padding: 26px 20px 24px;
+  }
+  .qs-auth__head { margin: 22px 0 20px; }
+  .qs-auth__head h1 { font-size: 1.4375rem; }
+  .qs-auth__row { flex-wrap: wrap; gap: 8px; }
+}
