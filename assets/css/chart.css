@@ -1,0 +1,118 @@
+/* ==========================================================================
+   QuickStark — portfolio chart
+   Shared by the landing preview and the dashboard.
+   ========================================================================== */
+
+.qs-chart {
+  position: relative;
+  width: 100%;
+  touch-action: pan-y;
+}
+
+.qs-chart__svg { display: block; width: 100%; overflow: visible; }
+
+.qs-chart__grid line {
+  stroke: rgba(148, 168, 214, 0.1);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  shape-rendering: crispEdges;
+}
+
+.qs-chart__line { vector-effect: non-scaling-stroke; }
+
+.qs-chart__end-dot {
+  filter: drop-shadow(0 0 7px rgba(77, 124, 243, 0.85));
+}
+
+.qs-chart__cursor { transition: opacity 140ms var(--qs-ease); pointer-events: none; }
+.qs-chart__cursor-line {
+  stroke: var(--qs-line-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.qs-chart__cursor-halo { fill: rgba(77, 124, 243, 0.2); }
+.qs-chart__cursor-dot { stroke: var(--qs-bg); stroke-width: 2.5; }
+
+/* --- Axis labels ------------------------------------------------------ */
+
+.qs-chart__y-axis { position: absolute; inset: 0; pointer-events: none; }
+
+.qs-chart__y-label {
+  position: absolute;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--qs-text-4);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.qs-chart__x-axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18px;
+  pointer-events: none;
+}
+
+.qs-chart__x-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 0.6875rem;
+  color: var(--qs-text-4);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* --- Tooltip ---------------------------------------------------------- */
+
+.qs-chart__tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  gap: 1px;
+  padding: 8px 11px;
+  border-radius: var(--qs-r-sm);
+  background: rgba(20, 28, 51, 0.96);
+  border: 1px solid var(--qs-line-strong);
+  box-shadow: var(--qs-shadow-md);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms var(--qs-ease);
+  white-space: nowrap;
+  z-index: 3;
+}
+.qs-chart__tip[data-visible="true"] { opacity: 1; }
+.qs-chart__tip-date { font-size: 0.6875rem; color: var(--qs-text-3); }
+.qs-chart__tip-value { font-size: 0.875rem; font-weight: 600; color: var(--qs-text); }
+
+/* --- Range switcher --------------------------------------------------- */
+
+.qs-ranges {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--qs-r-pill);
+  background: var(--qs-surface-2);
+  border: 1px solid var(--qs-line);
+}
+
+.qs-range {
+  height: 28px;
+  padding-inline: 13px;
+  border-radius: var(--qs-r-pill);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--qs-text-3);
+  transition: color var(--qs-fast), background var(--qs-fast);
+}
+.qs-range:hover { color: var(--qs-text-2); }
+.qs-range[aria-selected="true"] {
+  background: var(--qs-surface-hover);
+  color: var(--qs-text);
+  box-shadow: var(--qs-shadow-sm);
+}
