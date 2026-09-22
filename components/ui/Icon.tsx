@@ -28,6 +28,7 @@ export const ICONS = {
   close: <><path d="M6 6l12 12"/><path d="M18 6 6 18"/></>,
   menu: <><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></>,
   check: <path d="m5 12.5 4.5 4.5L19 7"/>,
+  checkCircle: <><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/></>,
   info: <><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.8h.01"/></>,
   alert: <><path d="M12 4.5 3 19.5h18L12 4.5Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></>,
   clock: <><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.8"/></>,

@@ -111,6 +111,31 @@
     font-feature-settings: "tnum" 1;
   }
 
+  /* --- Tier card wave -------------------------------------------------
+     Two wave layers drift across each card at different speeds, which reads
+     as motion with depth rather than a single sliding image.
+
+     The loop is seamless because each layer holds two identical copies of a
+     tileable wave and travels exactly half its own width: the frame it ends
+     on is pixel-identical to the frame it started on, so there is no jump.
+     Transform only, so it runs on the compositor and never triggers layout. */
+  @keyframes qs-wave-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+
+  .qs-wave {
+    width: 200%;
+    animation: qs-wave-drift linear infinite;
+    will-change: transform;
+  }
+
+  /* Motion is decoration here, so reduced-motion gets the shape and no
+     movement rather than nothing at all. */
+  @media (prefers-reduced-motion: reduce) {
+    .qs-wave { animation: none; }
+  }
+
   /* An appearance-none checkbox draws nothing when checked, so the tick is
      drawn here rather than shipping an icon for a 9px glyph. */
   .qs-check {
