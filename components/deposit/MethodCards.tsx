@@ -5,8 +5,6 @@ import type { DepositMethod } from "@/lib/types";
 
 const ICON: Record<string, IconName> = {
   bank: "bank",
-  card: "wallet",
-  btc: "bitcoin",
   eth: "layers",
   usdt: "globe",
 };
