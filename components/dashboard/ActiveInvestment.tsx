@@ -54,16 +54,16 @@ function InvestmentDetail({ investment }: { investment: Investment }) {
       <dl className="grid gap-px overflow-hidden rounded-md bg-[var(--line-soft)]">
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Initial investment</dt>
-          <dd className="text-sm font-medium tabular-nums">{money(investment.principal)}</dd>
+          <dd className="text-sm font-medium tabular-nums">{money(investment.principal, { decimals: 2 })}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Current value</dt>
-          <dd className="text-sm font-semibold tabular-nums">{money(investment.current_value)}</dd>
+          <dd className="text-sm font-semibold tabular-nums">{money(investment.current_value, { decimals: 2 })}</dd>
         </div>
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Growth</dt>
           <dd className={`text-sm font-medium tabular-nums ${up ? "text-up" : "text-down"}`}>
-            {money(growth, { signed: true })}{" "}
+            {money(growth, { decimals: 2, signed: true })}{" "}
             <span className="text-xs opacity-85">{percent(growthPercent)}</span>
           </dd>
         </div>

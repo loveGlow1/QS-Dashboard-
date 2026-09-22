@@ -30,8 +30,10 @@ export function RecentActivity({ transactions }: { transactions: Transaction[] }
       {transactions.length === 0 ? (
         <div className="grid justify-items-center gap-2.5 px-5 py-[38px] text-center text-mist-400">
           <Icon name="inbox" size={28} className="text-mist-500" />
-          <p className="max-w-[280px] text-[0.8125rem]">
-            No activity yet. Your deposits and investments will appear here.
+          <p className="text-sm font-medium text-mist-50">No transactions yet.</p>
+          <p className="max-w-[300px] text-[0.8125rem] leading-[1.6]">
+            Your deposits, investments, returns and withdrawals appear here as
+            they are recorded.
           </p>
         </div>
       ) : (
@@ -71,7 +73,7 @@ export function RecentActivity({ transactions }: { transactions: Transaction[] }
                       positive ? "text-up" : "text-mist-200"
                     }`}
                   >
-                    {money(amount, { signed: true })}
+                    {money(amount, { decimals: 2, signed: true })}
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
                     <span
