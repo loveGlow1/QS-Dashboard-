@@ -85,7 +85,7 @@ const STYLES: Record<PlanTier, TierStyle> = {
   },
 };
 
-/** `50000` → `₦50K`, `20000000` → `₦20M`. Ranges read better abbreviated. */
+/** `50000` → `₦50K`, `10000000` → `₦10M`. Ranges read better abbreviated. */
 function short(value: number): string {
   if (value >= 1_000_000) {
     const m = value / 1_000_000;

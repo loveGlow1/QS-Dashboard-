@@ -1,5 +1,6 @@
 import "server-only";
 import { unstable_rethrow } from "next/navigation";
+import { titleCase } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
 import type {
   BankAccount,
@@ -68,11 +69,25 @@ const EMPTY_TOTALS: Omit<PortfolioTotals, "user_id"> = {
   active_count: 0,
 };
 
+/**
+ * The signed-in customer's profile.
+ *
+ * Names are capitalised here rather than at each place one is shown. Doing it
+ * per screen means the next screen forgets — the greeting and the account menu
+ * were capitalised while the profile page still read "jeph kofi". What is
+ * stored is left exactly as the customer typed it; this is presentation.
+ */
 export async function getProfile(): Promise<Profile | null> {
   return safely("getProfile", async () => {
     const supabase = await createClient();
     const { data } = await supabase.from("profiles").select("*").maybeSingle();
-    return (data as Profile) ?? null;
+    const row = data as Profile | null;
+    if (!row) return null;
+    return {
+      ...row,
+      first_name: titleCase(row.first_name ?? ""),
+      full_name: titleCase(row.full_name ?? ""),
+    };
   }, null);
 }
 
