@@ -5,6 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { signOut } from "@/app/auth-actions";
 import { getUser } from "@/lib/supabase/server";
+import { ChangeEmail } from "@/components/security/ChangeEmail";
 
 export const metadata: Metadata = { title: "Security" };
 
@@ -28,6 +29,7 @@ export default async function SecurityPage() {
               <dd className="text-[0.8125rem] font-medium">Set</dd>
             </div>
           </dl>
+          <ChangeEmail current={user?.email || ""} />
         </Card>
 
         <Card>
