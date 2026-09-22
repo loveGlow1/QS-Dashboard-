@@ -1,22 +1,33 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { BottomNav, Sidebar } from "./Sidebar";
 import { Topbar } from "./Topbar";
 import type { Notification, Profile } from "@/lib/types";
 
+const TITLES: Record<string, string> = {
+  "/dashboard": "Dashboard",
+  "/investments": "Investments",
+  "/transactions": "Transactions",
+  "/withdraw": "Withdraw",
+  "/profile": "Profile",
+  "/security": "Security",
+  "/help": "Help",
+};
+
 export function AppShell({
-  title,
   profile,
   notifications,
   children,
 }: {
-  title: string;
   profile: Profile | null;
   notifications: Notification[];
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const title = TITLES[pathname] ?? "QuickStark";
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
@@ -38,7 +49,6 @@ export function AppShell({
       <Sidebar
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        verified={profile?.verified ?? false}
         tier={profile?.tier ?? "Account"}
       />
 

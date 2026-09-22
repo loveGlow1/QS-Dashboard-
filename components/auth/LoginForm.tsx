@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState } from "react";
 import { signIn, type AuthState } from "@/app/auth-actions";
 import { Button } from "@/components/ui/Button";
@@ -60,12 +59,9 @@ export function LoginForm({ next }: { next: string }) {
           />
           Keep me signed in
         </label>
-        <Link
-          href="/help"
-          className="text-[0.8125rem] text-mist-200 underline decoration-transparent underline-offset-[3px] transition-colors hover:text-accent-400 hover:decoration-current"
-        >
-          Forgot password?
-        </Link>
+        <span className="text-[0.8125rem] text-mist-500">
+          Forgot your password? Contact support.
+        </span>
       </div>
 
       <Button type="submit" variant="primary" size="lg" block busy={pending} className="mt-1">
