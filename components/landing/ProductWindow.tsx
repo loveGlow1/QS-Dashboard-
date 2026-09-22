@@ -23,11 +23,15 @@ import { EXAMPLE, EXAMPLE_SERIES } from "@/components/landing/illustration";
  * nothing about the product and makes it look broken.
  */
 
+/* Mirrors the real sidebar in components/dashboard/nav.ts, icons included.
+   A visitor comparing the screenshot against the product should not find a
+   rail that is missing a page or ordered differently. */
 const RAIL: { icon: IconName; label: string; active?: boolean }[] = [
   { icon: "grid", label: "Dashboard", active: true },
   { icon: "chart", label: "Investments" },
   { icon: "list", label: "Transactions" },
-  { icon: "download", label: "Withdraw" },
+  { icon: "arrowDownLeft", label: "Deposit" },
+  { icon: "arrowUpRight", label: "Withdraw" },
 ];
 
 export function ProductWindow() {
