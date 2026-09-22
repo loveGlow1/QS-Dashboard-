@@ -29,6 +29,15 @@ interface Props {
 const PAD = { top: 18, right: 8, bottom: 26 };
 const Y_GUTTER = 62;
 
+/* Grid accents. Decoration only — a rung's colour never encodes a value, so
+   nothing here can be misread as a gain, a loss or a threshold. Cycled top to
+   bottom and kept faint so the line stays the thing you look at. */
+const GRID_COLORS = [
+  "var(--color-grid-violet)",
+  "var(--color-grid-green)",
+  "var(--color-grid-amber)",
+] as const;
+
 function monotonePath(pts: { x: number; y: number }[]): string {
   const n = pts.length;
   if (n === 0) return "";
@@ -143,14 +152,22 @@ export function LineChart({
     const last = plotted[plotted.length - 1]!;
     const area = `${line}L${last.x.toFixed(2)},${height - PAD.bottom}L${plotted[0]!.x.toFixed(2)},${height - PAD.bottom}Z`;
 
-    /* At zero there is no ladder worth drawing — five rungs would all read
-       the same. One baseline, labelled honestly. */
-    const gridLines = atZero
-      ? [{ y: PAD.top + innerH - (-min / span) * innerH, label: compactMoney(0) }]
-      : Array.from({ length: 5 }, (_, g) => {
-          const ratio = g / 4;
-          return { y: PAD.top + innerH * ratio, label: compactMoney(max - span * ratio) };
-        });
+    /* The ladder is always drawn, so the chart keeps its shape at any value.
+       At zero the rungs carry no numbers — five would all read the same — and
+       only the baseline the line sits on is labelled. */
+    const zeroY = PAD.top + innerH - (-min / span) * innerH;
+    const gridLines = Array.from({ length: 5 }, (_, g) => {
+      const ratio = g / 4;
+      const y = PAD.top + innerH * ratio;
+      return {
+        y,
+        label: atZero ? null : compactMoney(max - span * ratio),
+        color: GRID_COLORS[g % GRID_COLORS.length]!,
+      };
+    });
+    if (atZero) {
+      gridLines.push({ y: zeroY, label: compactMoney(0), color: GRID_COLORS[1]! });
+    }
 
     /* Thin the x labels so they never collide, but always keep the most
        recent point — that is the one a reader looks for first. */
@@ -237,10 +254,11 @@ export function LineChart({
               x2={width - PAD.right}
               y1={g.y.toFixed(1)}
               y2={g.y.toFixed(1)}
-              stroke="rgba(148,168,214,0.1)"
-              strokeWidth="1"
-              strokeDasharray="2 6"
-              shapeRendering="crispEdges"
+              stroke={g.color}
+              strokeOpacity="0.62"
+              strokeWidth="1.75"
+              strokeDasharray="2 8"
+              strokeLinecap="round"
             />
           ))}
 
@@ -282,15 +300,17 @@ export function LineChart({
       {showAxes && (
         <>
           <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-            {geometry.gridLines.map((g, i) => (
-              <span
-                key={i}
-                className="absolute left-0 -translate-y-1/2 whitespace-nowrap text-[0.65rem] tabular-nums tracking-normal text-mist-500"
-                style={{ top: g.y }}
-              >
-                {g.label}
-              </span>
-            ))}
+            {geometry.gridLines.map((g, i) =>
+              g.label === null ? null : (
+                <span
+                  key={i}
+                  className="absolute left-0 -translate-y-1/2 whitespace-nowrap text-[0.65rem] tabular-nums tracking-normal text-mist-500"
+                  style={{ top: g.y }}
+                >
+                  {g.label}
+                </span>
+              ),
+            )}
           </div>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[18px]" aria-hidden="true">
             {geometry.xLabels.map((idx) => (

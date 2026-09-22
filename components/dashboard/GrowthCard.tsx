@@ -139,12 +139,16 @@ export function GrowthCard({
         )}
       </div>
 
-      {/* The prompt sits under the live chart rather than in place of it.
-          When the chart could not be drawn at all, NoHistory carries its own. */}
-      {atZero && hasHistory && (
+      {/* The prompt sits under the chart rather than in place of it, and stays
+          there once the account is funded — adding money is not a thing you
+          only do once. When there is no chart at all, NoHistory carries its
+          own copy of it. */}
+      {hasHistory && (
         <div className="mt-[18px] flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-soft)] pt-4">
           <p className="max-w-[42ch] text-[0.8125rem] leading-[1.6] text-mist-400">
-            Fund your account to start building your portfolio.
+            {atZero
+              ? "Fund your account to start building your portfolio."
+              : "Add funds to keep building your portfolio."}
           </p>
           <ButtonLink href="/deposit" variant="ghost" size="sm">
             Make a deposit
