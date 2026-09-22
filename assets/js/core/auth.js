@@ -1,14 +1,14 @@
 /**
  * QuickStark — session handling.
  *
- * MVP BEHAVIOUR: this is a mock. It checks a hard-coded demo credential in
- * the browser and stores a fake token. It is NOT authentication and provides
- * no security whatsoever — it exists purely so the login → dashboard → sign
- * out journey can be reviewed.
+ * `signIn` posts the credentials to the API and stores whatever session the
+ * server issues. Nothing about a visitor's identity is decided in the browser:
+ * the server alone validates credentials, and an expired or rejected token is
+ * discarded on the next request.
  *
- * Replacing it: keep the method signatures, move `signIn` to a server call
- * that sets an httpOnly session cookie, and have `currentUser` read from a
- * `/me` endpoint. The views only use the public methods below.
+ * The password never touches storage, and the token is held only for the
+ * lifetime the server stated. If the API moves to an httpOnly session cookie,
+ * `signIn` keeps its signature and simply stops storing a token.
  */
 (function (window) {
   "use strict";
@@ -31,62 +31,117 @@
     }
   }
 
+  function writeSession(session) {
+    var s = store();
+    if (!s) return;
+    try { s.setItem(cfg.sessionKey, JSON.stringify(session)); } catch (e) {}
+  }
+
+  function clearSession() {
+    var s = store();
+    if (!s) return;
+    try { s.removeItem(cfg.sessionKey); } catch (e) {}
+  }
+
+  /** A session is usable only while the server-stated expiry is in the future. */
+  function activeSession() {
+    var session = readSession();
+    if (!session || !session.token) return null;
+    if (session.expiresAt && session.expiresAt <= Date.now()) {
+      clearSession();
+      return null;
+    }
+    return session;
+  }
+
+  /** Milliseconds for an expiry the API may send as ISO, seconds or ms. */
+  function expiryMs(value) {
+    if (!value) return null;
+    if (typeof value === "number") {
+      return value < 1e12 ? value * 1000 : value;
+    }
+    var parsed = Date.parse(value);
+    return isNaN(parsed) ? null : parsed;
+  }
+
   QS.auth = {
     /** @returns {boolean} */
     isSignedIn: function () {
-      var session = readSession();
-      return !!(session && session.token && session.expiresAt > Date.now());
+      return activeSession() !== null;
+    },
+
+    /** The bearer token for API calls, or null. */
+    token: function () {
+      var session = activeSession();
+      return session ? session.token : null;
     },
 
     /** @returns {object|null} the signed-in user, or null. */
     currentUser: function () {
-      var session = readSession();
+      var session = activeSession();
       return session && session.user ? session.user : null;
     },
 
     /**
-     * Mocked sign-in.
-     * @returns {Promise<object>} resolves with the demo user.
+     * Signs in against the API.
+     *
+     * Expects `{ token, expiresAt, user }` back. Anything else is treated as
+     * a failed sign-in rather than quietly letting the visitor through.
+     *
+     * @returns {Promise<object>} resolves with the signed-in user
      */
     signIn: function (email, password) {
-      var creds = QS.demoData.demoCredentials;
-      var wait = cfg.simulatedLatency + 300;
+      return QS.api
+        .request("auth/login", {
+          method: "POST",
+          auth: false,
+          body: {
+            email: String(email || "").trim().toLowerCase(),
+            password: String(password || "")
+          }
+        })
+        .then(function (payload) {
+          if (!payload || !payload.token) {
+            var err = new Error("Sign in failed. Please try again.");
+            err.code = "invalid_response";
+            throw err;
+          }
 
-      return new Promise(function (resolve, rejectPromise) {
-        setTimeout(function () {
-          var okEmail = String(email || "").trim().toLowerCase() === creds.email;
-          var okPassword = String(password || "") === creds.password;
+          writeSession({
+            token: payload.token,
+            user: payload.user || null,
+            expiresAt: expiryMs(payload.expiresAt || payload.expires_at)
+          });
 
-          if (!okEmail || !okPassword) {
-            var err = new Error(
-              "Those details don't match the demo account. Use the demo credentials shown below."
-            );
+          return payload.user || null;
+        })
+        .catch(function (err) {
+          if (err && err.status === 401) {
             err.code = "invalid_credentials";
-            return rejectPromise(err);
+            err.message = "That email and password do not match an account.";
           }
-
-          var user = QS.demoData.user;
-          var session = {
-            /* Not a credential — a placeholder for a real server token. */
-            token: "demo." + Date.now().toString(36),
-            demo: true,
-            user: user,
-            expiresAt: Date.now() + 1000 * 60 * 60 * 8
-          };
-          var s = store();
-          if (s) {
-            try { s.setItem(cfg.sessionKey, JSON.stringify(session)); } catch (e) {}
-          }
-          resolve(user);
-        }, wait);
-      });
+          throw err;
+        });
     },
 
-    signOut: function () {
-      var s = store();
-      if (s) {
-        try { s.removeItem(cfg.sessionKey); } catch (e) {}
+    /**
+     * Drops the local session. Tells the server too, unless the session was
+     * already rejected — in that case there is nothing left to revoke.
+     *
+     * @param {{notify?: boolean}} [opts]
+     */
+    signOut: function (opts) {
+      var notify = !opts || opts.notify !== false;
+
+      /* Revoke server-side first, while the token is still readable; the
+         local session is dropped either way. */
+      if (notify && QS.auth.token()) {
+        QS.api
+          .request("auth/logout", { method: "POST", body: {} })
+          .catch(function () {});
       }
+
+      clearSession();
     },
 
     /**

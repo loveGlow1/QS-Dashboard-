@@ -342,23 +342,6 @@ table { border-collapse: collapse; width: 100%; }
 .qs-delta[data-dir="down"] { color: var(--qs-down); }
 .qs-delta svg { width: 12px; height: 12px; }
 
-/* Demo-data marker — every fabricated figure in this MVP carries one. */
-.qs-demo-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: rgba(233, 184, 114, 0.1);
-  border: 1px solid rgba(233, 184, 114, 0.22);
-  color: var(--qs-warn);
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 /* ==========================================================================
    Forms
    ========================================================================== */

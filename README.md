@@ -1,27 +1,27 @@
-# QuickStark Investment — MVP (v1)
+# QuickStark Investment
 
-The first visual MVP of the QuickStark investment platform: a public landing
-page, a login screen and a customer dashboard.
+The QuickStark investment platform front end: a public landing page, a login
+screen and a customer dashboard.
 
-> **This is a preview build.** It runs entirely on sample data with a mocked
-> sign-in. No real funds, accounts, investments, transactions or payments
-> exist anywhere in this codebase.
+> **This front end holds no data of its own.** Every figure it shows comes from
+> the API at `QS.config.apiBaseUrl`. Until that API is serving, the screens
+> render their loading and error states — they do not invent numbers.
 
 ---
 
-## Status of this version
+## Status
 
-| Area | v1 (this build) | Next |
+| Area | Today | Next |
 | --- | --- | --- |
 | Landing page | ✅ Built | — |
-| Login | ✅ Built (mocked, client-side) | Server-side authentication |
-| Customer dashboard | ✅ Built (sample data) | Live data from the API |
+| Login | ✅ Built, against `POST /auth/login` | — |
+| Customer dashboard | ✅ Built, against the API | — |
 | Investments / Transactions / Withdraw / Profile pages | Navigation placeholders | To be built |
 | Admin portal | Not built | Separate interface, separate authorization |
 | Payments | Provider-agnostic boundary, no provider registered | Paystack / Stripe adapters + webhooks |
 
-v1 is a **vanilla HTML / CSS / JavaScript** build, used to settle the visual
-language and the screen structure before the stack decision is applied.
+A **vanilla HTML / CSS / JavaScript** build, used to settle the visual language
+and the screen structure before the stack decision is applied.
 
 ---
 
@@ -35,19 +35,64 @@ python3 -m http.server 8000
 # → http://localhost:8000
 ```
 
-### Signing in
+The app expects the API to be reachable at `/api/v1` on the same origin. Point
+it elsewhere either by editing `apiBaseUrl` in `assets/js/core/config.js`, or
+per-deployment with an attribute on `<html>`:
 
-Sign-in is **simulated**. The preview credentials are shown on the login page
-itself and can be filled with one click:
-
-```
-demo@quickstark.tech
-quickstark
+```html
+<html lang="en" data-qs-api="https://api.quickstark.tech/v1">
 ```
 
-This exists so the login → dashboard → sign out journey can be reviewed. It is
-not authentication and provides no security. It is replaced wholesale when the
-real back-end lands (see *Replacing the mocks* below).
+Served without a back-end, the landing page shows "Plans could not be loaded"
+and the dashboard sends you to the login screen. That is the intended
+behaviour, not a broken build.
+
+---
+
+## API contract
+
+`QS.api` (`assets/js/core/api.js`) is the only place the app talks to the
+server. Every request sends `Accept: application/json` and, when a session
+exists, `Authorization: Bearer <token>`. A non-2xx response is expected to
+carry `{ "code": "...", "message": "..." }`, which is what the UI displays.
+
+| Method | Request | Response |
+| --- | --- | --- |
+| `POST /auth/login` | `{ email, password }` | `{ token, expiresAt, user }` |
+| `POST /auth/logout` | — | any 2xx |
+| `GET /me` | — | the signed-in user |
+| `GET /portfolio` | — | totals, `ranges`, and `series` keyed by range |
+| `GET /portfolio/series?range=6M` | — | `{ range, series: { points, change } }` |
+| `GET /investments` | `?status=`, `?limit=` | array of investments |
+| `GET /transactions` | `?type=`, `?limit=` | array of ledger entries, newest first |
+| `GET /notifications` | — | array of notifications |
+| `GET /plans` | — | array of investment plans (public, no session) |
+
+Notes on behaviour the front end relies on:
+
+- **Sorting, filtering and limiting happen server-side.** `getTransactions`
+  passes `type` and `limit` through and renders what comes back in order.
+- **`401` ends the session.** Any authenticated request that returns 401 clears
+  the stored session, so a revoked or expired token cannot keep a stale screen
+  alive.
+- **Requests time out.** After `config.requestTimeout` (15s) a request is
+  aborted and surfaced as an error rather than an indefinite spinner.
+- **Partial payloads degrade.** A portfolio with no `series` renders an empty
+  chart state; an empty list renders an empty state, not a blank panel.
+
+---
+
+## Authentication
+
+`assets/js/core/auth.js` posts credentials to `POST /auth/login` and stores
+whatever session the server issues. Nothing about identity is decided in the
+browser — the server alone validates credentials, and the client discards a
+token as soon as it expires or is rejected.
+
+The password is never stored. The token is held in `localStorage` under
+`qs.session` for the lifetime the server stated. If the API moves to an
+httpOnly session cookie, `signIn` keeps its signature and simply stops storing
+a token; requests already send `credentials: "same-origin"`.
 
 ---
 
@@ -64,8 +109,8 @@ Every link in the app is resolved through `QS.config.routes`
 or to a framework router — is a single-file change.
 
 Planned routes (`/investments`, `/transactions`, `/withdraw`, `/profile`,
-`/admin`) are already named in that same map. Their nav entries currently
-respond with a "not in this preview" notice instead of dead links.
+`/admin`) are already named in that same map. Their nav entries respond with a
+"not available yet" notice instead of dead links.
 
 ---
 
@@ -79,18 +124,17 @@ pages/
 
 assets/css/
   base.css                      Design tokens, reset, shared primitives
-  chart.css                     Portfolio chart (shared by landing + dashboard)
+  chart.css                     Portfolio chart
   landing.css                   Landing page
   auth.css                      Login
   dashboard.css                 Dashboard
 
 assets/js/core/
-  config.js                     Environment, routes, currency, demo flag
+  config.js                     API base URL, routes, currency, timeouts
   utils.js                      Money/date formatting, DOM helpers
   icons.js                      One icon family, 24px grid, 1.6 stroke
-  demo-data.js                  ⚠ All sample data. Deleted when the API lands.
   api.js                        Data access layer — the only way views read data
-  auth.js                       Session handling (mocked)
+  auth.js                       Session handling
   payments.js                   Payment provider boundary (no provider registered)
   bootstrap.js                  Resolves declarative attributes on each page
 
@@ -110,37 +154,20 @@ assets/js/pages/
 ### Conventions
 
 - **Views never touch data directly.** Everything reads through `QS.api`, which
-  returns promises and simulates latency, so loading, empty and error states
-  are real code paths rather than decoration.
+  returns promises, so loading, empty and error states are real code paths
+  rather than decoration.
 - **The browser never computes money.** Balances, growth and ledger entries are
-  rendered exactly as the service layer supplies them. This contract must hold
-  once the API is real: the server is the only source of truth for financial
-  records.
+  rendered exactly as the API supplies them. The server is the only source of
+  truth for financial records.
+- **Nothing is fabricated.** No screen fills a gap with an invented figure. A
+  region with no data says so.
 - **Markup stays declarative.** `data-icon`, `data-route`, `data-qs-logo` and
   `data-placeholder` are resolved by `bootstrap.js`, keeping inline SVG and
   hard-coded URLs out of the HTML.
 
 ---
 
-## Replacing the mocks
-
-Three files are the entire seam between this preview and a real back-end:
-
-| File | What changes |
-| --- | --- |
-| `assets/js/core/api.js` | Rewrite each method body as `fetch(config.apiBaseUrl + …)`. Signatures and payload shapes stay. No view code changes. |
-| `assets/js/core/auth.js` | Move `signIn` to a server call that sets an httpOnly session cookie; have `currentUser` read a `/me` endpoint. |
-| `assets/js/core/demo-data.js` | Delete. |
-
-Then set `demoMode: false` in `config.js`. The preview banners, the "Demo"
-tags and the sample-data footnotes are all driven by that flag.
-
-The payload shapes in `demo-data.js` deliberately mirror the planned API
-resources — `users`, `investment_plans`, `investments`, `ledger_entries`,
-`portfolio_snapshots`, `notifications` — so the dashboard does not need
-reshaping when the data becomes real.
-
-### Payments
+## Payments
 
 `QS.payments` is a provider-agnostic boundary. No screen talks to a payment
 provider directly:
@@ -150,10 +177,10 @@ QS.payments.use(PaystackAdapter);   // or Stripe, or anything else
 ```
 
 An adapter implements `initDeposit`, `initWithdrawal` and `verify`. Until one
-is registered, every call resolves to a `demo_unavailable` result that the UI
-surfaces as a placeholder — never as a completed transaction.
+is registered, every call resolves to a `provider_unavailable` result that the
+UI reports as unavailable — never as a completed transaction.
 
-### Admin portal
+## Admin portal
 
 Not built in this phase, and deliberately not entangled with the customer app.
 The intended split is a shared secure back-end behind two separate interfaces
@@ -163,28 +190,6 @@ with separate authorization:
 app.quickstark.tech     → customer portal (this build)
 admin.quickstark.tech   → admin portal (later)
 ```
-
----
-
-## Sample data
-
-All sample figures live in `assets/js/core/demo-data.js` and are pinned to a
-fixed snapshot date (**19 Nov 2026**) so the portfolio, its investment term and
-its activity history stay internally consistent. The demo ledger balances:
-
-```
-deposits      1,260,000
-investments  -1,200,000
-withdrawal      -60,000
-              ─────────
-cash                  0   → "Available balance"
-
-returns          84,500   → portfolio growth (35,000 + 28,500 + 21,000)
-investment value            1,200,000 principal + 84,500 growth = 1,284,500
-```
-
-Sample figures are marked wherever they appear: a dismissible banner on the
-dashboard, "Demo" tags on portfolio values, and footnotes under the charts.
 
 ---
 

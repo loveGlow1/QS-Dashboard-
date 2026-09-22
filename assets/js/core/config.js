@@ -1,8 +1,8 @@
 /**
  * QuickStark — application configuration.
  *
- * Everything environment-specific lives here so that swapping the demo
- * back-end for a real API is a single-file change.
+ * Everything environment-specific lives here, so pointing the app at a
+ * different back-end is a single-file change.
  */
 (function (window) {
   "use strict";
@@ -25,20 +25,17 @@
     currency: { code: "NGN", symbol: "₦", locale: "en-NG" },
 
     /**
-     * MVP flag. While true the app runs entirely on local demo data and a
-     * mocked auth session — no real funds, balances or payments exist.
-     * Set to false once `QS.api` is pointed at the live back-end.
+     * Base URL for the REST API. Every request `QS.api` makes is resolved
+     * against this. Override it here (or set `data-qs-api` on <html>) when
+     * the API is served from another origin.
      */
-    demoMode: true,
+    apiBaseUrl:
+      document.documentElement.getAttribute("data-qs-api") || "/api/v1",
 
-    /** Base URL for the future REST API. Unused while demoMode is true. */
-    apiBaseUrl: "/api/v1",
+    /** Abort an API request that has not responded within this many ms. */
+    requestTimeout: 15000,
 
-    /** Latency (ms) the demo service layer simulates, so loading states
-        are exercised exactly as they will be against a real network. */
-    simulatedLatency: 420,
-
-    /** Session storage key for the mocked auth token. */
+    /** Storage key for the session returned by the sign-in endpoint. */
     sessionKey: "qs.session",
 
     /** Named routes — the single source of truth for navigation. */
@@ -46,8 +43,8 @@
       home: ROOT + "/index.html",
       login: ROOT + "/pages/login.html",
       dashboard: ROOT + "/pages/dashboard.html",
-      /* Placeholders: these resolve to in-app sections for the MVP and
-         become their own documents when the pages are built. */
+      /* These resolve to in-app sections today and become their own
+         documents once those pages are built. */
       investments: ROOT + "/pages/dashboard.html#investments",
       transactions: ROOT + "/pages/dashboard.html#activity",
       withdraw: ROOT + "/pages/dashboard.html#withdraw",

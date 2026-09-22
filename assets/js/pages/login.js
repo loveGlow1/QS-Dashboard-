@@ -1,8 +1,9 @@
 /**
  * QuickStark — login page controller.
  *
- * Validation and submission run against QS.auth, which is mocked for this
- * preview. Swapping in a real endpoint means changing QS.auth.signIn only.
+ * Validation runs in the browser for feedback only. Credentials are checked
+ * by the server: this page reports what QS.auth.signIn comes back with and
+ * never decides on its own whether someone is signed in.
  */
 (function (window) {
   "use strict";
@@ -112,25 +113,10 @@
         .catch(function (err) {
           submit.removeAttribute("data-busy");
           showAlert(err && err.message ? err.message : "Sign in failed. Please try again.");
-          setInvalid(passwordField, true, "Check your password and try again.");
+          passwordInput.value = "";
           passwordInput.focus();
-          passwordInput.select();
         });
     });
-
-    /* ---------------- demo credential shortcut ---------------- */
-    var fill = utils.qs("[data-fill-demo]");
-    if (fill) {
-      fill.addEventListener("click", function () {
-        var creds = QS.demoData.demoCredentials;
-        emailInput.value = creds.email;
-        passwordInput.value = creds.password;
-        setInvalid(emailField, false);
-        setInvalid(passwordField, false);
-        clearAlert();
-        submit.focus();
-      });
-    }
 
     emailInput.focus();
   }

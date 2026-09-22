@@ -27,32 +27,18 @@
   };
 
   /* ================================================================== *
-   * Preview notice
-   * ================================================================== */
-
-  function mountDemoBar() {
-    var bar = utils.qs("[data-demo-bar]");
-    if (!bar || !QS.api.isDemo()) return;
-
-    var dateNode = utils.qs("[data-snapshot-date]", bar);
-    if (dateNode) dateNode.textContent = utils.date(QS.api.snapshotDate());
-    bar.hidden = false;
-
-    var dismiss = utils.qs("[data-demo-dismiss]", bar);
-    if (dismiss) {
-      dismiss.addEventListener("click", function () { bar.hidden = true; });
-    }
-  }
-
-  /* ================================================================== *
    * Identity
    * ================================================================== */
 
   function mountProfile() {
     return QS.api.getProfile().then(function (user) {
+      if (!user) return null;
+
       var greeting = utils.qs("[data-greeting]");
       if (greeting) {
-        greeting.textContent = utils.greeting() + ", " + user.firstName;
+        greeting.textContent = user.firstName
+          ? utils.greeting() + ", " + user.firstName
+          : utils.greeting();
       }
 
       utils.qsa("[data-user-initials]").forEach(function (n) {
@@ -64,6 +50,10 @@
 
       document.title = "Dashboard — QuickStark";
       return user;
+    }).catch(function () {
+      var greeting = utils.qs("[data-greeting]");
+      if (greeting) greeting.textContent = utils.greeting();
+      return null;
     });
   }
 
@@ -134,11 +124,18 @@
 
     /* The count comes from the investments resource, not from the portfolio
        summary, so it stays correct once both are served by the API. */
-    QS.api.getInvestments().then(function (list) {
-      var node = utils.qs("[data-total-count]");
-      if (!node) return;
-      node.textContent = String(list.filter(function (i) { return i.status === "active"; }).length);
-    });
+    QS.api.getInvestments()
+      .then(function (list) {
+        var node = utils.qs("[data-total-count]");
+        if (!node) return;
+        node.textContent = String(
+          (list || []).filter(function (i) { return i.status === "active"; }).length
+        );
+      })
+      .catch(function () {
+        var node = utils.qs("[data-total-count]");
+        if (node) node.textContent = "—";
+      });
   }
 
   /* ================================================================== *
@@ -157,22 +154,35 @@
     var subNode = utils.qs("[data-growth-sub]");
     if (!chartNode) return;
 
-    var active = "6M";
+    var series = (portfolio && portfolio.series) || {};
+    var ranges = (portfolio && portfolio.ranges) || Object.keys(series);
+
+    if (!ranges.length || !ranges.some(function (r) { return series[r]; })) {
+      chartNode.innerHTML =
+        '<div class="qs-empty">' + QS.icon("chart") +
+        "<p>No portfolio history yet. Your first investment starts this chart.</p></div>";
+      if (rangeNode) rangeNode.innerHTML = "";
+      if (subNode) subNode.innerHTML = "";
+      return;
+    }
+
+    /* Default to 6M when it exists, otherwise the first range offered. */
+    var active = ranges.indexOf("6M") !== -1 ? "6M" : ranges[0];
     var chart = null;
 
     function describe(range) {
-      var series = portfolio.series[range];
-      if (!subNode || !series) return;
-      var up = series.change >= 0;
+      var entry = series[range];
+      if (!subNode || !entry) return;
+      var up = entry.change >= 0;
       subNode.innerHTML =
         '<span class="qs-delta" data-dir="' + (up ? "up" : "down") + '">' +
-          utils.money(series.change, { signed: true }) +
+          utils.money(entry.change, { signed: true }) +
         "</span>" +
         '<span class="qs-growth__sub-note">value change over ' + utils.esc(range) +
         ", deposits included</span>";
     }
 
-    rangeNode.innerHTML = portfolio.ranges.map(function (r) {
+    rangeNode.innerHTML = ranges.map(function (r) {
       return '<button role="tab" class="qs-range" data-range="' + r + '" aria-selected="' +
         (r === active ? "true" : "false") + '">' + r + "</button>";
     }).join("");
@@ -198,9 +208,9 @@
 
     chartNode.innerHTML = "";
     chart = QS.Chart(chartNode, {
-      points: portfolio.series[active].points,
+      points: series[active].points,
       height: chartHeight(),
-      ariaLabel: "Portfolio value over time (sample data)"
+      ariaLabel: "Portfolio value over time"
     });
     describe(active);
 
@@ -216,8 +226,8 @@
    * Active investment
    * ================================================================== */
 
-  function investmentMarkup(inv, snapshot) {
-    var elapsed = utils.daysBetween(inv.startDate, snapshot);
+  function investmentMarkup(inv, today) {
+    var elapsed = utils.daysBetween(inv.startDate, today);
     var total = utils.daysBetween(inv.startDate, inv.maturityDate);
     var progress = utils.clamp((elapsed / total) * 100, 0, 100);
     var remaining = Math.max(0, total - elapsed);
@@ -259,7 +269,6 @@
         '<button class="qs-btn qs-btn--ghost qs-btn--block" data-soon="Investment detail">' +
           "View Investment" +
         "</button>" +
-        '<p class="qs-inv__note">Sample investment — demo data.</p>' +
       "</div>"
     );
   }
@@ -282,7 +291,7 @@
             "</div>";
           return;
         }
-        host.innerHTML = investmentMarkup(inv, QS.api.snapshotDate() || new Date().toISOString().slice(0, 10));
+        host.innerHTML = investmentMarkup(inv, new Date().toISOString().slice(0, 10));
         QS.appShell.refresh(host);
       })
       .catch(function () {
@@ -338,6 +347,7 @@
 
     QS.api.getTransactions({ limit: 5 })
       .then(function (rows) {
+        rows = rows || [];
         if (!rows.length) {
           host.innerHTML =
             '<div class="qs-empty">' + QS.icon("inbox") +
@@ -366,6 +376,7 @@
 
     QS.api.getNotifications()
       .then(function (items) {
+        items = items || [];
         if (dot) dot.hidden = !items.some(function (n) { return n.unread; });
 
         if (!items.length) {
@@ -408,7 +419,7 @@
     invest: { title: "Invest", message: "Funding a plan arrives with the investments page." },
     deposit: { title: "Deposit", message: null },
     withdraw: { title: "Withdraw", message: null },
-    transactions: { title: "Transactions", message: "The full transaction history page is not in this preview." }
+    transactions: { title: "Transactions", message: "The full transaction history page is not available yet." }
   };
 
   function mountQuickActions() {
@@ -450,7 +461,6 @@
     QS.bootstrap.mount(document);
     QS.appShell.mount();
 
-    mountDemoBar();
     mountProfile();
     mountInvestment();
     mountActivity();

@@ -8,28 +8,6 @@
   var utils = QS.utils;
 
   /* ------------------------------------------------------------------ *
-   * Hero product window — a miniature of the real dashboard chart
-   * ------------------------------------------------------------------ */
-
-  function mountHeroChart() {
-    var node = utils.qs("[data-hero-chart]");
-    if (!node) return;
-
-    QS.api.getPortfolioSeries("6M").then(function (res) {
-      QS.Chart(node, {
-        points: res.series.points,
-        height: 150,
-        padding: { top: 10, right: 4, bottom: 6, left: 4 },
-        showYAxis: false,
-        showXAxis: false,
-        showGrid: false,
-        interactive: false,
-        ariaLabel: "Sample portfolio value over six months"
-      });
-    });
-  }
-
-  /* ------------------------------------------------------------------ *
    * Investment plans
    * ------------------------------------------------------------------ */
 
@@ -52,7 +30,7 @@
           "<div><dt>Eligibility</dt><dd>" + utils.esc(plan.eligibility) + "</dd></div>" +
         "</dl>" +
         '<ul class="qs-plan__features">' +
-          plan.features.map(function (f) {
+          (plan.features || []).map(function (f) {
             return "<li><span data-icon=\"check\" data-icon-size=\"14\"></span>" + utils.esc(f) + "</li>";
           }).join("") +
         "</ul>" +
@@ -82,6 +60,16 @@
 
     QS.api.getPlans()
       .then(function (plans) {
+        plans = plans || [];
+        if (!plans.length) {
+          grid.innerHTML =
+            '<div class="qs-empty" style="grid-column:1/-1">' +
+              QS.icon("layers") +
+              "<p>No plans are open right now. Check back soon.</p>" +
+            "</div>";
+          return;
+        }
+
         grid.innerHTML = plans.map(planCard).join("");
         QS.bootstrap.refresh(grid);
 
@@ -89,7 +77,7 @@
           btn.addEventListener("click", function () {
             QS.toast({
               title: btn.getAttribute("data-plan-details") + " plan",
-              message: "Full plan details arrive with the investments page. Sign in to preview the dashboard.",
+              message: "Full plan details arrive with the investments page. Sign in to see your dashboard.",
               icon: "layers"
             });
           });
@@ -105,54 +93,6 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * Portfolio preview with range switching
-   * ------------------------------------------------------------------ */
-
-  function mountPreview() {
-    var chartNode = utils.qs("[data-preview-chart]");
-    var rangeNode = utils.qs("[data-preview-ranges]");
-    if (!chartNode || !rangeNode) return;
-
-    var chart = null;
-    var active = "6M";
-
-    chartNode.innerHTML = '<div class="qs-skeleton" style="height:100%;border-radius:12px"></div>';
-
-    function renderRanges(ranges) {
-      rangeNode.innerHTML = ranges.map(function (r) {
-        return (
-          '<button role="tab" class="qs-range" data-range="' + r + '" ' +
-          'aria-selected="' + (r === active ? "true" : "false") + '">' + r + "</button>"
-        );
-      }).join("");
-
-      utils.qsa("[data-range]", rangeNode).forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var range = btn.getAttribute("data-range");
-          if (range === active) return;
-          active = range;
-          utils.qsa("[data-range]", rangeNode).forEach(function (b) {
-            b.setAttribute("aria-selected", b === btn ? "true" : "false");
-          });
-          QS.api.getPortfolioSeries(range).then(function (res) {
-            if (chart) chart.setPoints(res.series.points, true);
-          });
-        });
-      });
-    }
-
-    QS.api.getPortfolio().then(function (portfolio) {
-      renderRanges(portfolio.ranges);
-      chartNode.innerHTML = "";
-      chart = QS.Chart(chartNode, {
-        points: portfolio.series[active].points,
-        height: 240,
-        ariaLabel: "Sample portfolio value chart"
-      });
-    });
-  }
-
-  /* ------------------------------------------------------------------ *
    * Init
    * ------------------------------------------------------------------ */
 
@@ -160,9 +100,7 @@
     QS.bootstrap.mount(document);
     QS.siteNav.mount();
     QS.accordion.mount(document);
-    mountHeroChart();
     mountPlans();
-    mountPreview();
   }
 
   if (document.readyState === "loading") {

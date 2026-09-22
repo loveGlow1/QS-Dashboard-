@@ -1,8 +1,8 @@
 /**
  * QuickStark — toast notifications.
  *
- * Used for transient confirmations and for the "not available in this
- * preview" responses the demo quick actions return.
+ * Used for transient confirmations and for the "not available yet" responses
+ * that unbuilt sections and unconnected services return.
  */
 (function (window) {
   "use strict";

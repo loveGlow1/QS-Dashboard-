@@ -134,55 +134,6 @@
 
 .qs-alert[data-login-error] { margin-bottom: 18px; }
 
-/* --- Demo credentials ------------------------------------------------- */
-
-.qs-auth__demo {
-  margin-top: 22px;
-  padding-top: 20px;
-  border-top: 1px solid var(--qs-line-soft);
-}
-
-.qs-auth__demo-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  color: var(--qs-text-4);
-}
-
-.qs-auth__demo-fill {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  margin-top: 11px;
-  padding: 11px 13px;
-  border-radius: var(--qs-r-md);
-  background: var(--qs-surface-2);
-  border: 1px dashed var(--qs-line-strong);
-  text-align: left;
-  transition: border-color var(--qs-fast), background var(--qs-fast);
-}
-.qs-auth__demo-fill:hover { border-color: var(--qs-accent-line); background: var(--qs-surface-3); }
-.qs-auth__demo-fill > span:first-child { display: grid; gap: 3px; min-width: 0; }
-.qs-auth__demo-fill code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.75rem;
-  color: var(--qs-text-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.qs-auth__demo-action {
-  flex: none;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--qs-accent-hover);
-  white-space: nowrap;
-}
-
 /* --- Footer ----------------------------------------------------------- */
 
 .qs-auth__foot {
