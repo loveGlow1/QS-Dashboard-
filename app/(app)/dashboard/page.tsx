@@ -3,6 +3,7 @@ import { ActiveInvestment } from "@/components/dashboard/ActiveInvestment";
 import { GrowthCard } from "@/components/dashboard/GrowthCard";
 import { PortfolioCard } from "@/components/dashboard/PortfolioCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
+import { MobileHome } from "@/components/dashboard/mobile/MobileHome";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import {
   getActiveInvestment,
@@ -39,12 +40,30 @@ export default async function DashboardPage() {
       <section className="mb-[22px] flex flex-wrap items-end justify-between gap-5 max-[720px]:items-start max-[720px]:gap-4">
         <div className="max-[720px]:w-full">
           <h2 className="text-[clamp(1.375rem,1.1rem+1vw,1.75rem)] font-semibold leading-[1.2] tracking-[-0.03em]">
-            {greeting()}, {firstName}
+            {greeting()},{" "}
+            <span className="text-em-400">{firstName}</span>
           </h2>
           <p className="mt-1.5 text-sm text-mist-400">Here&apos;s an overview of your portfolio.</p>
         </div>
-        <QuickActions />
+        <div className="max-[720px]:hidden">
+          <QuickActions />
+        </div>
       </section>
+
+      {/* A phone gets its own arrangement of the same figures — see
+          MobileHome. Both are rendered and one is hidden, rather than picking
+          a layout from a measured width, because measuring means the first
+          paint is a guess and the correction is a visible jump. */}
+      <div className="min-[721px]:hidden">
+        <MobileHome
+          firstName={firstName}
+          portfolio={portfolio}
+          investment={investment}
+          transactions={transactions}
+        />
+      </div>
+
+      <div className="max-[720px]:hidden">
 
       <section className="mb-4 grid gap-4 min-[1025px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)] min-[1181px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
         <PortfolioCard portfolio={portfolio} investment={investment} />
@@ -60,6 +79,7 @@ export default async function DashboardPage() {
         <RecentActivity transactions={transactions} />
         {investment && <ActiveInvestment investment={investment} />}
       </section>
+      </div>
 
       <footer className="mt-[26px] border-t border-[var(--line-soft)] pt-[18px]">
         <p className="max-w-[68ch] text-[0.6875rem] leading-[1.6] text-mist-500">

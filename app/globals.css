@@ -39,6 +39,13 @@
   --color-grid-green: #3ecf9a;
   --color-grid-amber: #e9b872;
 
+  /* --- Emerald, the mobile dashboard's accent -------------------------- */
+  --color-em-200: #9df0cb;
+  --color-em-300: #6ee7b7;
+  --color-em-400: #34d399;
+  --color-em-500: #10b981;
+  --color-em-600: #059669;
+
   /* --- Radii ---------------------------------------------------------- */
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -68,6 +75,13 @@
   --up-soft: rgba(62, 207, 154, 0.12);
   --down-soft: rgba(240, 104, 123, 0.12);
   --warn-soft: rgba(233, 184, 114, 0.12);
+
+  /* Emerald surfaces. Kept low in opacity on purpose: the accent should read
+     as a material the card is made of, not a colour laid on top of it. */
+  --em-soft: rgba(16, 185, 129, 0.1);
+  --em-line: rgba(16, 185, 129, 0.26);
+  --em-line-strong: rgba(52, 211, 153, 0.42);
+  --em-glow: rgba(16, 185, 129, 0.22);
 }
 
 /* ==========================================================================
