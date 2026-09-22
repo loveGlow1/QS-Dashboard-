@@ -1,0 +1,195 @@
+import { ButtonLink } from "@/components/ui/Button";
+import { Icon, type IconName } from "@/components/ui/Icon";
+import { Reveal } from "@/components/ui/Reveal";
+
+/* Shared section scaffolding ------------------------------------------- */
+
+export function Section({
+  id,
+  children,
+  className = "",
+}: {
+  id?: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section id={id} className={`py-[clamp(64px,8vw,116px)] ${className}`}>
+      <div className="mx-auto w-full max-w-[1180px] px-6">{children}</div>
+    </section>
+  );
+}
+
+export function SectionHead({
+  eyebrow,
+  title,
+  lede,
+  className = "",
+}: {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  className?: string;
+}) {
+  return (
+    <Reveal className={`mb-[clamp(32px,4vw,56px)] grid max-w-[620px] gap-3.5 ${className}`}>
+      <span className="text-xs font-medium uppercase tracking-[0.08em] text-mist-400">{eyebrow}</span>
+      <h2 className="text-[clamp(1.6rem,1.1rem+1.9vw,2.4rem)] font-semibold leading-[1.16] tracking-[-0.03em]">
+        {title}
+      </h2>
+      {lede && <p className="text-[clamp(1rem,0.94rem+0.3vw,1.125rem)] leading-[1.65] text-mist-400">{lede}</p>}
+    </Reveal>
+  );
+}
+
+/* Pillars ---------------------------------------------------------------- */
+
+const PILLARS: { icon: IconName; title: string; body: string }[] = [
+  {
+    icon: "chart",
+    title: "Track your portfolio",
+    body: "See your investment value and activity in one place, updated as your account changes.",
+  },
+  {
+    icon: "bell",
+    title: "Stay informed",
+    body: "Follow portfolio activity and investment milestones as they happen, without chasing updates.",
+  },
+  {
+    icon: "bank",
+    title: "Simple withdrawals",
+    body: "Manage eligible withdrawals directly from your account, with each request recorded end to end.",
+  },
+];
+
+export function Pillars() {
+  return (
+    <Section>
+      <SectionHead
+        eyebrow="The QuickStark experience"
+        title="One account, a clear view of everything in it."
+        lede="QuickStark brings your investment, its performance and its history into a single place, so you always know where you stand."
+      />
+      <div className="grid gap-4 min-[861px]:grid-cols-3">
+        {PILLARS.map((p, i) => (
+          <Reveal key={p.title} delay={i * 80} as="article">
+            <article className="h-full rounded-lg border border-[var(--line)] bg-ink-850 px-6 pb-7 pt-[26px] transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-ink-800">
+              <span className="mb-[18px] grid size-10 place-items-center rounded-md border border-[var(--accent-line)] bg-[var(--accent-soft)] text-accent-300">
+                <Icon name={p.icon} size={19} />
+              </span>
+              <h3 className="mb-2 text-lg font-semibold tracking-[-0.02em]">{p.title}</h3>
+              <p className="text-sm leading-[1.62] text-mist-400">{p.body}</p>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* How it works ----------------------------------------------------------- */
+
+const STEPS: { icon: IconName; title: string; body: string }[] = [
+  { icon: "user", title: "Create your account", body: "Sign up and complete verification to get access to your dashboard." },
+  { icon: "layers", title: "Choose an investment", body: "Review the available plans, their minimums and their terms, then fund the one you choose." },
+  { icon: "trendUp", title: "Track your portfolio", body: "Follow your portfolio value, activity and milestones from your dashboard." },
+  { icon: "bank", title: "Withdraw when eligible", body: "Request a withdrawal once your investment reaches its eligibility terms." },
+];
+
+export function HowItWorks() {
+  return (
+    <Section id="how">
+      <SectionHead eyebrow="How it works" title="Four steps, start to finish." />
+      <ol className="grid overflow-hidden rounded-lg border border-[var(--line)] bg-ink-850 min-[561px]:grid-cols-2 min-[961px]:grid-cols-4">
+        {STEPS.map((step, i) => (
+          <Reveal
+            key={step.title}
+            delay={i * 70}
+            as="li"
+            className="border-b border-[var(--line)] px-6 pb-[30px] pt-7 last:border-b-0 min-[561px]:[&:nth-child(-n+2)]:border-b min-[561px]:[&:nth-child(2n)]:border-r-0 min-[561px]:[&:nth-child(n+3)]:border-b-0 min-[561px]:border-r min-[961px]:border-b-0 min-[961px]:last:border-r-0"
+          >
+            <span className="text-[0.6875rem] font-semibold tracking-[0.12em] text-mist-500">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span className="my-4 grid size-9 place-items-center rounded-full border border-[var(--line-strong)] bg-ink-800 text-mist-200">
+              <Icon name={step.icon} size={17} />
+            </span>
+            <h3 className="mb-[7px] text-lg font-semibold tracking-[-0.02em]">{step.title}</h3>
+            <p className="text-[0.8125rem] leading-[1.6] text-mist-400">{step.body}</p>
+          </Reveal>
+        ))}
+      </ol>
+    </Section>
+  );
+}
+
+/* About ------------------------------------------------------------------ */
+
+const POINTS: { icon: IconName; title: string; body: string }[] = [
+  { icon: "globe", title: "Clarity", body: "Terms, minimums and durations are stated before you commit, in plain language." },
+  { icon: "file", title: "A complete record", body: "Every deposit, investment, return and withdrawal is recorded and visible in your account." },
+  { icon: "shield", title: "Control", body: "Your portfolio, your documents and your withdrawal requests stay under your own account." },
+];
+
+export function About() {
+  return (
+    <Section id="about">
+      <div className="grid items-start gap-[clamp(28px,4vw,64px)] min-[861px]:grid-cols-2">
+        <SectionHead
+          eyebrow="About"
+          title="Built to be understood, not decoded."
+          lede="QuickStark is an investment platform for people who want to know exactly what they hold and what it is doing. The product is designed around three commitments."
+          className="mb-0"
+        />
+        <div className="grid gap-px overflow-hidden rounded-lg bg-[var(--line-soft)]">
+          {POINTS.map((point, i) => (
+            <Reveal key={point.title} delay={i * 70}>
+              <div className="bg-ink-850 px-6 py-[22px]">
+                <h3 className="mb-[7px] flex items-center gap-2.5 text-lg font-semibold tracking-[-0.02em]">
+                  <Icon name={point.icon} size={17} className="text-accent-500" />
+                  {point.title}
+                </h3>
+                <p className="text-sm leading-[1.62] text-mist-400">{point.body}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* Final CTA -------------------------------------------------------------- */
+
+export function FinalCta() {
+  return (
+    <Section>
+      <Reveal>
+        <div className="relative isolate grid justify-items-center gap-4 overflow-hidden rounded-xl border border-[var(--line-strong)] bg-gradient-to-b from-ink-800 to-ink-850 px-[clamp(24px,4vw,56px)] py-[clamp(44px,6vw,76px)] text-center">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 -top-[60%] -z-10 h-[150%]"
+            style={{
+              background:
+                "radial-gradient(42% 46% at 50% 58%, rgba(77,124,243,0.26) 0%, rgba(77,124,243,0) 70%)",
+            }}
+          />
+          <h2 className="text-[clamp(1.6rem,1.1rem+1.9vw,2.4rem)] font-semibold leading-[1.16] tracking-[-0.03em]">
+            Ready to take control of your portfolio?
+          </h2>
+          <p className="max-w-[46ch] text-[clamp(1rem,0.94rem+0.3vw,1.125rem)] leading-[1.65] text-mist-400">
+            Create your account, choose a plan and follow every step from one dashboard.
+          </p>
+          <div className="mt-2.5 flex flex-wrap justify-center gap-2.5">
+            <ButtonLink href="/signup" variant="primary" size="lg">
+              Get Started
+            </ButtonLink>
+            <ButtonLink href="/login" variant="ghost" size="lg">
+              Login
+            </ButtonLink>
+          </div>
+        </div>
+      </Reveal>
+    </Section>
+  );
+}

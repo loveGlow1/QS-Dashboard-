@@ -147,3 +147,20 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics | null> {
   const { data } = await supabase.from("platform_metrics").select("*").maybeSingle();
   return (data as PlatformMetrics) ?? null;
 }
+
+/**
+ * Cumulative amount invested across the platform, by month. A public
+ * aggregate: it carries no customer detail.
+ */
+export async function getPlatformSeries(): Promise<SeriesPoint[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("platform_monthly")
+    .select("month, total_invested")
+    .order("month", { ascending: true });
+
+  return ((data as { month: string; total_invested: number }[]) ?? []).map((row) => ({
+    date: row.month,
+    value: Number(row.total_invested),
+  }));
+}

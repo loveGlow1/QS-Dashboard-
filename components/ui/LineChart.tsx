@@ -20,6 +20,10 @@ interface Props {
   interactive?: boolean;
   ariaLabel?: string;
   className?: string;
+  /** Shown when there is nothing to plot. Phrase it for the caller's
+      context: a platform total and a personal portfolio are not the same
+      thing, and saying the wrong one is worse than saying nothing. */
+  emptyMessage?: string;
 }
 
 const PAD = { top: 18, right: 8, bottom: 26 };
@@ -70,6 +74,7 @@ export function LineChart({
   interactive = true,
   ariaLabel = "Portfolio value over time",
   className = "",
+  emptyMessage = "No history to show yet.",
 }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
@@ -163,10 +168,7 @@ export function LineChart({
         className={`grid place-items-center rounded-md border border-dashed border-[var(--line)] text-center ${className}`}
         style={{ height }}
       >
-        <p className="max-w-[260px] px-5 text-[0.8125rem] text-mist-400">
-          No portfolio history yet. Your chart appears once your first investment
-          is funded.
-        </p>
+        <p className="max-w-[280px] px-5 text-[0.8125rem] text-mist-400">{emptyMessage}</p>
       </div>
     );
   }
