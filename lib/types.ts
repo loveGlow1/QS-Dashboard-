@@ -319,6 +319,9 @@ export interface Deposit {
   fee_amount: number;
   credited_amount: number;
   asset_code: string;
+  /** The naira rate this deposit was credited at, recorded by credit_deposit
+      so a naira figure can be checked against the amount that arrived. */
+  rate_to_ngn: number | null;
   status: DepositStatus;
   confirmations: number;
   tx_hash: string | null;
