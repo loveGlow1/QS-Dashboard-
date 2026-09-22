@@ -3,7 +3,7 @@ import { Icon, type IconName } from "@/components/ui/Icon";
 
 const ACTIONS: { href: string; icon: IconName; label: string }[] = [
   { href: "/investments", icon: "plus", label: "Invest" },
-  { href: "/help#deposits", icon: "arrowDownLeft", label: "Deposit" },
+  { href: "/deposit", icon: "arrowDownLeft", label: "Deposit" },
   { href: "/withdraw", icon: "arrowUpRight", label: "Withdraw" },
   { href: "/transactions", icon: "list", label: "Transactions" },
 ];
