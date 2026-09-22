@@ -21,6 +21,7 @@ export const ICONS = {
   wallet: <><path d="M3.5 8.5A2.5 2.5 0 0 1 6 6h11a2 2 0 0 1 2 2v1"/><rect x="3.5" y="8.5" width="17" height="11" rx="2.5"/><path d="M16.5 14h.01"/></>,
   bank: <><path d="M4 10h16"/><path d="m12 3 8 4H4l8-4Z"/><path d="M6.5 10v7"/><path d="M12 10v7"/><path d="M17.5 10v7"/><path d="M4 20h16"/></>,
   bitcoin: <><circle cx="12" cy="12" r="9"/><path d="M9.5 7.5v9"/><path d="M11.5 7.5v9"/><path d="M8 9.5h5a2 2 0 0 1 0 4H8h5.4a2.1 2.1 0 0 1 0 4.2H8"/><path d="M10.2 5.8v1.7"/><path d="M12.8 5.8v1.7"/></>,
+  mail: <><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="m4 8 7.2 4.8a1.5 1.5 0 0 0 1.6 0L20 8"/></>,
   bell: <><path d="M18 9a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16S18 14 18 9Z"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></>,
   chevronDown: <path d="m6 9.5 6 6 6-6"/>,
   chevronLeft: <path d="m14.5 6-6 6 6 6"/>,

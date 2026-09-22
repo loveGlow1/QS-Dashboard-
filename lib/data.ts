@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type {
   ChartRange,
@@ -26,6 +27,26 @@ import type {
  * the server would act on, and the server's is the only one that counts.
  */
 
+/**
+ * Runs a read and returns `fallback` if it fails.
+ *
+ * A page that cannot reach the database should say it has nothing to show,
+ * not return a 500. The error is logged so an outage is visible in the server
+ * logs rather than silently swallowed.
+ */
+async function safely<T>(label: string, read: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await read();
+  } catch (error) {
+    /* Next signals control flow with thrown errors — a dynamic-rendering
+       bailout, a redirect, a notFound. Swallowing those would leave the
+       framework unable to do its job, so they go straight back up. */
+    unstable_rethrow(error);
+    console.error(`[data] ${label} failed`, error);
+    return fallback;
+  }
+}
+
 const EMPTY_TOTALS: Omit<PortfolioTotals, "user_id"> = {
   invested: 0,
   investment_value: 0,
@@ -39,28 +60,34 @@ const EMPTY_TOTALS: Omit<PortfolioTotals, "user_id"> = {
 };
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("profiles").select("*").maybeSingle();
-  return (data as Profile) ?? null;
+  return safely("getProfile", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase.from("profiles").select("*").maybeSingle();
+    return (data as Profile) ?? null;
+  }, null);
 }
 
 export async function getPlans(): Promise<Plan[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("plans")
-    .select("*")
-    .neq("status", "closed")
-    .order("sort_order", { ascending: true });
-  return (data as Plan[]) ?? [];
+  return safely("getPlans", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("plans")
+      .select("*")
+      .neq("status", "closed")
+      .order("sort_order", { ascending: true });
+    return (data as Plan[]) ?? [];
+  }, []);
 }
 
 export async function getInvestments(): Promise<Investment[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("investments")
-    .select("*")
-    .order("start_date", { ascending: false });
-  return (data as Investment[]) ?? [];
+  return safely("getInvestments", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("investments")
+      .select("*")
+      .order("start_date", { ascending: false });
+    return (data as Investment[]) ?? [];
+  }, []);
 }
 
 export async function getActiveInvestment(): Promise<Investment | null> {
@@ -68,39 +95,47 @@ export async function getActiveInvestment(): Promise<Investment | null> {
   return rows.find((i) => i.status === "active") ?? null;
 }
 
-export async function getTransactions(opts: { limit?: number; type?: string } = {}) {
-  const supabase = await createClient();
-  let query = supabase
-    .from("transactions")
-    .select("*")
-    .order("occurred_at", { ascending: false })
-    .order("created_at", { ascending: false });
+export async function getTransactions(
+  opts: { limit?: number; type?: string } = {},
+): Promise<Transaction[]> {
+  return safely("getTransactions", async () => {
+    const supabase = await createClient();
+    let query = supabase
+      .from("transactions")
+      .select("*")
+      .order("occurred_at", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  if (opts.type && opts.type !== "all") query = query.eq("type", opts.type);
-  if (opts.limit) query = query.limit(opts.limit);
+    if (opts.type && opts.type !== "all") query = query.eq("type", opts.type);
+    if (opts.limit) query = query.limit(opts.limit);
 
-  const { data } = await query;
-  return (data as Transaction[]) ?? [];
+    const { data } = await query;
+    return (data as Transaction[]) ?? [];
+  }, []);
 }
 
 export async function getNotifications(limit = 12): Promise<Notification[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("notifications")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  return (data as Notification[]) ?? [];
+  return safely("getNotifications", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("notifications")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(limit);
+    return (data as Notification[]) ?? [];
+  }, []);
 }
 
 /** One chart range of the customer's own history, via the database function. */
 export async function getSeries(range: ChartRange = "6M"): Promise<SeriesPoint[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.rpc("portfolio_series", { p_range: range });
-  return ((data as { as_of: string; value: number }[]) ?? []).map((row) => ({
-    date: row.as_of,
-    value: Number(row.value),
-  }));
+  return safely("getSeries", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase.rpc("portfolio_series", { p_range: range });
+    return ((data as { as_of: string; value: number }[]) ?? []).map((row) => ({
+      date: row.as_of,
+      value: Number(row.value),
+    }));
+  }, []);
 }
 
 /**
@@ -110,42 +145,42 @@ export async function getSeries(range: ChartRange = "6M"): Promise<SeriesPoint[]
  * placeholder, and the dashboard says as much.
  */
 export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioSummary> {
-  const supabase = await createClient();
+  const series = await getSeries(range);
+  const empty: PortfolioSummary = { user_id: "", ...EMPTY_TOTALS, series };
 
-  const [totalsResult, series] = await Promise.all([
-    supabase.from("portfolio_totals").select("*").maybeSingle(),
-    getSeries(range),
-  ]);
+  return safely("getPortfolio", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase.from("portfolio_totals").select("*").maybeSingle();
+    const row = data as PortfolioTotals | null;
 
-  const row = totalsResult.data as PortfolioTotals | null;
+    if (!row) return empty;
 
-  if (!row) {
-    const { data: userData } = await supabase.auth.getUser();
-    return { user_id: userData.user?.id ?? "", ...EMPTY_TOTALS, series };
-  }
-
-  /* Postgres numeric arrives as a string over PostgREST when it exceeds the
-     safe range, so coerce every figure rather than trusting the type. */
-  return {
-    user_id: row.user_id,
-    invested: Number(row.invested),
-    investment_value: Number(row.investment_value),
-    growth: Number(row.growth),
-    growth_percent: Number(row.growth_percent),
-    available: Number(row.available),
-    pending_out: Number(row.pending_out),
-    withdrawable: Number(row.withdrawable),
-    total_value: Number(row.total_value),
-    active_count: Number(row.active_count),
-    series,
-  };
+    /* Postgres numeric arrives as a string over PostgREST once it exceeds the
+       safe integer range, so coerce every figure rather than trusting the
+       declared type. */
+    return {
+      user_id: row.user_id,
+      invested: Number(row.invested),
+      investment_value: Number(row.investment_value),
+      growth: Number(row.growth),
+      growth_percent: Number(row.growth_percent),
+      available: Number(row.available),
+      pending_out: Number(row.pending_out),
+      withdrawable: Number(row.withdrawable),
+      total_value: Number(row.total_value),
+      active_count: Number(row.active_count),
+      series,
+    };
+  }, empty);
 }
 
 /** Public aggregates for the landing page. Readable without a session. */
 export async function getPlatformMetrics(): Promise<PlatformMetrics | null> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("platform_metrics").select("*").maybeSingle();
-  return (data as PlatformMetrics) ?? null;
+  return safely("getPlatformMetrics", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase.from("platform_metrics").select("*").maybeSingle();
+    return (data as PlatformMetrics) ?? null;
+  }, null);
 }
 
 /**
@@ -153,14 +188,16 @@ export async function getPlatformMetrics(): Promise<PlatformMetrics | null> {
  * aggregate: it carries no customer detail.
  */
 export async function getPlatformSeries(): Promise<SeriesPoint[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("platform_monthly")
-    .select("month, total_invested")
-    .order("month", { ascending: true });
+  return safely("getPlatformSeries", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("platform_monthly")
+      .select("month, total_invested")
+      .order("month", { ascending: true });
 
-  return ((data as { month: string; total_invested: number }[]) ?? []).map((row) => ({
-    date: row.month,
-    value: Number(row.total_invested),
-  }));
+    return ((data as { month: string; total_invested: number }[]) ?? []).map((row) => ({
+      date: row.month,
+      value: Number(row.total_invested),
+    }));
+  }, []);
 }
