@@ -76,7 +76,7 @@ export function Topbar({
           >
             <Icon name="bell" size={19} />
             {unread && (
-              <span className="absolute right-[9px] top-2 size-[7px] rounded-full border-2 border-ink-900 bg-accent-500" />
+              <span className="absolute right-[9px] top-2 size-[7px] rounded-full border-2 border-ink-900 bg-accent-500 max-[720px]:bg-em-400" />
             )}
           </button>
 
@@ -123,7 +123,7 @@ export function Topbar({
             onClick={() => setOpen(open === "account" ? null : "account")}
             aria-expanded={open === "account"}
             aria-label="Account menu"
-            className="grid size-[38px] cursor-pointer place-items-center rounded-full border border-[var(--accent-line)] bg-gradient-to-br from-accent-700 to-accent-500 text-xs font-semibold text-white transition-shadow hover:shadow-[0_0_0_3px_var(--accent-soft)]"
+            className="grid size-[38px] cursor-pointer place-items-center rounded-full border border-[var(--accent-line)] bg-gradient-to-br from-accent-700 to-accent-500 text-xs font-semibold text-white transition-shadow hover:shadow-[0_0_0_3px_var(--accent-soft)] max-[720px]:border-[var(--em-line-strong)] max-[720px]:from-em-600 max-[720px]:to-em-400"
           >
             {initials(name)}
           </button>

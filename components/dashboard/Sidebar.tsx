@@ -123,11 +123,15 @@ export function BottomNav() {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={`grid justify-items-center gap-1 rounded-sm px-1 py-[7px] text-[0.625rem] font-medium transition-colors ${
-              active ? "text-accent-300" : "text-mist-500 hover:text-mist-200"
+              active ? "text-em-300" : "text-mist-500 hover:text-mist-200"
             }`}
           >
             <Icon name={item.icon} size={20} />
             {item.short ?? item.label}
+            <span
+              aria-hidden="true"
+              className={`h-[2px] w-6 rounded-full ${active ? "bg-em-400" : "bg-transparent"}`}
+            />
           </Link>
         );
       })}
