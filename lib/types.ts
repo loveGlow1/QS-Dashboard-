@@ -123,3 +123,56 @@ export interface PortfolioSummary extends PortfolioTotals {
 }
 
 export type ChartRange = "1M" | "3M" | "6M" | "1Y";
+
+/* ------------------------------------------------------------------ *
+ * Withdrawals
+ * ------------------------------------------------------------------ */
+
+export type WithdrawalStatus =
+  | "pending"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export interface BankAccount {
+  id: string;
+  user_id: string;
+  bank_name: string;
+  bank_code: string;
+  /** Full number. Masked at every point it is rendered. */
+  account_number: string;
+  account_name: string;
+  /** Set by account verification, never by the account holder. */
+  verified: boolean;
+  verified_at: string | null;
+  is_default: boolean;
+  created_at: string;
+}
+
+/** The terms the server applies. The browser only displays them. */
+export interface WithdrawalSettings {
+  minimum_amount: number;
+  fee_percent: number;
+  fee_flat: number;
+  fee_cap: number | null;
+  processing_time_label: string;
+}
+
+export interface Withdrawal {
+  id: string;
+  reference: string;
+  bank_account_id: string;
+  gross_amount: number;
+  fee_amount: number;
+  net_amount: number;
+  status: WithdrawalStatus;
+  failure_reason: string | null;
+  created_at: string;
+  processed_at: string | null;
+}
+
+/** `0123456789` → `••••6789`. The only form an account number is shown in. */
+export function maskAccount(accountNumber: string): string {
+  return `\u2022\u2022\u2022\u2022${accountNumber.slice(-4)}`;
+}
