@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Profile — QuickStark</title>
+<meta name="description" content="Your QuickStark account details.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <section class="qs-pagehead">
+      <div>
+        <h1 class="qs-h1">Profile</h1>
+        <p>Your account details.</p>
+      </div>
+    </section>
+
+    <div class="qs-grid qs-grid--split">
+      <section class="qs-card" aria-labelledby="qs-details-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-details-title">Your details</h2>
+        </header>
+
+        <div class="qs-alert qs-alert--error" data-profile-error hidden role="alert">
+          <span data-icon="alert" data-icon-size="16"></span>
+          <span data-profile-error-text></span>
+        </div>
+        <div class="qs-alert qs-alert--ok" data-profile-done hidden role="status">
+          <span data-icon="check" data-icon-size="16"></span>
+          <span>Saved.</span>
+        </div>
+
+        <form data-profile-form novalidate>
+          <div class="qs-field" data-field="name">
+            <label class="qs-label" for="qs-fullname">Full name</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input" id="qs-fullname" type="text" autocomplete="name">
+            </div>
+            <span class="qs-field-error" data-error-for="name">Enter your name.</span>
+          </div>
+
+          <div class="qs-field">
+            <label class="qs-label" for="qs-emailfield">Email</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input" id="qs-emailfield" type="email" disabled>
+            </div>
+            <span class="qs-field-note">
+              Changing the email on an account is handled by support, so a
+              sign-in address cannot be moved without a check.
+            </span>
+          </div>
+
+          <button class="qs-btn qs-btn--primary" type="submit" data-profile-submit>
+            Save changes
+          </button>
+        </form>
+      </section>
+
+      <section class="qs-card" aria-labelledby="qs-standing-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-standing-title">Account standing</h2>
+        </header>
+
+        <dl class="qs-deflist">
+          <div><dt>Status</dt><dd data-standing-status>—</dd></div>
+          <div><dt>Tier</dt><dd data-standing-tier>—</dd></div>
+          <div><dt>Member since</dt><dd data-standing-since>—</dd></div>
+          <div><dt>Active investments</dt><dd class="qs-num" data-standing-active>—</dd></div>
+          <div><dt>Total portfolio</dt><dd class="qs-num" data-standing-total>—</dd></div>
+        </dl>
+
+        <p class="qs-fineprint" data-standing-note></p>
+      </section>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/_page.js"></script>
+<script src="../assets/js/pages/profile.js"></script>
+</body>
+</html>

@@ -19,7 +19,7 @@ authentication.
 | Account creation | ✅ Supabase Auth, real accounts | Email verification flow polish |
 | Sign in / out / password reset | ✅ Built | — |
 | Customer dashboard | ✅ Reads the customer's own records | — |
-| Investments / Transactions / Withdraw / Profile pages | Navigation placeholders | To be built |
+| Investments / Transactions / Withdraw / Profile / Security / Help | ✅ Built | — |
 | Admin portal | Not built | Separate interface, separate authorization |
 | Payments | Provider-agnostic boundary, no provider registered | Paystack / Stripe adapters + webhooks |
 | Funds movement | **Not enabled** — see *Money* below | Requires a payment provider and the compliance that goes with it |
@@ -118,6 +118,25 @@ The public aggregates are plain tables refreshed by triggers, not views over
 the customer tables. An anonymous read therefore never touches `profiles`,
 `investments` or the ledger — not even indirectly through a view.
 
+### Customer actions
+
+These are the only ways an account's money moves from the browser. Each is a
+database function that revalidates every precondition before writing, so the
+client cannot skip a check by calling the API directly.
+
+| Function | Refuses when |
+| --- | --- |
+| `place_investment(plan_id, amount)` | not verified · plan unknown or not open · below the plan minimum · more than the available balance |
+| `request_withdrawal(amount, destination)` | not verified · amount not positive · no destination · more than the available balance |
+| `cancel_withdrawal(id)` | the request is not the caller's own, or is no longer pending |
+
+A withdrawal is recorded as `pending` and counted against the balance
+immediately, so the same money cannot be requested twice. It settles only when
+a payout actually completes, which needs a payment provider.
+
+A new investment starts at its principal: no return is credited at purchase
+time. Growth is recorded by the back office as it is actually earned.
+
 ### Server-side jobs
 
 - `record_daily_snapshots(date)` — writes each customer's end-of-day portfolio
@@ -160,9 +179,62 @@ Supabase's own linter should also report no security findings:
 | `/signup` | `pages/signup.html` |
 | `/login` | `pages/login.html` |
 | `/dashboard` | `pages/dashboard.html` |
+| `/investments` | `pages/investments.html` |
+| `/transactions` | `pages/transactions.html` |
+| `/withdraw` | `pages/withdraw.html` |
+| `/profile` | `pages/profile.html` |
+| `/security` | `pages/security.html` |
+| `/help` | `pages/help.html` |
+
+The sidebar, topbar and mobile bottom bar are rendered by `app-shell.js` from
+one navigation definition, so a route cannot drift between them.
+
+`vercel.json` maps the short paths (`/login`, `/withdraw`, …) onto these files
+and sets the security headers.
 
 Every link resolves through `QS.config.routes` rather than being hard-coded, so
 moving to clean URLs — or to a framework router — is a single-file change.
+
+---
+
+## Deploying
+
+The site is static, so Vercel needs no build step: **Framework preset: Other,
+Build command: none, Output directory: `.`**
+
+**Set the Supabase URLs before the first real sign-up.** Confirmation and
+password-reset emails link back to whatever is configured here, so a wrong
+value silently breaks account creation. In the Supabase dashboard under
+*Authentication → URL Configuration*:
+
+| Setting | Value |
+| --- | --- |
+| Site URL | `https://<your-domain>` |
+| Redirect URLs | `https://<your-domain>/**` |
+
+Add the Vercel preview domain to Redirect URLs too if you want sign-up to work
+on preview deployments.
+
+### About environment variables
+
+This is a static site with no build step, so nothing substitutes an env var at
+deploy time. The Supabase URL and publishable key live in
+`assets/js/core/config.js`, which is correct: the publishable key is designed
+to be public and grants nothing on its own — every table is behind row level
+security and no client role can write a financial row.
+
+To point a deployment at a different project without editing that file,
+override it per page with attributes on `<html>`:
+
+```html
+<html lang="en"
+      data-qs-supabase-url="https://your-project.supabase.co"
+      data-qs-supabase-key="sb_publishable_...">
+```
+
+**Never put the service role key in this repository or in a Vercel environment
+variable read by the browser.** It bypasses row level security entirely. It
+belongs only in a server-side back office or a scheduled job.
 
 ---
 
@@ -204,7 +276,10 @@ assets/js/components/
   reveal.js                     Scroll entrance
 
 assets/js/pages/
-  landing.js  signup.js  login.js  dashboard.js
+  _page.js                      Shared boot: session gate, shell, identity
+  landing.js  signup.js  login.js
+  dashboard.js  investments.js  transactions.js  withdraw.js
+  profile.js  security.js  help.js
 ```
 
 ### Conventions

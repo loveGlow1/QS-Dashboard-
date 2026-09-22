@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investments — QuickStark</title>
+<meta name="description" content="Your QuickStark investments and the plans open to you.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <section class="qs-pagehead">
+      <div>
+        <h1 class="qs-h1">Investments</h1>
+        <p>What you currently hold, and the plans you can invest in.</p>
+      </div>
+      <dl class="qs-pagehead__stats">
+        <div><dt>Available to invest</dt><dd class="qs-num" data-available>—</dd></div>
+        <div><dt>Active</dt><dd class="qs-num" data-active-count>—</dd></div>
+      </dl>
+    </section>
+
+    <section class="qs-card" aria-labelledby="qs-holdings-title">
+      <header class="qs-card__head">
+        <h2 class="qs-h3" id="qs-holdings-title">Your investments</h2>
+      </header>
+      <div data-holdings></div>
+    </section>
+
+    <section class="qs-section-block" aria-labelledby="qs-plans-title">
+      <header class="qs-card__head">
+        <h2 class="qs-h3" id="qs-plans-title">Plans</h2>
+      </header>
+      <div class="qs-planlist" data-plan-list></div>
+      <p class="qs-fineprint">
+        QuickStark does not promise or guarantee a return. Investment values can
+        go down as well as up, and past performance does not indicate future
+        results.
+      </p>
+    </section>
+
+    <!-- Invest dialog ------------------------------------------------- -->
+    <div class="qs-modal" data-invest-modal hidden>
+      <div class="qs-modal__backdrop" data-invest-close></div>
+      <div class="qs-modal__panel" role="dialog" aria-modal="true" aria-labelledby="qs-invest-title">
+        <header class="qs-modal__head">
+          <h3 id="qs-invest-title">Invest in <span data-invest-plan></span></h3>
+          <button class="qs-icon-btn" data-invest-close aria-label="Close">
+            <span data-icon="close" data-icon-size="16"></span>
+          </button>
+        </header>
+
+        <div class="qs-alert qs-alert--error" data-invest-error hidden role="alert">
+          <span data-icon="alert" data-icon-size="16"></span>
+          <span data-invest-error-text></span>
+        </div>
+
+        <form data-invest-form novalidate>
+          <dl class="qs-modal__facts">
+            <div><dt>Minimum</dt><dd class="qs-num" data-invest-minimum>—</dd></div>
+            <div><dt>Term</dt><dd data-invest-term>—</dd></div>
+            <div><dt>Available balance</dt><dd class="qs-num" data-invest-available>—</dd></div>
+          </dl>
+
+          <div class="qs-field" data-field="amount">
+            <label class="qs-label" for="qs-invest-amount">Amount to invest</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input qs-num" id="qs-invest-amount" type="text"
+                     inputmode="numeric" autocomplete="off" placeholder="0">
+            </div>
+            <span class="qs-field-error" data-error-for="amount">Enter an amount.</span>
+          </div>
+
+          <p class="qs-fineprint">
+            The amount moves from your available balance into the plan and is
+            recorded on your statement. It is not a promise of any return.
+          </p>
+
+          <button class="qs-btn qs-btn--primary qs-btn--block" type="submit" data-invest-submit>
+            Confirm investment
+          </button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/_page.js"></script>
+<script src="../assets/js/pages/investments.js"></script>
+</body>
+</html>
