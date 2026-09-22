@@ -34,6 +34,11 @@
   --color-down: #f0687b;
   --color-warn: #e9b872;
 
+  /* --- Chart grid accents (decoration only, never a value) ------------ */
+  --color-grid-violet: #a78bfa;
+  --color-grid-green: #3ecf9a;
+  --color-grid-amber: #e9b872;
+
   /* --- Radii ---------------------------------------------------------- */
   --radius-sm: 8px;
   --radius-md: 12px;
