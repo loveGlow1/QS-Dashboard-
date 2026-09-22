@@ -174,6 +174,21 @@ export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioS
   }, empty);
 }
 
+/**
+ * Whether the account has any recorded portfolio history at all.
+ *
+ * Distinguishes "never invested" from "nothing in the selected window",
+ * which are different things to tell a customer. Asks for one row rather
+ * than counting: the answer is the same and the query is cheaper.
+ */
+export async function hasPortfolioHistory(): Promise<boolean> {
+  return safely("hasPortfolioHistory", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase.from("portfolio_snapshots").select("as_of").limit(1);
+    return ((data as unknown[]) ?? []).length > 0;
+  }, false);
+}
+
 /** Public aggregates for the landing page. Readable without a session. */
 export async function getPlatformMetrics(): Promise<PlatformMetrics | null> {
   return safely("getPlatformMetrics", async () => {
