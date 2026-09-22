@@ -58,7 +58,9 @@ export function Logo({
     </>
   );
 
-  const className = `inline-flex items-center gap-2.5 font-semibold tracking-[-0.025em] text-mist-50 transition-opacity hover:opacity-80 ${TEXT[size]}`;
+  /* The link is a touch target on a phone; the wordmark itself stays its own
+   size, the extra height is only hit area. */
+  const className = `inline-flex items-center gap-2.5 font-semibold tracking-[-0.025em] text-mist-50 transition-opacity hover:opacity-80 max-[720px]:min-h-[44px] ${TEXT[size]}`;
 
   if (href === null) return <span className={className}>{inner}</span>;
 

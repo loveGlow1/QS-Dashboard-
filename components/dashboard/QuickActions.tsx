@@ -19,7 +19,7 @@ export function QuickActions() {
         <Link
           key={action.label}
           href={action.href}
-          className="inline-flex h-[38px] flex-none items-center gap-2 whitespace-nowrap rounded-full border border-[var(--line)] bg-ink-800 px-[15px] text-[0.8125rem] font-medium text-mist-200 transition-[background-color,border-color,color,transform] hover:border-[var(--line-strong)] hover:bg-ink-600 hover:text-mist-50 active:translate-y-px max-[720px]:snap-start [&>svg]:text-mist-500 [&:hover>svg]:text-accent-500"
+          className="inline-flex h-[38px] max-[720px]:h-11 flex-none items-center gap-2 whitespace-nowrap rounded-full border border-[var(--line)] bg-ink-800 px-[15px] text-[0.8125rem] font-medium text-mist-200 transition-[background-color,border-color,color,transform] hover:border-[var(--line-strong)] hover:bg-ink-600 hover:text-mist-50 active:translate-y-px max-[720px]:snap-start [&>svg]:text-mist-500 [&:hover>svg]:text-accent-500"
         >
           <Icon name={action.icon} size={16} />
           {action.label}

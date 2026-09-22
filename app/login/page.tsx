@@ -25,7 +25,7 @@ export default async function LoginPage({
       footer={
         <>
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="ml-1 text-accent-400 underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-current">
+          <Link href="/signup" className="ml-1 inline-block py-3.5 -my-3.5 text-accent-400 underline decoration-transparent underline-offset-[3px] transition-colors hover:decoration-current">
             Create account
           </Link>
         </>

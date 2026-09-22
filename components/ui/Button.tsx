@@ -19,9 +19,12 @@ const VARIANTS: Record<Variant, string> = {
   plain: "border",
 };
 
+/* Heights are the visual size; the max-[720px] minimum is the touch target.
+   Apple and Android both ask for ~44px, and a 34px control is a control
+   people miss. Phones only — a mouse does not need the extra height. */
 const SIZES: Record<Size, string> = {
-  sm: "h-[34px] px-3.5 text-[0.8125rem]",
-  md: "h-[42px] px-[18px] text-sm",
+  sm: "h-[34px] px-3.5 text-[0.8125rem] max-[720px]:min-h-[44px]",
+  md: "h-[42px] px-[18px] text-sm max-[720px]:min-h-[44px]",
   lg: "h-[50px] px-[26px] text-[0.9375rem]",
 };
 

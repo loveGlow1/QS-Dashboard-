@@ -26,14 +26,14 @@ export function PasswordField({
         autoComplete={autoComplete}
         placeholder={placeholder}
         required
-        className={`${FIELD_CLASS} pr-[46px]`}
+        className={`${FIELD_CLASS} pr-[52px]`}
       />
       <button
         type="button"
         onClick={() => setShown((v) => !v)}
         aria-label={shown ? "Hide password" : "Show password"}
         aria-pressed={shown}
-        className="absolute right-[5px] top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-sm text-mist-400 transition-colors hover:bg-[rgba(148,168,214,0.08)] hover:text-mist-50"
+        className="absolute right-[3px] top-1/2 grid size-9 max-[720px]:size-11 -translate-y-1/2 place-items-center rounded-sm text-mist-400 transition-colors hover:bg-[rgba(148,168,214,0.08)] hover:text-mist-50"
       >
         <Icon name={shown ? "eyeOff" : "eye"} size={18} />
       </button>

@@ -137,7 +137,7 @@ export function GrowthCard({
                 role="tab"
                 aria-selected={r === range}
                 onClick={() => select(r)}
-                className={`h-7 rounded-full px-[13px] text-xs font-medium transition-colors max-[560px]:flex-1 ${
+                className={`h-7 rounded-full px-[13px] text-xs font-medium transition-colors max-[720px]:h-11 max-[560px]:flex-1 ${
                   r === range
                     ? "bg-ink-600 text-mist-50 shadow-sm"
                     : "text-mist-400 hover:text-mist-200"
