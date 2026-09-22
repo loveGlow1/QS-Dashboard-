@@ -9,7 +9,6 @@ import {
   getPortfolio,
   getProfile,
   getTransactions,
-  hasPortfolioHistory,
 } from "@/lib/data";
 import { greeting } from "@/lib/format";
 import type { ChartRange } from "@/lib/types";
@@ -25,12 +24,11 @@ export default async function DashboardPage() {
   /* Every figure below is fetched for the session's own user: row level
      security scopes each query to them, so no identifier from the request
      participates in deciding whose money is returned. */
-  const [profile, portfolio, investment, transactions, anyHistory] = await Promise.all([
+  const [profile, portfolio, investment, transactions] = await Promise.all([
     getProfile(),
     getPortfolio(DEFAULT_RANGE),
     getActiveInvestment(),
     getTransactions({ limit: 5 }),
-    hasPortfolioHistory(),
   ]);
 
   const firstName = profile?.first_name || profile?.full_name?.split(" ")[0] || "there";
@@ -49,11 +47,7 @@ export default async function DashboardPage() {
 
       <section className="mb-4 grid gap-4 min-[1025px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)] min-[1181px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
         <PortfolioCard portfolio={portfolio} investment={investment} />
-        <GrowthCard
-          initialRange={DEFAULT_RANGE}
-          initialSeries={portfolio.series}
-          hasAnyHistory={anyHistory}
-        />
+        <GrowthCard initialRange={DEFAULT_RANGE} initialSeries={portfolio.series} />
       </section>
 
       {/* The active investment panel only appears when there is one. On a new
