@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/Badge";
-import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { Sparkline } from "@/components/ui/Sparkline";
+import { StartInvesting } from "@/components/dashboard/StartInvesting";
 import { formatDate, money, percent } from "@/lib/format";
 import type { Investment, PortfolioSummary } from "@/lib/types";
 
@@ -114,22 +114,15 @@ function Metric({
  * nothing in it is a normal state, not an error or a component that failed
  * to load.
  */
+/* The heading states the position; the card below states the action. The
+   sentence that used to sit between them ("Start your first investment to
+   begin tracking your portfolio here") said what the card now says, a line
+   above it, and the layered icon appeared twice in the same 200 pixels. */
 function EmptyPosition() {
   return (
-    <div className="mt-auto grid justify-items-start gap-3 border-t border-[var(--line-soft)] pt-6">
-      <span className="grid size-10 place-items-center rounded-md border border-[var(--accent-line)] bg-[var(--accent-soft)] text-accent-300">
-        <Icon name="layers" size={19} />
-      </span>
-      <div>
-        <p className="text-sm font-medium text-mist-50">No active investments yet.</p>
-        <p className="mt-1 max-w-[34ch] text-[0.8125rem] leading-[1.6] text-mist-400">
-          Start your first investment to begin tracking your portfolio here.
-        </p>
-      </div>
-      <ButtonLink href="/investments" variant="primary" size="sm" className="mt-1">
-        <Icon name="plus" size={16} />
-        Start Investing
-      </ButtonLink>
+    <div className="mt-auto grid justify-items-start gap-3.5 border-t border-[var(--line-soft)] pt-6">
+      <p className="text-sm font-medium text-mist-50">No active investments yet.</p>
+      <StartInvesting className="w-full" />
     </div>
   );
 }
