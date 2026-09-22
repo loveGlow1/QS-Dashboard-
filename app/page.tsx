@@ -5,19 +5,14 @@ import { Plans } from "@/components/landing/Plans";
 import { PlatformPreview } from "@/components/landing/PlatformPreview";
 import { Faq } from "@/components/landing/Faq";
 import { Footer } from "@/components/landing/Footer";
-import { getPlans, getPlatformMetrics, getPlatformSeries } from "@/lib/data";
+import { getPlans } from "@/lib/data";
 import { getUser } from "@/lib/supabase/server";
 
 /* Rendered per request: the header reflects whether the visitor is signed
    in, which means reading cookies, which rules out static caching. */
 
 export default async function Home() {
-  const [user, plans, metrics, series] = await Promise.all([
-    getUser(),
-    getPlans(),
-    getPlatformMetrics(),
-    getPlatformSeries(),
-  ]);
+  const [user, plans] = await Promise.all([getUser(), getPlans()]);
 
   return (
     <>
@@ -31,11 +26,11 @@ export default async function Home() {
       <SiteHeader signedIn={Boolean(user)} />
 
       <main id="main">
-        <Hero metrics={metrics} />
+        <Hero />
         <Pillars />
         <HowItWorks />
         <Plans plans={plans} />
-        <PlatformPreview metrics={metrics} series={series} />
+        <PlatformPreview />
         <About />
         <Faq />
         <FinalCta />

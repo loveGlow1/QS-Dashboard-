@@ -2,6 +2,7 @@ import "server-only";
 import { unstable_rethrow } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type {
+  BankAccount,
   ChartRange,
   Investment,
   Notification,
@@ -12,6 +13,8 @@ import type {
   Profile,
   SeriesPoint,
   Transaction,
+  Withdrawal,
+  WithdrawalSettings,
 } from "@/lib/types";
 
 /**
@@ -172,6 +175,56 @@ export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioS
       series,
     };
   }, empty);
+}
+
+/** The caller's own payout destinations. */
+export async function getBankAccounts(): Promise<BankAccount[]> {
+  return safely("getBankAccounts", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("bank_accounts")
+      .select("*")
+      .order("is_default", { ascending: false })
+      .order("created_at", { ascending: true });
+    return (data as BankAccount[]) ?? [];
+  }, []);
+}
+
+/** Withdrawal terms. Publicly readable; the server enforces them regardless. */
+export async function getWithdrawalSettings(): Promise<WithdrawalSettings | null> {
+  return safely("getWithdrawalSettings", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("withdrawal_settings")
+      .select("minimum_amount, fee_percent, fee_flat, fee_cap, processing_time_label")
+      .maybeSingle();
+    if (!data) return null;
+    const row = data as WithdrawalSettings;
+    return {
+      minimum_amount: Number(row.minimum_amount),
+      fee_percent: Number(row.fee_percent),
+      fee_flat: Number(row.fee_flat),
+      fee_cap: row.fee_cap === null ? null : Number(row.fee_cap),
+      processing_time_label: row.processing_time_label,
+    };
+  }, null);
+}
+
+/** The caller's own withdrawal requests, newest first. */
+export async function getWithdrawals(): Promise<Withdrawal[]> {
+  return safely("getWithdrawals", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("withdrawals")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return ((data as Withdrawal[]) ?? []).map((w) => ({
+      ...w,
+      gross_amount: Number(w.gross_amount),
+      fee_amount: Number(w.fee_amount),
+      net_amount: Number(w.net_amount),
+    }));
+  }, []);
 }
 
 /**
