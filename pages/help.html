@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Help — QuickStark</title>
+<meta name="description" content="Answers about your QuickStark account, and how to reach support.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <section class="qs-pagehead">
+      <div>
+        <h1 class="qs-h1">Help</h1>
+        <p>How the account works, and how to reach a person.</p>
+      </div>
+    </section>
+
+    <div class="qs-grid qs-grid--split">
+      <section class="qs-card" aria-labelledby="qs-faq-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-faq-title">Common questions</h2>
+        </header>
+        <div class="qs-accordion" data-accordion></div>
+      </section>
+
+      <section class="qs-card" aria-labelledby="qs-contact-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-contact-title">Contact support</h2>
+        </header>
+
+        <p class="qs-help__lede">
+          Email support with your account email in the message and we will pick
+          it up. Please never send your password.
+        </p>
+
+        <a class="qs-btn qs-btn--primary qs-btn--block" data-support-link
+           href="mailto:support@quickstark.tech">
+          <span data-icon="mail" data-icon-size="16"></span> Email support
+        </a>
+
+        <dl class="qs-deflist">
+          <div><dt>Your account</dt><dd data-user-email>—</dd></div>
+          <div><dt>Account status</dt><dd data-help-status>—</dd></div>
+        </dl>
+
+        <p class="qs-fineprint">
+          QuickStark will never ask for your password, a one-time code, or
+          payment to release a withdrawal. If a message asks for any of those,
+          it did not come from us.
+        </p>
+      </section>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/accordion.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/_page.js"></script>
+<script src="../assets/js/pages/help.js"></script>
+</body>
+</html>

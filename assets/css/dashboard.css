@@ -782,3 +782,250 @@
   .qs-txn__meta { flex-wrap: wrap; gap: 0 6px; }
   .qs-bottomnav__item { font-size: 0.5625rem; }
 }
+
+/* ==========================================================================
+   Inner pages — shared building blocks
+   ========================================================================== */
+
+.qs-pagehead {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.qs-pagehead .qs-h1 {
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.qs-pagehead p { margin-top: 5px; font-size: 0.875rem; color: var(--qs-text-3); }
+
+.qs-pagehead__stats { display: flex; gap: 26px; }
+.qs-pagehead__stats dt {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--qs-text-4);
+}
+.qs-pagehead__stats dd { margin-top: 5px; font-size: 1.0625rem; font-weight: 600; }
+
+.qs-section-block { margin-top: 22px; }
+
+.qs-card__head--wrap { flex-wrap: wrap; gap: 12px; }
+
+.qs-grid--split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.qs-fineprint {
+  margin-top: 14px;
+  font-size: 0.6875rem;
+  line-height: 1.6;
+  color: var(--qs-text-4);
+}
+
+.qs-field-note {
+  font-size: 0.6875rem;
+  line-height: 1.55;
+  color: var(--qs-text-4);
+}
+
+.qs-deflist { display: grid; gap: 1px; margin-top: 4px; }
+.qs-deflist > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--qs-line-soft);
+}
+.qs-deflist > div:last-child { border-bottom: 0; }
+.qs-deflist dt { font-size: 0.8125rem; color: var(--qs-text-3); }
+.qs-deflist dd { font-size: 0.8125rem; font-weight: 500; text-align: right; }
+
+/* A button that reads as a link — used for inline row actions. */
+.qs-linkbtn {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--qs-text-3);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: transparent;
+  transition: color var(--qs-fast), text-decoration-color var(--qs-fast);
+}
+.qs-linkbtn:hover { color: var(--qs-down); text-decoration-color: currentColor; }
+.qs-linkbtn[data-busy="true"] { opacity: 0.5; pointer-events: none; }
+
+/* --- Holdings --------------------------------------------------------- */
+
+.qs-holdings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.qs-holding {
+  padding: 16px;
+  border-radius: var(--qs-r-md);
+  background: var(--qs-surface-2);
+  border: 1px solid var(--qs-line-soft);
+}
+.qs-holding__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.qs-holding__plan { font-size: 0.9375rem; font-weight: 600; }
+.qs-holding__term { margin-top: 2px; font-size: 0.75rem; color: var(--qs-text-4); }
+
+.qs-holding__figures { display: grid; gap: 9px; margin-bottom: 16px; }
+.qs-holding__figures > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.qs-holding__figures dt { font-size: 0.8125rem; color: var(--qs-text-3); }
+.qs-holding__figures dd { font-size: 0.8125rem; font-weight: 500; }
+.qs-holding__strong { font-size: 0.9375rem !important; font-weight: 600 !important; }
+
+/* --- Plan cards ------------------------------------------------------- */
+
+.qs-planlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+}
+
+.qs-plancard {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-radius: var(--qs-r-lg);
+  background: var(--qs-surface-1);
+  border: 1px solid var(--qs-line);
+}
+.qs-plancard--featured { border-color: var(--qs-accent-line); background: var(--qs-surface-2); }
+
+.qs-plancard__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.qs-plancard__head h3 { font-size: 1.0625rem; font-weight: 600; }
+.qs-plancard__summary {
+  margin-top: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--qs-text-3);
+}
+
+.qs-plancard__terms { display: grid; gap: 8px; margin: 16px 0; }
+.qs-plancard__terms > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.qs-plancard__terms dt { font-size: 0.75rem; color: var(--qs-text-4); }
+.qs-plancard__terms dd { font-size: 0.8125rem; font-weight: 500; }
+
+.qs-plancard__features { display: grid; gap: 8px; margin-bottom: 18px; }
+.qs-plancard__features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.8125rem;
+  color: var(--qs-text-2);
+}
+.qs-plancard__features svg {
+  width: 14px; height: 14px;
+  color: var(--qs-accent);
+  flex: none;
+  margin-top: 3px;
+}
+
+/* Why a plan is unavailable, said plainly instead of a dead button. */
+.qs-plancard__reason {
+  margin-top: auto;
+  margin-bottom: 10px;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--qs-warn);
+}
+.qs-plancard .qs-btn { margin-top: auto; }
+.qs-plancard__reason + .qs-btn { margin-top: 0; }
+
+/* --- Modal ------------------------------------------------------------ */
+
+.qs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.qs-modal[hidden] { display: none; }
+
+.qs-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 4, 10, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.qs-modal__panel {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: var(--qs-r-lg);
+  background: var(--qs-surface-1);
+  border: 1px solid var(--qs-line);
+  box-shadow: var(--qs-shadow-2, 0 24px 60px rgba(0, 0, 0, 0.5));
+}
+
+.qs-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.qs-modal__head h3 { font-size: 1.0625rem; font-weight: 600; }
+
+.qs-modal__facts { display: grid; gap: 9px; margin-bottom: 18px; }
+.qs-modal__facts > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.qs-modal__facts dt { font-size: 0.8125rem; color: var(--qs-text-3); }
+.qs-modal__facts dd { font-size: 0.8125rem; font-weight: 500; }
+
+/* --- Help ------------------------------------------------------------- */
+
+.qs-help__lede {
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  color: var(--qs-text-3);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .qs-pagehead { align-items: flex-start; }
+  .qs-pagehead__stats { gap: 20px; }
+}

@@ -30,6 +30,15 @@
     ready = true;
   });
 
+  /**
+   * Absolute URL for a route, for the links Supabase puts in emails.
+   * The routes are relative ("../pages/login.html"), and a confirmation link
+   * has to survive leaving the site and coming back.
+   */
+  function absolute(route) {
+    return new URL(route, window.location.href).href;
+  }
+
   /** Turns a Supabase auth error into something worth showing a person. */
   function readable(err) {
     if (!err) return new Error("Something went wrong. Please try again.");
@@ -85,7 +94,7 @@
           password: String(password || ""),
           options: {
             data: { full_name: String(fullName || "").trim() },
-            emailRedirectTo: window.location.origin + cfg.routes.login.replace(/^\./, "")
+            emailRedirectTo: absolute(cfg.routes.login)
           }
         })
         .then(function (res) {
@@ -117,9 +126,33 @@
       });
     },
 
+    /** Sets a new password for the signed-in customer. */
+    changePassword: function (password) {
+      return db.auth
+        .updateUser({ password: String(password || "") })
+        .then(function (res) {
+          if (res.error) throw readable(res.error);
+          return true;
+        });
+    },
+
+    /**
+     * Ends every session on every device, including this one. The right
+     * response to a password someone else may know.
+     */
+    signOutEverywhere: function () {
+      return db.auth.signOut({ scope: "global" })
+        .catch(function () {})
+        .then(function () {
+          session = null;
+          window.location.replace(cfg.routes.login);
+        });
+    },
+
     sendPasswordReset: function (email) {
       return db.auth
-        .resetPasswordForEmail(String(email || "").trim().toLowerCase())
+        .resetPasswordForEmail(String(email || "").trim().toLowerCase(),
+                               { redirectTo: absolute(cfg.routes.login) })
         .then(function (res) {
           if (res.error) throw readable(res.error);
           return true;

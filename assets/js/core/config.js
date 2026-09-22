@@ -45,12 +45,12 @@
       login: ROOT + "/pages/login.html",
       signup: ROOT + "/pages/signup.html",
       dashboard: ROOT + "/pages/dashboard.html",
-      /* These resolve to in-app sections today and become their own
-         documents once those pages are built. */
-      investments: ROOT + "/pages/dashboard.html#investments",
-      transactions: ROOT + "/pages/dashboard.html#activity",
-      withdraw: ROOT + "/pages/dashboard.html#withdraw",
-      profile: ROOT + "/pages/dashboard.html#profile"
+      investments: ROOT + "/pages/investments.html",
+      transactions: ROOT + "/pages/transactions.html",
+      withdraw: ROOT + "/pages/withdraw.html",
+      profile: ROOT + "/pages/profile.html",
+      security: ROOT + "/pages/security.html",
+      help: ROOT + "/pages/help.html"
     },
 
     asset: function (path) {

@@ -2,9 +2,9 @@
 <html lang="en" data-qs-root="..">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard — QuickStark</title>
-<meta name="description" content="Your QuickStark portfolio: value, performance, active investments and recent activity.">
+<meta name="description" content="Your QuickStark portfolio at a glance.">
 <meta name="theme-color" content="#060a16">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,110 +18,9 @@
 
 <a class="qs-skip" href="#qs-main">Skip to content</a>
 
-<!-- ======================================================================
-     Sidebar
-     ====================================================================== -->
-<aside class="qs-sidebar" data-sidebar>
-  <div class="qs-sidebar__top">
-    <div data-qs-logo data-href="none"></div>
-    <button class="qs-sidebar__close" data-sidebar-close aria-label="Close menu">
-      <span data-icon="close" data-icon-size="18"></span>
-    </button>
-  </div>
-
-  <nav class="qs-sidebar__nav" aria-label="Account sections">
-    <p class="qs-sidebar__group">Overview</p>
-    <a class="qs-nav-item" href="#" data-view="dashboard" aria-current="page">
-      <span data-icon="grid" data-icon-size="18"></span> Dashboard
-    </a>
-    <a class="qs-nav-item" href="#investments" data-view="investments">
-      <span data-icon="chart" data-icon-size="18"></span> Investments
-    </a>
-    <a class="qs-nav-item" href="#activity" data-view="transactions">
-      <span data-icon="list" data-icon-size="18"></span> Transactions
-    </a>
-    <a class="qs-nav-item" href="#" data-soon="Withdraw">
-      <span data-icon="download" data-icon-size="18"></span> Withdraw
-    </a>
-
-    <p class="qs-sidebar__group">Account</p>
-    <a class="qs-nav-item" href="#" data-soon="Profile">
-      <span data-icon="user" data-icon-size="18"></span> Profile
-    </a>
-    <a class="qs-nav-item" href="#" data-soon="Security">
-      <span data-icon="shield" data-icon-size="18"></span> Security
-    </a>
-    <a class="qs-nav-item" href="#" data-soon="Help">
-      <span data-icon="help" data-icon-size="18"></span> Help
-    </a>
-  </nav>
-
-  <div class="qs-sidebar__foot">
-    <div class="qs-sidebar__status">
-      <span class="qs-badge" data-account-status hidden></span>
-      <p data-account-tier>Individual account</p>
-    </div>
-    <button class="qs-nav-item qs-nav-item--quiet" data-signout>
-      <span data-icon="logout" data-icon-size="18"></span> Sign out
-    </button>
-  </div>
-</aside>
-
-<div class="qs-sidebar__backdrop" data-sidebar-backdrop aria-hidden="true"></div>
-
-<!-- ======================================================================
-     Shell
-     ====================================================================== -->
-<div class="qs-shell">
-
-  <header class="qs-topbar">
-    <button class="qs-topbar__menu" data-sidebar-open aria-label="Open menu">
-      <span data-icon="menu" data-icon-size="20"></span>
-    </button>
-
-    <div class="qs-topbar__title">
-      <span class="qs-topbar__brand" data-qs-logo="sm" data-href="none"></span>
-      <h2>Dashboard</h2>
-    </div>
-
-    <div class="qs-topbar__actions">
-      <div class="qs-pop" data-pop="notifications">
-        <button class="qs-icon-btn" data-pop-trigger aria-expanded="false" aria-label="Notifications">
-          <span data-icon="bell" data-icon-size="19"></span>
-          <span class="qs-icon-btn__dot" data-notif-dot hidden></span>
-        </button>
-        <div class="qs-pop__panel qs-pop__panel--wide" data-pop-panel hidden>
-          <header class="qs-pop__head">
-            <h3>Notifications</h3>
-          </header>
-          <div data-notifications></div>
-        </div>
-      </div>
-
-      <div class="qs-pop" data-pop="account">
-        <button class="qs-avatar" data-pop-trigger aria-expanded="false" aria-label="Account menu">
-          <span data-user-initials>&nbsp;</span>
-        </button>
-        <div class="qs-pop__panel" data-pop-panel hidden>
-          <header class="qs-pop__head qs-pop__head--user">
-            <span class="qs-avatar qs-avatar--sm" data-user-initials aria-hidden="true">&nbsp;</span>
-            <span>
-              <strong data-user-name>&nbsp;</strong>
-              <small data-user-email>&nbsp;</small>
-            </span>
-          </header>
-          <div class="qs-pop__list">
-            <button data-soon="Profile"><span data-icon="user" data-icon-size="16"></span> Profile</button>
-            <button data-soon="Security"><span data-icon="shield" data-icon-size="16"></span> Security</button>
-            <button data-soon="Help"><span data-icon="help" data-icon-size="16"></span> Help</button>
-          </div>
-          <div class="qs-pop__list qs-pop__list--divided">
-            <button data-signout><span data-icon="logout" data-icon-size="16"></span> Sign out</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
 
   <main class="qs-main" id="qs-main">
 
@@ -208,9 +107,9 @@
       <article class="qs-card qs-activity" id="activity" aria-labelledby="qs-activity-title">
         <header class="qs-card__head">
           <h3 class="qs-h3" id="qs-activity-title">Recent Activity</h3>
-          <button class="qs-btn qs-btn--ghost qs-btn--sm" data-soon="Transactions">
+          <a class="qs-btn qs-btn--ghost qs-btn--sm" data-route="transactions">
             View all transactions
-          </button>
+          </a>
         </header>
         <div data-activity-list></div>
       </article>
@@ -232,28 +131,8 @@
     </footer>
 
   </main>
-</div>
 
-<!-- ======================================================================
-     Mobile bottom navigation
-     ====================================================================== -->
-<nav class="qs-bottomnav" aria-label="Sections">
-  <a class="qs-bottomnav__item" href="#" data-view="dashboard" aria-current="page">
-    <span data-icon="grid" data-icon-size="20"></span> Dashboard
-  </a>
-  <a class="qs-bottomnav__item" href="#investments" data-view="investments">
-    <span data-icon="chart" data-icon-size="20"></span> Investments
-  </a>
-  <a class="qs-bottomnav__item" href="#activity" data-view="transactions">
-    <span data-icon="list" data-icon-size="20"></span> Activity
-  </a>
-  <a class="qs-bottomnav__item" href="#" data-soon="Withdraw">
-    <span data-icon="download" data-icon-size="20"></span> Withdraw
-  </a>
-  <button class="qs-bottomnav__item" data-sidebar-open>
-    <span data-icon="menu" data-icon-size="20"></span> More
-  </button>
-</nav>
+</div>
 
 <script src="../assets/vendor/supabase.js"></script>
 <script src="../assets/js/core/config.js"></script>

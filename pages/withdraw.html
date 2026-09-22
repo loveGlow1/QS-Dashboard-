@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Withdraw — QuickStark</title>
+<meta name="description" content="Request a withdrawal from your QuickStark available balance.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <section class="qs-pagehead">
+      <div>
+        <h1 class="qs-h1">Withdraw</h1>
+        <p>Move money out of your available balance.</p>
+      </div>
+      <dl class="qs-pagehead__stats">
+        <div><dt>Withdrawable now</dt><dd class="qs-num" data-withdrawable>—</dd></div>
+        <div><dt>Already pending</dt><dd class="qs-num" data-pending>—</dd></div>
+      </dl>
+    </section>
+
+    <div class="qs-grid qs-grid--split">
+      <section class="qs-card" aria-labelledby="qs-withdraw-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-withdraw-title">New request</h2>
+        </header>
+
+        <div class="qs-alert qs-alert--error" data-withdraw-error hidden role="alert">
+          <span data-icon="alert" data-icon-size="16"></span>
+          <span data-withdraw-error-text></span>
+        </div>
+
+        <div class="qs-alert qs-alert--note" data-withdraw-gate hidden role="status">
+          <span data-icon="info" data-icon-size="16"></span>
+          <span data-withdraw-gate-text></span>
+        </div>
+
+        <form data-withdraw-form novalidate>
+          <div class="qs-field" data-field="amount">
+            <label class="qs-label" for="qs-amount">Amount</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input qs-num" id="qs-amount" type="text"
+                     inputmode="numeric" autocomplete="off" placeholder="0">
+            </div>
+            <span class="qs-field-error" data-error-for="amount">Enter an amount.</span>
+          </div>
+
+          <div class="qs-field" data-field="destination">
+            <label class="qs-label" for="qs-destination">Pay out to</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input" id="qs-destination" type="text"
+                     autocomplete="off" placeholder="Bank name and account number">
+            </div>
+            <span class="qs-field-error" data-error-for="destination">Enter the account to pay out to.</span>
+          </div>
+
+          <p class="qs-fineprint">
+            A request is recorded straight away and held against your balance so
+            the same money cannot be requested twice. It stays pending until the
+            payout is processed.
+          </p>
+
+          <button class="qs-btn qs-btn--primary qs-btn--block" type="submit" data-withdraw-submit>
+            Request withdrawal
+          </button>
+        </form>
+      </section>
+
+      <section class="qs-card" aria-labelledby="qs-pending-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-pending-title">Pending requests</h2>
+        </header>
+        <div data-pending-list></div>
+      </section>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/_page.js"></script>
+<script src="../assets/js/pages/withdraw.js"></script>
+</body>
+</html>
