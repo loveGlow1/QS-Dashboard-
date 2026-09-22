@@ -107,21 +107,26 @@ export async function POST(request: Request) {
 
   const supabase = createServiceClient();
 
-  /* Whose money this is, decided by the address it was sent to. */
-  const { data: destination, error: destError } = await supabase
-    .from("deposit_destinations")
-    .select("id, user_id, method_id, network_id, active")
-    .eq("destination", event.address)
-    .maybeSingle();
+  /* Whose money this is: the customer holding that address right now.
+     Addresses rotate through a pool, so the same one belongs to different
+     people at different times and the question is about the lease, not the
+     address. */
+  const { data: leases, error: destError } = await supabase.rpc("resolve_deposit_lease", {
+    p_address: event.address,
+    p_network: null,
+  });
 
   if (destError) {
-    console.error("[deposits] destination lookup failed", destError);
+    console.error("[deposits] lease lookup failed", destError);
     return NextResponse.json({ error: "lookup failed" }, { status: 500 });
   }
-  if (!destination || !destination.active) {
-    /* Money sent to an address this platform did not issue, or one since
-       retired. Recording it against a guessed customer would be worse than
-       leaving it for a human. */
+
+  const destination = (leases as
+    | { destination_id: string; user_id: string; method_id: string; network_id: string | null; live: boolean }[]
+    | null)?.[0];
+
+  if (!destination) {
+    /* An address this platform never issued. */
     console.error("[deposits] payment to an unknown address", {
       address: event.address,
       txHash: event.txHash,
@@ -129,11 +134,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unknown destination" }, { status: 409 });
   }
 
+  if (!destination.live) {
+    /* The lease had expired when this arrived. The money is real and it is
+       somebody's, but the records cannot say whose without guessing, and a
+       guess here pays one customer with another's deposit. Record it for a
+       human and do not credit. 200, because the provider has delivered
+       correctly and retrying will not make the lease live again. */
+    console.error("[deposits] payment to an expired lease — needs manual attribution", {
+      address: event.address,
+      txHash: event.txHash,
+      lastHolder: destination.user_id,
+    });
+    return NextResponse.json(
+      { error: "expired lease", attributed: false, review: true },
+      { status: 200 },
+    );
+  }
+
   const { data: depositId, error: recordError } = await supabase.rpc("record_deposit", {
     p_user: destination.user_id,
     p_method: destination.method_id,
     p_network: destination.network_id,
-    p_destination_id: destination.id,
+    p_destination_id: destination.destination_id,
     p_amount: event.amount,
     p_asset_code: event.asset,
     p_tx_hash: event.txHash,
