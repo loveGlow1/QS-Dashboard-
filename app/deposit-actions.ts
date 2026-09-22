@@ -42,6 +42,7 @@ export async function declareTransfer(
     const destinationId = String(formData.get("destination_id") ?? "").trim();
     const raw = String(formData.get("amount") ?? "").replace(/[₦,\s]/g, "");
     const amount = Number(raw);
+    const txHash = String(formData.get("tx_hash") ?? "").trim() || null;
 
     if (!destinationId) return { error: "Choose where you transferred to." };
     if (!raw) return { error: "Enter the amount you transferred." };
@@ -56,6 +57,7 @@ export async function declareTransfer(
     const { error } = await supabase.rpc("declare_deposit", {
       p_destination_id: destinationId,
       p_amount: amount,
+      p_tx_hash: txHash,
     });
 
     if (error) return { error: readable(error.message) };
@@ -64,7 +66,7 @@ export async function declareTransfer(
     return {
       error: null,
       success:
-        "Recorded. Your balance updates once the transfer is confirmed as received.",
+        "Recorded. Your balance updates once the payment is confirmed as received.",
     };
   } catch (error) {
     unstable_rethrow(error);
