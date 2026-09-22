@@ -39,7 +39,7 @@ export function AuthShell({
 
       <Link
         href="/"
-        className="relative z-[2] mx-0 mt-[22px] inline-flex items-center gap-1.5 self-start rounded-full border border-[var(--line-soft)] bg-[rgba(15,22,41,0.6)] py-2 pl-2.5 pr-3.5 text-[0.8125rem] text-mist-400 backdrop-blur-[8px] transition-colors hover:border-[var(--line-strong)] hover:bg-ink-800 hover:text-mist-50 max-[560px]:ml-4 max-[560px]:mt-4 min-[561px]:ml-[22px]"
+        className="relative z-[2] mx-0 mt-[22px] inline-flex items-center gap-1.5 self-start rounded-full border border-[var(--line-soft)] bg-[rgba(15,22,41,0.6)] py-2 max-[720px]:min-h-[44px] pl-2.5 pr-3.5 text-[0.8125rem] text-mist-400 backdrop-blur-[8px] transition-colors hover:border-[var(--line-strong)] hover:bg-ink-800 hover:text-mist-50 max-[560px]:ml-4 max-[560px]:mt-4 min-[561px]:ml-[22px]"
       >
         <Icon name="chevronLeft" size={16} />
         Back to site

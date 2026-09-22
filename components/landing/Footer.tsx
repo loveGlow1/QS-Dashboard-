@@ -50,7 +50,7 @@ export function Footer() {
                   <Link
                     key={link.label}
                     href={link.href}
-                    className="justify-self-start text-[0.8125rem] text-mist-500 transition-colors hover:text-mist-200"
+                    className="inline-flex items-center justify-self-start text-[0.8125rem] text-mist-500 transition-colors hover:text-mist-200 max-[720px]:min-h-[44px]"
                   >
                     {link.label}
                   </Link>

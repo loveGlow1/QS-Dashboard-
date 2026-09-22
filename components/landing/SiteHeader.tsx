@@ -103,7 +103,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="col-start-3 grid size-10 place-content-center items-center gap-[5px] justify-self-end rounded-md border border-[var(--line)] bg-ink-800 min-[901px]:hidden"
+            className="col-start-3 grid size-10 max-[720px]:size-11 place-content-center items-center gap-[5px] justify-self-end rounded-md border border-[var(--line)] bg-ink-800 min-[901px]:hidden"
           >
             <span
               className={`block h-[1.6px] w-4 rounded-sm bg-mist-200 transition-transform duration-200 ${open ? "translate-y-[3.3px] rotate-45" : ""}`}

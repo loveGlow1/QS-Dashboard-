@@ -50,7 +50,7 @@ export function LoginForm({ next }: { next: string }) {
       </div>
 
       <div className="-mt-0.5 flex items-center justify-between gap-3">
-        <label className="inline-flex cursor-pointer select-none items-center gap-2.5 text-[0.8125rem] text-mist-400">
+        <label className="inline-flex cursor-pointer select-none items-center gap-2.5 py-3 -my-3 text-[0.8125rem] text-mist-400">
           <input
             type="checkbox"
             name="remember"
