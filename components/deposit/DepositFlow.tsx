@@ -37,12 +37,6 @@ export function DepositFlow({
   if (!method) {
     return (
       <div className="grid gap-5">
-        <header>
-          <h2 className="text-lg font-semibold tracking-[-0.02em]">Deposit</h2>
-          <p className="mt-1 text-[0.8125rem] leading-[1.6] text-mist-400">
-            Add funds to your account.
-          </p>
-        </header>
         <DepositMethodCards methods={methods} onSelect={(m) => {
           setMethod(m);
           setNetworkId(null);

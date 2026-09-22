@@ -3,7 +3,6 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { RequestList } from "@/components/withdraw/RequestList";
 import { WithdrawFlow } from "@/components/withdraw/WithdrawFlow";
 import { Card } from "@/components/ui/Card";
-import { Icon } from "@/components/ui/Icon";
 import {
   getBankAccounts,
   getPayoutMethods,
@@ -27,8 +26,6 @@ export default async function WithdrawPage() {
     getPayoutNetworks(),
     getWithdrawals(),
   ]);
-
-  const nothingEligible = portfolio.withdrawable <= 0;
 
   return (
     <>
@@ -67,27 +64,13 @@ export default async function WithdrawPage() {
 
         <div className="grid gap-4">
           <Card as="article">
-            {nothingEligible ? (
-              <div className="grid justify-items-start gap-3 rounded-md border border-dashed border-[var(--line)] p-6">
-                <span className="grid size-10 place-items-center rounded-md border border-[var(--accent-line)] bg-[var(--accent-soft)] text-accent-300">
-                  <Icon name="clock" size={19} />
-                </span>
-                <p className="text-sm font-medium text-mist-50">Nothing is withdrawable yet.</p>
-                <p className="max-w-[48ch] text-[0.8125rem] leading-[1.65] text-mist-400">
-                  Funds become eligible according to the terms of the investment
-                  holding them. Your dashboard shows the maturity date for each
-                  active investment.
-                </p>
-              </div>
-            ) : (
-              <WithdrawFlow
-                methods={methods}
-                networks={networks}
-                /* Narrowed here: full account numbers stay on the server. */
-                accounts={accounts.map(toBankAccountView)}
-                withdrawable={portfolio.withdrawable}
-              />
-            )}
+            <WithdrawFlow
+              methods={methods}
+              networks={networks}
+              /* Narrowed here: full account numbers stay on the server. */
+              accounts={accounts.map(toBankAccountView)}
+              withdrawable={portfolio.withdrawable}
+            />
           </Card>
 
           <Card as="article">
