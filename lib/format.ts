@@ -62,6 +62,23 @@ export function greeting(date = new Date()): string {
   return "Good evening";
 }
 
+/**
+ * `jeph kofi` → `Jeph Kofi`
+ *
+ * Names are typed however the customer typed them, and a dashboard that
+ * greets someone as "jeph" reads like a bug. Only the first letter of each
+ * part is raised and the rest lowered, so shouted input is calmed too.
+ * Hyphens and apostrophes start a new part, so Ade-Bola and O'Neill keep
+ * their capitals.
+ */
+export function titleCase(name: string): string {
+  return String(name || "")
+    .toLocaleLowerCase()
+    .replace(/(^|[\s\-'\u2019])([^\s\-'\u2019])/g, (_, lead: string, ch: string) =>
+      lead + ch.toLocaleUpperCase(),
+    );
+}
+
 export function initials(name: string): string {
   return String(name || "")
     .trim()

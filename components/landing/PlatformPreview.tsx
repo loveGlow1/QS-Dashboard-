@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/Icon";
 import { LineChart } from "@/components/ui/LineChart";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/landing/Sections";
+import { DemoBadge } from "@/components/landing/DemoBadge";
 import { EXAMPLE, EXAMPLE_SERIES } from "@/components/landing/illustration";
 import { money, percent } from "@/lib/format";
 
@@ -57,9 +58,7 @@ export function PlatformPreview() {
               <div>
                 <p className="flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.08em] text-mist-500">
                   Portfolio Growth
-                  <span className="rounded-[5px] border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-[7px] py-[2px] text-[0.625rem] font-semibold normal-case tracking-[0.07em] text-warn">
-                    Example
-                  </span>
+                  <DemoBadge />
                 </p>
                 <p className="mt-2 text-[clamp(1.75rem,1.3rem+1.8vw,2.5rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums">
                   {money(EXAMPLE.total)}

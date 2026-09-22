@@ -10,7 +10,7 @@ import {
   getProfile,
   getTransactions,
 } from "@/lib/data";
-import { greeting } from "@/lib/format";
+import { greeting, titleCase } from "@/lib/format";
 import type { ChartRange } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -31,7 +31,8 @@ export default async function DashboardPage() {
     getTransactions({ limit: 5 }),
   ]);
 
-  const firstName = profile?.first_name || profile?.full_name?.split(" ")[0] || "there";
+  const firstName =
+    titleCase(profile?.first_name || profile?.full_name?.split(" ")[0] || "") || "there";
 
   return (
     <>
