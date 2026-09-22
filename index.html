@@ -34,7 +34,7 @@
 
     <div class="qs-header__actions">
       <a class="qs-btn qs-btn--quiet" data-route="login">Login</a>
-      <a class="qs-btn qs-btn--primary qs-btn--sm" data-route="login">Get Started</a>
+      <a class="qs-btn qs-btn--primary qs-btn--sm" data-route="signup">Get Started</a>
     </div>
 
     <button class="qs-nav-toggle" data-nav-toggle aria-expanded="false" aria-controls="qs-mobile-nav" aria-label="Open menu">
@@ -54,7 +54,7 @@
   </nav>
   <div class="qs-drawer__actions">
     <a class="qs-btn qs-btn--ghost qs-btn--block" data-route="login">Login</a>
-    <a class="qs-btn qs-btn--primary qs-btn--block" data-route="login">Get Started</a>
+    <a class="qs-btn qs-btn--primary qs-btn--block" data-route="signup">Get Started</a>
   </div>
 </div>
 
@@ -84,12 +84,13 @@
       </p>
 
       <div class="qs-hero__cta" data-reveal data-reveal-delay="180">
-        <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="login">Get Started</a>
+        <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="signup">Get Started</a>
         <a class="qs-btn qs-btn--ghost qs-btn--lg" href="#investments">Explore Investments</a>
       </div>
 
-      <!-- Product window: a real interface, built from the same components
-           as the dashboard rather than a stock illustration. -->
+      <!-- Product window: the real interface, built from the same components
+           as the dashboard. The figures are live platform aggregates, not a
+           customer's account. -->
       <div class="qs-window" data-reveal data-reveal-delay="240">
         <div class="qs-window__chrome">
           <span class="qs-window__dots"><i></i><i></i><i></i></span>
@@ -111,24 +112,23 @@
           <div class="qs-window__main">
             <div class="qs-window__head">
               <div>
-                <p class="qs-window__label">
-                  Total portfolio
-                  <span class="qs-demo-tag">Demo data</span>
+                <p class="qs-window__label">Invested on QuickStark</p>
+                <p class="qs-window__value qs-num" data-stat-invested>
+                  <span class="qs-skeleton" style="display:inline-block;width:160px;height:30px"></span>
                 </p>
-                <p class="qs-window__value qs-num" data-window-total>&#8358;1,284,500</p>
               </div>
-              <span class="qs-badge qs-badge--up"><span class="qs-dot"></span>+7.04%</span>
+              <span class="qs-badge qs-badge--up" data-stat-plans hidden></span>
             </div>
-            <div class="qs-window__chart" data-hero-chart></div>
+            <div class="qs-window__chart" data-platform-chart></div>
             <div class="qs-window__stats">
-              <div><p>Invested</p><strong class="qs-num">&#8358;1,200,000</strong></div>
-              <div><p>Growth</p><strong class="qs-num qs-window__up">+&#8358;84,500</strong></div>
-              <div><p>Active plan</p><strong>Growth</strong></div>
+              <div><p>Members</p><strong class="qs-num" data-stat-members>—</strong></div>
+              <div><p>Active investments</p><strong class="qs-num" data-stat-active>—</strong></div>
+              <div><p>Open plans</p><strong class="qs-num" data-stat-open>—</strong></div>
             </div>
           </div>
         </div>
-
       </div>
+
     </div>
   </section>
 
@@ -229,7 +229,7 @@
         <span data-icon="info"></span>
         QuickStark does not promise or guarantee a return. Investment values can
         go down as well as up, and past performance does not indicate future
-        results. Plan details above are illustrative for this preview.
+        results.
       </p>
     </div>
   </section>
@@ -261,25 +261,20 @@
         <div class="qs-preview__panel" data-reveal data-reveal-delay="100">
           <div class="qs-preview__panel-head">
             <div>
-              <p class="qs-preview__label">
-                Total portfolio
-                <span class="qs-demo-tag">Demo</span>
+              <p class="qs-preview__label">Invested on QuickStark</p>
+              <p class="qs-preview__value qs-num" data-stat-invested>
+                <span class="qs-skeleton" style="display:inline-block;width:180px;height:34px"></span>
               </p>
-              <p class="qs-preview__value qs-num">&#8358;1,284,500</p>
-              <p class="qs-preview__delta">
-                <span class="qs-delta"><span data-icon="trendUp"></span>+&#8358;84,500</span>
-                <span class="qs-badge qs-badge--up">+7.04%</span>
-              </p>
-            </div>
-            <div class="qs-ranges qs-preview__ranges" data-preview-ranges role="tablist" aria-label="Chart range">
-              <!-- rendered by landing.js -->
+              <p class="qs-preview__delta" data-stat-summary></p>
             </div>
           </div>
-          <div class="qs-preview__chart" data-preview-chart></div>
+          <div class="qs-preview__chart" data-platform-chart></div>
           <p class="qs-preview__footnote">
-            Sample figures shown for preview purposes only — not a real account.
+            Platform totals across all QuickStark accounts, updated live. Your
+            own portfolio appears here once you sign in.
           </p>
         </div>
+
       </div>
     </div>
   </section>
@@ -397,8 +392,8 @@
       </div>
 
       <p class="qs-faq__note" data-reveal>
-        This is an early preview of the platform. Nothing on this page is
-        financial advice, and no figure shown here describes a real account.
+        Nothing on this page is financial advice. Investing carries risk,
+        including the risk of losing money.
       </p>
     </div>
   </section>
@@ -416,7 +411,7 @@
           dashboard.
         </p>
         <div class="qs-cta__actions">
-          <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="login">Get Started</a>
+          <a class="qs-btn qs-btn--primary qs-btn--lg" data-route="signup">Get Started</a>
           <a class="qs-btn qs-btn--ghost qs-btn--lg" data-route="login">Login</a>
         </div>
       </div>
@@ -462,17 +457,14 @@
 
     <div class="qs-footer__bottom">
       <p>&copy; <span data-year>2026</span> QuickStark. All rights reserved.</p>
-      <p class="qs-footer__disclaimer">
-        Preview build — all figures shown are sample data.
-      </p>
     </div>
   </div>
 </footer>
 
+<script src="assets/vendor/supabase.js"></script>
 <script src="assets/js/core/config.js"></script>
 <script src="assets/js/core/utils.js"></script>
 <script src="assets/js/core/icons.js"></script>
-<script src="assets/js/core/demo-data.js"></script>
 <script src="assets/js/core/api.js"></script>
 <script src="assets/js/core/auth.js"></script>
 <script src="assets/js/core/payments.js"></script>

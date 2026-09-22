@@ -8,28 +8,6 @@
   var utils = QS.utils;
 
   /* ------------------------------------------------------------------ *
-   * Hero product window — a miniature of the real dashboard chart
-   * ------------------------------------------------------------------ */
-
-  function mountHeroChart() {
-    var node = utils.qs("[data-hero-chart]");
-    if (!node) return;
-
-    QS.api.getPortfolioSeries("6M").then(function (res) {
-      QS.Chart(node, {
-        points: res.series.points,
-        height: 150,
-        padding: { top: 10, right: 4, bottom: 6, left: 4 },
-        showYAxis: false,
-        showXAxis: false,
-        showGrid: false,
-        interactive: false,
-        ariaLabel: "Sample portfolio value over six months"
-      });
-    });
-  }
-
-  /* ------------------------------------------------------------------ *
    * Investment plans
    * ------------------------------------------------------------------ */
 
@@ -52,7 +30,7 @@
           "<div><dt>Eligibility</dt><dd>" + utils.esc(plan.eligibility) + "</dd></div>" +
         "</dl>" +
         '<ul class="qs-plan__features">' +
-          plan.features.map(function (f) {
+          (plan.features || []).map(function (f) {
             return "<li><span data-icon=\"check\" data-icon-size=\"14\"></span>" + utils.esc(f) + "</li>";
           }).join("") +
         "</ul>" +
@@ -82,6 +60,16 @@
 
     QS.api.getPlans()
       .then(function (plans) {
+        plans = plans || [];
+        if (!plans.length) {
+          grid.innerHTML =
+            '<div class="qs-empty" style="grid-column:1/-1">' +
+              QS.icon("layers") +
+              "<p>No plans are open right now. Check back soon.</p>" +
+            "</div>";
+          return;
+        }
+
         grid.innerHTML = plans.map(planCard).join("");
         QS.bootstrap.refresh(grid);
 
@@ -89,7 +77,7 @@
           btn.addEventListener("click", function () {
             QS.toast({
               title: btn.getAttribute("data-plan-details") + " plan",
-              message: "Full plan details arrive with the investments page. Sign in to preview the dashboard.",
+              message: "Full plan details arrive with the investments page. Sign in to see your dashboard.",
               icon: "layers"
             });
           });
@@ -105,51 +93,98 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * Portfolio preview with range switching
+   * Platform figures
+   *
+   * Real aggregates across every QuickStark account — no customer, no
+   * individual record, and nothing fabricated. A brand-new platform shows
+   * honest zeros rather than an invented curve.
    * ------------------------------------------------------------------ */
 
-  function mountPreview() {
-    var chartNode = utils.qs("[data-preview-chart]");
-    var rangeNode = utils.qs("[data-preview-ranges]");
-    if (!chartNode || !rangeNode) return;
+  function mountPlatformStats() {
+    var valueNodes = utils.qsa("[data-stat-invested]");
+    var summary = utils.qs("[data-stat-summary]");
+    var plansBadge = utils.qs("[data-stat-plans]");
+    if (!valueNodes.length) return;
 
-    var chart = null;
-    var active = "6M";
+    QS.api.getPlatformStats()
+      .then(function (stats) {
+        valueNodes.forEach(function (node) {
+          node.textContent = utils.money(stats.totalInvested);
+        });
 
-    chartNode.innerHTML = '<div class="qs-skeleton" style="height:100%;border-radius:12px"></div>';
+        var set = function (sel, text) {
+          utils.qsa(sel).forEach(function (n) { n.textContent = text; });
+        };
+        set("[data-stat-members]", utils.number(stats.members));
+        set("[data-stat-active]", utils.number(stats.activeInvestments));
+        set("[data-stat-open]", utils.number(stats.openPlans));
 
-    function renderRanges(ranges) {
-      rangeNode.innerHTML = ranges.map(function (r) {
-        return (
-          '<button role="tab" class="qs-range" data-range="' + r + '" ' +
-          'aria-selected="' + (r === active ? "true" : "false") + '">' + r + "</button>"
-        );
-      }).join("");
+        if (plansBadge && stats.openPlans > 0) {
+          plansBadge.innerHTML =
+            '<span class="qs-dot"></span>' + stats.openPlans +
+            (stats.openPlans === 1 ? " plan open" : " plans open");
+          plansBadge.hidden = false;
+        }
 
-      utils.qsa("[data-range]", rangeNode).forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          var range = btn.getAttribute("data-range");
-          if (range === active) return;
-          active = range;
-          utils.qsa("[data-range]", rangeNode).forEach(function (b) {
-            b.setAttribute("aria-selected", b === btn ? "true" : "false");
-          });
-          QS.api.getPortfolioSeries(range).then(function (res) {
-            if (chart) chart.setPoints(res.series.points, true);
+        if (summary) {
+          summary.innerHTML = stats.activeInvestments
+            ? '<span class="qs-preview__stat-note">across ' +
+                utils.number(stats.activeInvestments) +
+                (stats.activeInvestments === 1 ? " active investment" : " active investments") +
+                " held by " + utils.number(stats.members) +
+                (stats.members === 1 ? " member" : " members") + "</span>"
+            : '<span class="qs-preview__stat-note">No investments placed yet — ' +
+                "the first one starts this total.</span>";
+        }
+      })
+      .catch(function () {
+        valueNodes.forEach(function (node) { node.textContent = "—"; });
+        if (summary) {
+          summary.innerHTML =
+            '<span class="qs-preview__stat-note">Platform figures are unavailable right now.</span>';
+        }
+      });
+  }
+
+  function mountPlatformChart() {
+    var nodes = utils.qsa("[data-platform-chart]");
+    if (!nodes.length) return;
+
+    nodes.forEach(function (node) {
+      node.innerHTML = '<div class="qs-skeleton" style="height:100%;border-radius:12px"></div>';
+    });
+
+    QS.api.getPlatformSeries()
+      .then(function (points) {
+        nodes.forEach(function (node) {
+          /* Under two points there is no line to draw, and drawing one anyway
+             would be inventing a trend. */
+          if (points.length < 2) {
+            node.innerHTML =
+              '<div class="qs-empty qs-empty--flush">' + QS.icon("chart") +
+              "<p>Growth appears here as investments are placed.</p></div>";
+            return;
+          }
+          node.innerHTML = "";
+          QS.Chart(node, {
+            points: points,
+            height: node.clientHeight || 150,
+            padding: { top: 10, right: 4, bottom: 6, left: 4 },
+            showYAxis: false,
+            showXAxis: false,
+            showGrid: false,
+            interactive: false,
+            ariaLabel: "Total invested on QuickStark over time"
           });
         });
+      })
+      .catch(function () {
+        nodes.forEach(function (node) {
+          node.innerHTML =
+            '<div class="qs-empty qs-empty--flush">' + QS.icon("alert") +
+            "<p>Chart unavailable.</p></div>";
+        });
       });
-    }
-
-    QS.api.getPortfolio().then(function (portfolio) {
-      renderRanges(portfolio.ranges);
-      chartNode.innerHTML = "";
-      chart = QS.Chart(chartNode, {
-        points: portfolio.series[active].points,
-        height: 240,
-        ariaLabel: "Sample portfolio value chart"
-      });
-    });
   }
 
   /* ------------------------------------------------------------------ *
@@ -160,9 +195,9 @@
     QS.bootstrap.mount(document);
     QS.siteNav.mount();
     QS.accordion.mount(document);
-    mountHeroChart();
+    mountPlatformStats();
+    mountPlatformChart();
     mountPlans();
-    mountPreview();
   }
 
   if (document.readyState === "loading") {

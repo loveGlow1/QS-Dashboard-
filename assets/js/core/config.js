@@ -1,8 +1,8 @@
 /**
  * QuickStark — application configuration.
  *
- * Everything environment-specific lives here so that swapping the demo
- * back-end for a real API is a single-file change.
+ * Everything environment-specific lives here, so pointing the app at a
+ * different back-end is a single-file change.
  */
 (function (window) {
   "use strict";
@@ -18,6 +18,7 @@
   }
 
   var ROOT = resolveRoot();
+  var html = document.documentElement;
 
   QS.config = {
     brand: "QuickStark",
@@ -25,29 +26,27 @@
     currency: { code: "NGN", symbol: "₦", locale: "en-NG" },
 
     /**
-     * MVP flag. While true the app runs entirely on local demo data and a
-     * mocked auth session — no real funds, balances or payments exist.
-     * Set to false once `QS.api` is pointed at the live back-end.
+     * Supabase project. The publishable key is designed to ship in the
+     * browser: it grants nothing on its own. Every table is behind row level
+     * security, so a caller reads only their own records, and no client role
+     * can write a financial row at all. Override per deployment with
+     * `data-qs-supabase-url` / `data-qs-supabase-key` on <html>.
      */
-    demoMode: true,
-
-    /** Base URL for the future REST API. Unused while demoMode is true. */
-    apiBaseUrl: "/api/v1",
-
-    /** Latency (ms) the demo service layer simulates, so loading states
-        are exercised exactly as they will be against a real network. */
-    simulatedLatency: 420,
-
-    /** Session storage key for the mocked auth token. */
-    sessionKey: "qs.session",
+    supabaseUrl:
+      html.getAttribute("data-qs-supabase-url") ||
+      "https://ihbwmebrflqkpchiqbpu.supabase.co",
+    supabaseKey:
+      html.getAttribute("data-qs-supabase-key") ||
+      "sb_publishable_Vkvk3jTSPh1zGlmmNVs50Q_E-3qLzJW",
 
     /** Named routes — the single source of truth for navigation. */
     routes: {
       home: ROOT + "/index.html",
       login: ROOT + "/pages/login.html",
+      signup: ROOT + "/pages/signup.html",
       dashboard: ROOT + "/pages/dashboard.html",
-      /* Placeholders: these resolve to in-app sections for the MVP and
-         become their own documents when the pages are built. */
+      /* These resolve to in-app sections today and become their own
+         documents once those pages are built. */
       investments: ROOT + "/pages/dashboard.html#investments",
       transactions: ROOT + "/pages/dashboard.html#activity",
       withdraw: ROOT + "/pages/dashboard.html#withdraw",
@@ -58,4 +57,25 @@
       return ROOT + "/assets/" + String(path).replace(/^\/+/, "");
     }
   };
+
+  /* A missing client library would otherwise fail deep inside a page
+     controller with an opaque error. Fail loudly and early instead. */
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    throw new Error(
+      "QuickStark: assets/vendor/supabase.js must load before core/config.js."
+    );
+  }
+
+  /** The one Supabase client the whole app shares. */
+  QS.db = window.supabase.createClient(
+    QS.config.supabaseUrl,
+    QS.config.supabaseKey,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
 })(window);

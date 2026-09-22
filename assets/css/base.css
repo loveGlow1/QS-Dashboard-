@@ -342,23 +342,6 @@ table { border-collapse: collapse; width: 100%; }
 .qs-delta[data-dir="down"] { color: var(--qs-down); }
 .qs-delta svg { width: 12px; height: 12px; }
 
-/* Demo-data marker — every fabricated figure in this MVP carries one. */
-.qs-demo-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: rgba(233, 184, 114, 0.1);
-  border: 1px solid rgba(233, 184, 114, 0.22);
-  color: var(--qs-warn);
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 /* ==========================================================================
    Forms
    ========================================================================== */
@@ -470,6 +453,7 @@ table { border-collapse: collapse; width: 100%; }
 .qs-alert--error { background: var(--qs-down-soft); border-color: rgba(240, 104, 123, 0.26); color: #f8b3bd; }
 .qs-alert--info { background: var(--qs-accent-soft); border-color: var(--qs-accent-line); color: #b9cbfb; }
 .qs-alert--note { background: var(--qs-warn-soft); border-color: rgba(233, 184, 114, 0.22); color: #edd0a4; }
+.qs-alert--ok { background: var(--qs-up-soft); border-color: rgba(74, 201, 137, 0.26); color: #9fe0bd; }
 .qs-alert[hidden] { display: none; }
 
 .qs-skeleton {
@@ -498,6 +482,11 @@ table { border-collapse: collapse; width: 100%; }
 }
 .qs-empty svg { width: 28px; height: 28px; color: var(--qs-text-4); }
 .qs-empty p { font-size: 0.8125rem; max-width: 280px; }
+/* Fills its container instead of adding its own padding — for empty
+   states that sit inside a fixed-height chart slot. */
+.qs-empty--flush { height: 100%; padding: 0; gap: 8px; }
+.qs-empty--flush svg { width: 22px; height: 22px; }
+.qs-empty--flush p { font-size: 0.75rem; }
 
 /* ==========================================================================
    Toast

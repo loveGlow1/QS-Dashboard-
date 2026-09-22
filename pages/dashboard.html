@@ -58,7 +58,7 @@
 
   <div class="qs-sidebar__foot">
     <div class="qs-sidebar__status">
-      <span class="qs-badge qs-badge--up"><span class="qs-dot"></span> Verified</span>
+      <span class="qs-badge" data-account-status hidden></span>
       <p data-account-tier>Individual account</p>
     </div>
     <button class="qs-nav-item qs-nav-item--quiet" data-signout>
@@ -93,7 +93,6 @@
         <div class="qs-pop__panel qs-pop__panel--wide" data-pop-panel hidden>
           <header class="qs-pop__head">
             <h3>Notifications</h3>
-            <span class="qs-demo-tag">Demo</span>
           </header>
           <div data-notifications></div>
         </div>
@@ -126,19 +125,6 @@
 
   <main class="qs-main" id="qs-main">
 
-    <!-- Preview notice ------------------------------------------------ -->
-    <div class="qs-demo-bar" data-demo-bar hidden>
-      <span class="qs-demo-bar__icon" data-icon="info" data-icon-size="16"></span>
-      <p>
-        <strong>Preview build — sample data.</strong>
-        Every figure on this page is illustrative. No real funds, investments
-        or transactions are represented. Snapshot dated <span data-snapshot-date>—</span>.
-      </p>
-      <button class="qs-demo-bar__close" data-demo-dismiss aria-label="Dismiss notice">
-        <span data-icon="close" data-icon-size="15"></span>
-      </button>
-    </div>
-
     <!-- Greeting ------------------------------------------------------ -->
     <section class="qs-greeting">
       <div>
@@ -169,7 +155,7 @@
       <article class="qs-card qs-total" aria-labelledby="qs-total-label">
         <header class="qs-card__head">
           <p class="qs-card__label" id="qs-total-label">
-            Total portfolio <span class="qs-demo-tag">Demo</span>
+            Total portfolio
           </p>
         </header>
 
@@ -240,8 +226,8 @@
 
     <footer class="qs-main__foot">
       <p>
-        QuickStark preview build. Figures shown are sample data and do not
-        describe a real account. Nothing here is financial advice.
+        Figures are shown as your account records them. Nothing here is
+        financial advice.
       </p>
     </footer>
 
@@ -269,10 +255,10 @@
   </button>
 </nav>
 
+<script src="../assets/vendor/supabase.js"></script>
 <script src="../assets/js/core/config.js"></script>
 <script src="../assets/js/core/utils.js"></script>
 <script src="../assets/js/core/icons.js"></script>
-<script src="../assets/js/core/demo-data.js"></script>
 <script src="../assets/js/core/api.js"></script>
 <script src="../assets/js/core/auth.js"></script>
 <script src="../assets/js/core/payments.js"></script>

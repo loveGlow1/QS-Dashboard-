@@ -1,9 +1,9 @@
 /**
  * QuickStark — payment service boundary.
  *
- * No provider is wired up in this MVP, and no money moves. This module exists
- * so that the UI never speaks to a payment provider directly: screens call
- * `QS.payments.*`, and a provider adapter is registered behind it later.
+ * No provider is registered by default, and no money moves until one is. This
+ * module exists so that the UI never speaks to a payment provider directly:
+ * screens call `QS.payments.*`, and a provider adapter is registered behind it.
  *
  *   QS.payments.use(PaystackAdapter)   // or Stripe, or anything else
  *
@@ -13,8 +13,9 @@
  *   initWithdrawal(req) → Promise<{ reference, status }>
  *   verify(reference)   → Promise<{ reference, status }>
  *
- * Until one is registered every call resolves to a `demo_unavailable` result
- * that the UI shows as a placeholder — never as a completed transaction.
+ * Until one is registered every call resolves to a `provider_unavailable`
+ * result, which the UI reports as unavailable — never as a completed
+ * transaction.
  */
 (function (window) {
   "use strict";
@@ -25,11 +26,11 @@
 
   function unavailable(intent) {
     return Promise.resolve({
-      status: "demo_unavailable",
+      status: "provider_unavailable",
       intent: intent,
       reference: null,
       message:
-        "Payments are not connected in this preview. This action is a placeholder."
+        "Payments are not connected yet. No money has moved."
     });
   }
 

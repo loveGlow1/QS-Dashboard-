@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sign in — QuickStark</title>
-<meta name="description" content="Sign in to your QuickStark account to access your portfolio.">
+<title>Create account — QuickStark</title>
+<meta name="description" content="Open a QuickStark account to invest and track your portfolio.">
 <meta name="theme-color" content="#060a16">
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,16 +28,30 @@
     <div class="qs-auth__brand" data-qs-logo="lg"></div>
 
     <header class="qs-auth__head">
-      <h1 id="qs-auth-title">Welcome back</h1>
-      <p>Access your portfolio</p>
+      <h1 id="qs-auth-title">Create your account</h1>
+      <p>Open a portfolio in a minute</p>
     </header>
 
-    <div class="qs-alert qs-alert--error" data-login-error hidden role="alert">
+    <div class="qs-alert qs-alert--error" data-signup-error hidden role="alert">
       <span data-icon="alert" data-icon-size="16"></span>
-      <span data-login-error-text></span>
+      <span data-signup-error-text></span>
     </div>
 
-    <form class="qs-auth__form" data-login-form novalidate>
+    <div class="qs-alert qs-alert--ok" data-signup-done hidden role="status">
+      <span data-icon="check" data-icon-size="16"></span>
+      <span data-signup-done-text></span>
+    </div>
+
+    <form class="qs-auth__form" data-signup-form novalidate>
+      <div class="qs-field" data-field="name">
+        <label class="qs-label" for="qs-name">Full name</label>
+        <div class="qs-input-wrap">
+          <input class="qs-input" id="qs-name" name="name" type="text"
+                 autocomplete="name" placeholder="Your name" required>
+        </div>
+        <span class="qs-field-error" data-error-for="name">Enter your name.</span>
+      </div>
+
       <div class="qs-field" data-field="email">
         <label class="qs-label" for="qs-email">Email</label>
         <div class="qs-input-wrap">
@@ -52,28 +66,26 @@
         <label class="qs-label" for="qs-password">Password</label>
         <div class="qs-input-wrap">
           <input class="qs-input" id="qs-password" name="password" type="password"
-                 autocomplete="current-password" placeholder="Enter your password" required>
+                 autocomplete="new-password" placeholder="At least 8 characters" required>
           <button class="qs-input-btn" type="button" data-toggle-password
                   aria-label="Show password" aria-pressed="false"></button>
         </div>
-        <span class="qs-field-error" data-error-for="password">Enter your password.</span>
+        <span class="qs-field-error" data-error-for="password">Use at least 8 characters.</span>
       </div>
 
-      <div class="qs-auth__row">
-        <label class="qs-checkbox">
-          <input type="checkbox" name="remember" checked> Keep me signed in
-        </label>
-        <a href="#" class="qs-auth__link" data-forgot-password>Forgot password?</a>
-      </div>
-
-      <button class="qs-btn qs-btn--primary qs-btn--lg qs-btn--block" type="submit" data-login-submit>
-        Sign in
+      <button class="qs-btn qs-btn--primary qs-btn--lg qs-btn--block" type="submit" data-signup-submit>
+        Create account
       </button>
+
+      <p class="qs-auth__fineprint">
+        Opening an account does not place an investment. Investing carries
+        risk, including the risk of losing money.
+      </p>
     </form>
 
     <p class="qs-auth__foot">
-      Don't have an account?
-      <a class="qs-auth__link" data-route="signup">Create account</a>
+      Already have an account?
+      <a class="qs-auth__link" data-route="login">Sign in</a>
     </p>
 
   </section>
@@ -89,6 +101,6 @@
 <script src="../assets/js/components/toast.js"></script>
 <script src="../assets/js/components/reveal.js"></script>
 <script src="../assets/js/core/bootstrap.js"></script>
-<script src="../assets/js/pages/login.js"></script>
+<script src="../assets/js/pages/signup.js"></script>
 </body>
 </html>

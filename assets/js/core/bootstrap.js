@@ -46,7 +46,7 @@
         e.preventDefault();
         QS.toast({
           title: node.getAttribute("data-placeholder"),
-          message: "This page is not part of the current preview build.",
+          message: "This page is not available yet.",
           icon: "info"
         });
       });

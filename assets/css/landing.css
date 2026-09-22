@@ -228,8 +228,7 @@
   gap: 10px;
 }
 
-/* ==========================================================================
-   Product window mockup
+   Product window — live platform figures
    ========================================================================== */
 
 .qs-window {
@@ -534,6 +533,10 @@
   align-items: center;
 }
 
+@media (max-width: 940px) {
+  .qs-preview__layout { grid-template-columns: 1fr; }
+}
+
 .qs-preview__copy { display: grid; gap: 16px; justify-items: start; }
 .qs-preview__copy .qs-h2 { margin-top: 2px; }
 .qs-preview__list { display: grid; gap: 10px; margin-top: 2px; }
@@ -547,38 +550,38 @@
 .qs-preview__list svg { width: 15px; height: 15px; color: var(--qs-accent); flex: none; margin-top: 4px; }
 
 .qs-preview__panel {
-  padding: clamp(20px, 2.4vw, 28px);
-  border-radius: var(--qs-r-xl);
-  background: linear-gradient(180deg, rgba(20, 28, 51, 0.8) 0%, rgba(11, 17, 34, 0.9) 100%);
-  border: 1px solid var(--qs-line-strong);
-  box-shadow: var(--qs-shadow-lg);
+  padding: 22px;
+  border-radius: var(--qs-r-lg);
+  background: var(--qs-surface-1);
+  border: 1px solid var(--qs-line);
+  box-shadow: var(--qs-shadow-1);
 }
 
 .qs-preview__panel-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 18px;
 }
+
 .qs-preview__label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-size: 0.6875rem;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--qs-text-4);
 }
+
 .qs-preview__value {
   margin-top: 8px;
-  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
+  font-size: clamp(1.75rem, 3vw, 2.125rem);
   font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
+
 .qs-preview__delta { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.qs-preview__stat-note { font-size: 0.75rem; color: var(--qs-text-3); line-height: 1.5; }
 
 .qs-preview__chart { height: 240px; }
 
@@ -587,11 +590,8 @@
   padding-top: 16px;
   border-top: 1px solid var(--qs-line-soft);
   font-size: 0.6875rem;
+  line-height: 1.55;
   color: var(--qs-text-4);
-}
-
-@media (max-width: 940px) {
-  .qs-preview__layout { grid-template-columns: 1fr; }
 }
 
 /* ==========================================================================
@@ -760,7 +760,6 @@
   font-size: 0.75rem;
   color: var(--qs-text-4);
 }
-.qs-footer__disclaimer { color: var(--qs-warn); opacity: 0.75; }
 
 @media (max-width: 760px) {
   .qs-footer__top { grid-template-columns: 1fr; }

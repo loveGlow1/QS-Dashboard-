@@ -3,7 +3,7 @@
  *
  * Owns the chrome around the dashboard content: the sidebar drawer on small
  * screens, the notification and account popovers, sign out, and the
- * "not in this preview" responses for sections that arrive in a later phase.
+ * "not available yet" responses for sections that arrive in a later phase.
  */
 (function (window) {
   "use strict";
@@ -107,8 +107,9 @@
   function mountSignOut() {
     utils.qsa("[data-signout]").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        btn.setAttribute("data-busy", "true");
+        /* signOut revokes the session server-side, then redirects. */
         QS.auth.signOut();
-        window.location.replace(QS.config.routes.login);
       });
     });
   }
@@ -125,7 +126,7 @@
         e.preventDefault();
         QS.toast({
           title: node.getAttribute("data-soon"),
-          message: "This section is not part of the current preview build.",
+          message: "This section is not available yet.",
           icon: "info"
         });
       });
