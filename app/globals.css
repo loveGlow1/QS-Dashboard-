@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   QuickStark Investment — design tokens
+   Ported from the v1 build: deep navy surfaces, blue-gray elevation, one
+   restrained cool blue accent. Green and red appear only as directional
+   indicators on financial values, never as decoration.
+   ========================================================================== */
+
+@theme {
+  /* --- Surfaces: deep navy → blue-gray -------------------------------- */
+  --color-ink-950: #04070f;
+  --color-ink-900: #060a16;
+  --color-ink-850: #0b1122;
+  --color-ink-800: #0f1629;
+  --color-ink-700: #141c33;
+  --color-ink-600: #18213b;
+
+  /* --- Type ----------------------------------------------------------- */
+  --color-mist-50: #eef2fb;
+  --color-mist-200: #b7c2de;
+  --color-mist-400: #8290b4;
+  --color-mist-500: #5d6a8c;
+
+  /* --- Accent: restrained cool blue ----------------------------------- */
+  --color-accent-300: #8fb0ff;
+  --color-accent-400: #6690f6;
+  --color-accent-500: #4d7cf3;
+  --color-accent-600: #3d68d8;
+  --color-accent-700: #2f56c4;
+
+  /* --- Directional indicators (financial values only) ----------------- */
+  --color-up: #3ecf9a;
+  --color-down: #f0687b;
+  --color-warn: #e9b872;
+
+  /* --- Radii ---------------------------------------------------------- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* --- Motion --------------------------------------------------------- */
+  --ease-brand: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* --- Type family ---------------------------------------------------- */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  /* --- Layout --------------------------------------------------------- */
+  --spacing-header: 72px;
+  --spacing-rail: 248px;
+}
+
+/* Hairlines carry alpha, so they stay as plain custom properties rather than
+   theme colors — they must composite over whatever surface is beneath. */
+:root {
+  --line: rgba(148, 168, 214, 0.12);
+  --line-strong: rgba(148, 168, 214, 0.22);
+  --line-soft: rgba(148, 168, 214, 0.07);
+  --accent-soft: rgba(77, 124, 243, 0.14);
+  --accent-line: rgba(77, 124, 243, 0.32);
+  --up-soft: rgba(62, 207, 154, 0.12);
+  --down-soft: rgba(240, 104, 123, 0.12);
+  --warn-soft: rgba(233, 184, 114, 0.12);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 168, 214, 0.22) transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--spacing-header) + 16px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-ink-900);
+    color: var(--color-mist-50);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: #fff;
+  }
+
+  /* Every figure on this platform is money. Tabular by default so columns
+     of numbers line up and digits never jitter as values update. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  *::-webkit-scrollbar { width: 9px; height: 9px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+  *::-webkit-scrollbar-thumb {
+    background: rgba(148, 168, 214, 0.2);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 168, 214, 0.34);
+    background-clip: padding-box;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
