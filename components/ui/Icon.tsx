@@ -25,6 +25,7 @@ export const ICONS = {
   bell: <><path d="M18 9a6 6 0 0 0-12 0c0 5-2 6.5-2 6.5h16S18 14 18 9Z"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></>,
   chevronDown: <path d="m6 9.5 6 6 6-6"/>,
   chevronLeft: <path d="m14.5 6-6 6 6 6"/>,
+  chevronRight: <path d="m9.5 6 6 6-6 6"/>,
   close: <><path d="M6 6l12 12"/><path d="M18 6 6 18"/></>,
   menu: <><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></>,
   check: <path d="m5 12.5 4.5 4.5L19 7"/>,

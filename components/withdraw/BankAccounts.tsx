@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { addBankAccount, removeBankAccount, type ActionState } from "@/app/withdraw-actions";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { maskAccount, type BankAccount } from "@/lib/types";
+import { maskAccount, type BankAccountView } from "@/lib/types";
 
 const INITIAL: ActionState = { error: null };
 
@@ -21,7 +21,7 @@ const BANKS = [
   "Wema Bank", "Zenith Bank",
 ];
 
-export function BankAccounts({ accounts }: { accounts: BankAccount[] }) {
+export function BankAccounts({ accounts }: { accounts: BankAccountView[] }) {
   const [adding, setAdding] = useState(accounts.length === 0);
   const [addState, addAction, addPending] = useActionState(addBankAccount, INITIAL);
   const [removeState, removeAction] = useActionState(removeBankAccount, INITIAL);
@@ -40,7 +40,7 @@ export function BankAccounts({ accounts }: { accounts: BankAccount[] }) {
               </span>
               <span className="grid min-w-0 flex-1 gap-[2px]">
                 <span className="truncate text-[0.8125rem] font-medium">
-                  {account.bank_name} {maskAccount(account.account_number)}
+                  {account.bank_name} {maskAccount(account.last4)}
                 </span>
                 <span className="truncate text-xs text-mist-500">{account.account_name}</span>
               </span>
@@ -58,7 +58,7 @@ export function BankAccounts({ accounts }: { accounts: BankAccount[] }) {
                 <input type="hidden" name="id" value={account.id} />
                 <button
                   type="submit"
-                  aria-label={`Remove ${account.bank_name} ${maskAccount(account.account_number)}`}
+                  aria-label={`Remove ${account.bank_name} ${maskAccount(account.last4)}`}
                   className="grid size-8 place-items-center rounded-sm text-mist-500 transition-colors hover:bg-[var(--down-soft)] hover:text-down"
                 >
                   <Icon name="close" size={15} />

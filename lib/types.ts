@@ -172,7 +172,79 @@ export interface Withdrawal {
   processed_at: string | null;
 }
 
-/** `0123456789` → `••••6789`. The only form an account number is shown in. */
-export function maskAccount(accountNumber: string): string {
-  return `\u2022\u2022\u2022\u2022${accountNumber.slice(-4)}`;
+/**
+ * What a client component is allowed to know about a payout destination.
+ *
+ * Deliberately has no account_number. Props handed to a client component are
+ * serialised into the page payload, so passing the full number would ship it
+ * in the HTML of every render — visible to anything reading the document,
+ * for no benefit: the screen only ever shows the last four digits.
+ */
+export interface BankAccountView {
+  id: string;
+  bank_name: string;
+  account_name: string;
+  /** The last four digits, the only part ever displayed. */
+  last4: string;
+  verified: boolean;
+  is_default: boolean;
+}
+
+/** Narrows a stored account to the part the browser may hold. */
+export function toBankAccountView(account: BankAccount): BankAccountView {
+  return {
+    id: account.id,
+    bank_name: account.bank_name,
+    account_name: account.account_name,
+    last4: account.account_number.slice(-4),
+    verified: account.verified,
+    is_default: account.is_default,
+  };
+}
+
+/** `4821` → `••••4821`. The only form an account number is shown in. */
+export function maskAccount(last4: string): string {
+  return `\u2022\u2022\u2022\u2022${last4}`;
+}
+
+/* ------------------------------------------------------------------ *
+ * Payout methods
+ * ------------------------------------------------------------------ */
+
+export type PayoutKind = "bank" | "crypto";
+
+/**
+ * A withdrawal method as the server defines it.
+ *
+ * `enabled` says whether a payout can genuinely be made this way, not whether
+ * the screen exists. A disabled method is shown with its reason rather than
+ * hidden, so a customer is never walked into a flow that fails at the end.
+ */
+export interface PayoutMethod {
+  id: string;
+  label: string;
+  subtitle: string;
+  kind: PayoutKind;
+  asset_code: string | null;
+  enabled: boolean;
+  unavailable_reason: string;
+  minimum_amount: number;
+  fee_percent: number;
+  fee_flat: number;
+  fee_cap: number | null;
+  processing_time_label: string;
+  sort_order: number;
+}
+
+export interface PayoutNetwork {
+  id: string;
+  method_id: string;
+  label: string;
+  /** Anchored pattern the destination address must match. */
+  address_regex: string;
+  address_hint: string;
+  enabled: boolean;
+  network_fee: number;
+  minimum_amount: number;
+  sort_order: number;
 }
