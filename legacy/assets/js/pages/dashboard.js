@@ -57,7 +57,6 @@
         n.hidden = false;
       });
 
-      document.title = "Dashboard — QuickStark";
       return user;
     }).catch(function () {
       var greeting = utils.qs("[data-greeting]");
@@ -295,9 +294,8 @@
           "</div>" +
         "</div>" +
 
-        '<button class="qs-btn qs-btn--ghost qs-btn--block" data-soon="Investment detail">' +
-          "View Investment" +
-        "</button>" +
+        '<a class="qs-btn qs-btn--ghost qs-btn--block" href="' +
+          QS.config.routes.investments + '">View investments</a>' +
       "</div>"
     );
   }
@@ -439,42 +437,40 @@
   /* ================================================================== *
    * Quick actions
    *
-   * These deliberately do not move money. They route through the payment
-   * service boundary, which has no provider registered in this build, and
-   * report exactly what came back.
+   * Invest, Withdraw and Transactions go to their pages. Deposit is the one
+   * that cannot work yet: putting money in needs a payment provider, and this
+   * build has none registered, so it reports exactly what the payment
+   * boundary returns rather than pretending.
    * ================================================================== */
 
-  var ACTION_COPY = {
-    invest: { title: "Invest", message: "Funding a plan arrives with the investments page." },
-    deposit: { title: "Deposit", message: null },
-    withdraw: { title: "Withdraw", message: null },
-    transactions: { title: "Transactions", message: "The full transaction history page is not available yet." }
-  };
-
   function mountQuickActions() {
+    var routes = {
+      invest: QS.config.routes.investments,
+      withdraw: QS.config.routes.withdraw,
+      transactions: QS.config.routes.transactions
+    };
+
     utils.qsa("[data-action]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var action = btn.getAttribute("data-action");
-        var copy = ACTION_COPY[action] || { title: "Action", message: null };
 
-        if (action === "deposit" || action === "withdraw") {
-          btn.setAttribute("data-busy", "true");
-          var call = action === "deposit"
-            ? QS.payments.initDeposit({ amount: 0, currency: "NGN" })
-            : QS.payments.initWithdrawal({ amount: 0, currency: "NGN", destination: "" });
-
-          call.then(function (result) {
-            btn.removeAttribute("data-busy");
-            QS.toast({
-              title: copy.title,
-              message: result.message || "Request received.",
-              icon: "wallet"
-            });
-          });
+        if (routes[action]) {
+          window.location.href = routes[action];
           return;
         }
 
-        QS.toast({ title: copy.title, message: copy.message, icon: "info" });
+        if (action === "deposit") {
+          btn.setAttribute("data-busy", "true");
+          QS.payments.initDeposit({ amount: 0, currency: QS.config.currency.code })
+            .then(function (result) {
+              btn.removeAttribute("data-busy");
+              QS.toast({
+                title: "Deposit",
+                message: result.message || "Request received.",
+                icon: "wallet"
+              });
+            });
+        }
       });
     });
   }
@@ -491,8 +487,8 @@
   }
 
   function render() {
+    QS.appShell.mount({ view: "dashboard", title: "Dashboard" });
     QS.bootstrap.mount(document);
-    QS.appShell.mount();
 
     mountProfile();
     mountInvestment();

@@ -89,14 +89,29 @@ export interface SeriesPoint {
   value: number;
 }
 
-/** Portfolio totals, derived server-side from investments and snapshots. */
-export interface PortfolioSummary {
-  totalValue: number;
+/**
+ * Row shape of the `portfolio_totals` view.
+ *
+ * Every figure here is derived by the database from investments and the
+ * completed ledger. The client reads these; it never recomputes them, so the
+ * number on screen and the number the server would act on cannot disagree.
+ */
+export interface PortfolioTotals {
+  user_id: string;
   invested: number;
+  investment_value: number;
   growth: number;
-  growthPercent: number;
+  growth_percent: number;
   available: number;
-  activeCount: number;
+  /** Held against pending withdrawal requests, so it cannot be spent twice. */
+  pending_out: number;
+  withdrawable: number;
+  total_value: number;
+  active_count: number;
+}
+
+/** Portfolio totals plus the chart range the page asked for. */
+export interface PortfolioSummary extends PortfolioTotals {
   /** Empty when the account has no history yet. */
   series: SeriesPoint[];
 }

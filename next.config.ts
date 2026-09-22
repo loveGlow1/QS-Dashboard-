@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  /* legacy/ holds the v1 vanilla build, kept as porting reference only. */
+  outputFileTracingExcludes: { "*": ["./legacy/**"] },
   async headers() {
     return [
       {

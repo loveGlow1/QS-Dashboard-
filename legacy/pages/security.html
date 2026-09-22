@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security — QuickStark</title>
+<meta name="description" content="Manage your QuickStark password and sessions.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <section class="qs-pagehead">
+      <div>
+        <h1 class="qs-h1">Security</h1>
+        <p>Your password and where you are signed in.</p>
+      </div>
+    </section>
+
+    <div class="qs-grid qs-grid--split">
+      <section class="qs-card" aria-labelledby="qs-password-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-password-title">Change password</h2>
+        </header>
+
+        <div class="qs-alert qs-alert--error" data-pw-error hidden role="alert">
+          <span data-icon="alert" data-icon-size="16"></span>
+          <span data-pw-error-text></span>
+        </div>
+        <div class="qs-alert qs-alert--ok" data-pw-done hidden role="status">
+          <span data-icon="check" data-icon-size="16"></span>
+          <span>Password updated.</span>
+        </div>
+
+        <form data-password-form novalidate>
+          <div class="qs-field" data-field="password">
+            <label class="qs-label" for="qs-newpassword">New password</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input" id="qs-newpassword" type="password"
+                     autocomplete="new-password" placeholder="At least 8 characters">
+              <button class="qs-input-btn" type="button" data-toggle-password
+                      aria-label="Show password" aria-pressed="false"></button>
+            </div>
+            <span class="qs-field-error" data-error-for="password">Use at least 8 characters.</span>
+          </div>
+
+          <div class="qs-field" data-field="confirm">
+            <label class="qs-label" for="qs-confirmpassword">Confirm new password</label>
+            <div class="qs-input-wrap">
+              <input class="qs-input" id="qs-confirmpassword" type="password"
+                     autocomplete="new-password" placeholder="Repeat it">
+            </div>
+            <span class="qs-field-error" data-error-for="confirm">Both entries must match.</span>
+          </div>
+
+          <button class="qs-btn qs-btn--primary" type="submit" data-password-submit>
+            Update password
+          </button>
+        </form>
+      </section>
+
+      <section class="qs-card" aria-labelledby="qs-sessions-title">
+        <header class="qs-card__head">
+          <h2 class="qs-h3" id="qs-sessions-title">Sessions</h2>
+        </header>
+
+        <dl class="qs-deflist">
+          <div><dt>Signed in as</dt><dd data-session-email>—</dd></div>
+          <div><dt>Signed in since</dt><dd data-session-since>—</dd></div>
+        </dl>
+
+        <p class="qs-fineprint">
+          Signing out everywhere ends every session on every device, including
+          this one. Use it if you think someone else has your password.
+        </p>
+
+        <button class="qs-btn qs-btn--ghost qs-btn--block" data-signout-all>
+          Sign out on all devices
+        </button>
+      </section>
+    </div>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/_page.js"></script>
+<script src="../assets/js/pages/security.js"></script>
+</body>
+</html>

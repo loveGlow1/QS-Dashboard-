@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-qs-root="..">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — QuickStark</title>
+<meta name="description" content="Your QuickStark portfolio at a glance.">
+<meta name="theme-color" content="#060a16">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/chart.css">
+<link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body class="qs-app">
+
+<a class="qs-skip" href="#qs-main">Skip to content</a>
+
+<!-- Sidebar, topbar and bottom navigation are rendered by app-shell.js from
+     one definition, so routes cannot drift between them. -->
+<div class="qs-shell" data-app-shell>
+
+  <main class="qs-main" id="qs-main">
+
+    <!-- Greeting ------------------------------------------------------ -->
+    <section class="qs-greeting">
+      <div>
+        <h1 data-greeting>
+          <span class="qs-skeleton" style="display:inline-block;width:240px;height:28px"></span>
+        </h1>
+        <p>Here's an overview of your portfolio.</p>
+      </div>
+      <div class="qs-quick" role="group" aria-label="Quick actions">
+        <button class="qs-quick__btn" data-action="invest">
+          <span data-icon="plus" data-icon-size="16"></span> Invest
+        </button>
+        <button class="qs-quick__btn" data-action="deposit">
+          <span data-icon="arrowDownLeft" data-icon-size="16"></span> Deposit
+        </button>
+        <button class="qs-quick__btn" data-action="withdraw">
+          <span data-icon="arrowUpRight" data-icon-size="16"></span> Withdraw
+        </button>
+        <button class="qs-quick__btn" data-action="transactions">
+          <span data-icon="list" data-icon-size="16"></span> Transactions
+        </button>
+      </div>
+    </section>
+
+    <!-- Portfolio + chart --------------------------------------------- -->
+    <section class="qs-grid qs-grid--top">
+
+      <article class="qs-card qs-total" aria-labelledby="qs-total-label">
+        <header class="qs-card__head">
+          <p class="qs-card__label" id="qs-total-label">
+            Total portfolio
+          </p>
+        </header>
+
+        <p class="qs-total__value qs-num" data-total-value>
+          <span class="qs-skeleton" style="display:inline-block;width:200px;height:40px"></span>
+        </p>
+
+        <div class="qs-total__delta" data-total-delta></div>
+
+        <div class="qs-total__breakdown">
+          <p class="qs-total__breakdown-label">Composition</p>
+          <div class="qs-total__bar" data-total-bar aria-hidden="true">
+            <span data-total-bar-fill></span>
+          </div>
+          <dl class="qs-total__legend" data-total-legend></dl>
+        </div>
+
+        <dl class="qs-total__split">
+          <div>
+            <dt>Available balance</dt>
+            <dd class="qs-num" data-total-available>—</dd>
+          </div>
+          <div>
+            <dt>Active investments</dt>
+            <dd class="qs-num" data-total-count>—</dd>
+          </div>
+        </dl>
+      </article>
+
+      <article class="qs-card qs-growth" aria-labelledby="qs-growth-title">
+        <header class="qs-card__head qs-growth__head">
+          <div>
+            <h3 class="qs-h3" id="qs-growth-title">Portfolio Growth</h3>
+            <p class="qs-growth__sub" data-growth-sub>
+              <span class="qs-skeleton" style="display:inline-block;width:180px;height:13px"></span>
+            </p>
+          </div>
+          <div class="qs-ranges" data-growth-ranges role="tablist" aria-label="Chart range"></div>
+        </header>
+        <div class="qs-growth__chart" data-growth-chart>
+          <div class="qs-skeleton" style="height:100%;border-radius:12px"></div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Activity + active investment ---------------------------------- -->
+    <section class="qs-grid qs-grid--bottom">
+
+      <article class="qs-card qs-activity" id="activity" aria-labelledby="qs-activity-title">
+        <header class="qs-card__head">
+          <h3 class="qs-h3" id="qs-activity-title">Recent Activity</h3>
+          <a class="qs-btn qs-btn--ghost qs-btn--sm" data-route="transactions">
+            View all transactions
+          </a>
+        </header>
+        <div data-activity-list></div>
+      </article>
+
+      <article class="qs-card qs-invest" id="investments" aria-labelledby="qs-invest-title">
+        <header class="qs-card__head">
+          <h3 class="qs-h3" id="qs-invest-title">Active Investment</h3>
+        </header>
+        <div data-active-investment></div>
+      </article>
+
+    </section>
+
+    <footer class="qs-main__foot">
+      <p>
+        Figures are shown as your account records them. Nothing here is
+        financial advice.
+      </p>
+    </footer>
+
+  </main>
+
+</div>
+
+<script src="../assets/vendor/supabase.js"></script>
+<script src="../assets/js/core/config.js"></script>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/icons.js"></script>
+<script src="../assets/js/core/api.js"></script>
+<script src="../assets/js/core/auth.js"></script>
+<script src="../assets/js/core/payments.js"></script>
+<script src="../assets/js/components/brand.js"></script>
+<script src="../assets/js/components/toast.js"></script>
+<script src="../assets/js/components/reveal.js"></script>
+<script src="../assets/js/components/chart.js"></script>
+<script src="../assets/js/components/app-shell.js"></script>
+<script src="../assets/js/core/bootstrap.js"></script>
+<script src="../assets/js/pages/dashboard.js"></script>
+</body>
+</html>

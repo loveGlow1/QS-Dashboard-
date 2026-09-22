@@ -77,7 +77,7 @@
     getPortfolio: function () {
       return db
         .from("portfolio_totals")
-        .select("invested, investment_value, growth, growth_percent, available, total_value, active_count")
+        .select("invested, investment_value, growth, growth_percent, available, pending_out, withdrawable, total_value, active_count")
         .maybeSingle()
         .then(unwrap)
         .then(function (row) {
@@ -89,6 +89,9 @@
             growth: Number(row.growth || 0),
             growthPercent: Number(row.growth_percent || 0),
             available: Number(row.available || 0),
+            /* Stored negative in the ledger; shown as a positive commitment. */
+            pendingOut: Math.abs(Number(row.pending_out || 0)),
+            withdrawable: Number(row.withdrawable || 0),
             activeCount: Number(row.active_count || 0),
             ranges: RANGES.slice()
           };
@@ -190,6 +193,59 @@
             };
           });
         });
+    },
+
+
+    /* ---------------------------------------------------------------- *
+     * Actions
+     *
+     * These are the only writes the app makes, and none of them writes a
+     * financial row directly: each calls a database function that revalidates
+     * every precondition server-side before anything is recorded.
+     * ---------------------------------------------------------------- */
+
+    /** @returns {Promise<string>} the new investment's id */
+    placeInvestment: function (planId, amount) {
+      return db
+        .rpc("place_investment", { p_plan_id: planId, p_amount: amount })
+        .then(unwrap);
+    },
+
+    /** @returns {Promise<string>} the pending withdrawal's id */
+    requestWithdrawal: function (amount, destination) {
+      return db
+        .rpc("request_withdrawal", { p_amount: amount, p_destination: destination })
+        .then(unwrap);
+    },
+
+    cancelWithdrawal: function (id) {
+      return db.rpc("cancel_withdrawal", { p_id: id }).then(unwrap);
+    },
+
+    /** Renames the signed-in customer. Tier and verification are not theirs. */
+    updateProfile: function (fullName) {
+      var full = String(fullName || "").trim();
+      var user = QS.auth.currentUser();
+      if (!user) return Promise.reject(new Error("You are not signed in."));
+
+      return db
+        .from("profiles")
+        .update({ full_name: full, first_name: full.split(" ")[0] || full })
+        .eq("id", user.id)
+        .select("id, first_name, full_name, tier, verified")
+        .maybeSingle()
+        .then(unwrap);
+    },
+
+    markNotificationsRead: function () {
+      var user = QS.auth.currentUser();
+      if (!user) return Promise.resolve(null);
+      return db
+        .from("notifications")
+        .update({ unread: false })
+        .eq("user_id", user.id)
+        .eq("unread", true)
+        .then(function (res) { return res.error ? null : true; });
     },
 
     /** Public — the catalogue is readable without a session. */

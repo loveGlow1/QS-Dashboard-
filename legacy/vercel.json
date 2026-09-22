@@ -1,0 +1,37 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/login", "destination": "/pages/login", "permanent": false },
+    { "source": "/signup", "destination": "/pages/signup", "permanent": false },
+    { "source": "/dashboard", "destination": "/pages/dashboard", "permanent": false },
+    { "source": "/investments", "destination": "/pages/investments", "permanent": false },
+    { "source": "/transactions", "destination": "/pages/transactions", "permanent": false },
+    { "source": "/withdraw", "destination": "/pages/withdraw", "permanent": false },
+    { "source": "/profile", "destination": "/pages/profile", "permanent": false },
+    { "source": "/security", "destination": "/pages/security", "permanent": false },
+    { "source": "/help", "destination": "/pages/help", "permanent": false }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        }
+      ]
+    },
+    {
+      "source": "/assets/vendor/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}

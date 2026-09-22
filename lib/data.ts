@@ -7,6 +7,7 @@ import type {
   Plan,
   PlatformMetrics,
   PortfolioSummary,
+  PortfolioTotals,
   Profile,
   SeriesPoint,
   Transaction,
@@ -15,21 +16,26 @@ import type {
 /**
  * Server-side reads.
  *
- * Everything here runs with the signed-in customer's own credentials, so row
- * level security decides what comes back — the query does not have to be
- * trusted to scope itself correctly.
+ * Everything runs with the signed-in customer's own credentials, so row level
+ * security decides what comes back — a query does not have to be trusted to
+ * scope itself correctly.
  *
- * No function in this module invents a financial figure. Totals are summed
- * from rows the database returned; nothing is estimated, projected or filled
- * in when data is missing. An account with no history gets zeroes and an
- * empty series, and the UI says so.
+ * Financial figures are read from `portfolio_totals`, a view the database
+ * derives from investments and the completed ledger. This module deliberately
+ * does not re-add them up: a total computed here could disagree with the one
+ * the server would act on, and the server's is the only one that counts.
  */
 
-const DAYS_IN_RANGE: Record<ChartRange, number> = {
-  "1M": 30,
-  "3M": 91,
-  "6M": 182,
-  "1Y": 365,
+const EMPTY_TOTALS: Omit<PortfolioTotals, "user_id"> = {
+  invested: 0,
+  investment_value: 0,
+  growth: 0,
+  growth_percent: 0,
+  available: 0,
+  pending_out: 0,
+  withdrawable: 0,
+  total_value: 0,
+  active_count: 0,
 };
 
 export async function getProfile(): Promise<Profile | null> {
@@ -57,14 +63,22 @@ export async function getInvestments(): Promise<Investment[]> {
   return (data as Investment[]) ?? [];
 }
 
-export async function getTransactions(limit?: number): Promise<Transaction[]> {
+export async function getActiveInvestment(): Promise<Investment | null> {
+  const rows = await getInvestments();
+  return rows.find((i) => i.status === "active") ?? null;
+}
+
+export async function getTransactions(opts: { limit?: number; type?: string } = {}) {
   const supabase = await createClient();
   let query = supabase
     .from("transactions")
     .select("*")
     .order("occurred_at", { ascending: false })
     .order("created_at", { ascending: false });
-  if (limit) query = query.limit(limit);
+
+  if (opts.type && opts.type !== "all") query = query.eq("type", opts.type);
+  if (opts.limit) query = query.limit(opts.limit);
+
   const { data } = await query;
   return (data as Transaction[]) ?? [];
 }
@@ -79,17 +93,10 @@ export async function getNotifications(limit = 12): Promise<Notification[]> {
   return (data as Notification[]) ?? [];
 }
 
-export async function getSeries(range: ChartRange): Promise<SeriesPoint[]> {
+/** One chart range of the customer's own history, via the database function. */
+export async function getSeries(range: ChartRange = "6M"): Promise<SeriesPoint[]> {
   const supabase = await createClient();
-  const since = new Date();
-  since.setUTCDate(since.getUTCDate() - DAYS_IN_RANGE[range]);
-
-  const { data } = await supabase
-    .from("portfolio_snapshots")
-    .select("as_of, value")
-    .gte("as_of", since.toISOString().slice(0, 10))
-    .order("as_of", { ascending: true });
-
+  const { data } = await supabase.rpc("portfolio_series", { p_range: range });
   return ((data as { as_of: string; value: number }[]) ?? []).map((row) => ({
     date: row.as_of,
     value: Number(row.value),
@@ -97,37 +104,39 @@ export async function getSeries(range: ChartRange): Promise<SeriesPoint[]> {
 }
 
 /**
- * Portfolio totals.
+ * Portfolio totals and one chart range.
  *
- * `available` is the customer's uninvested cash, summed from the completed
- * ledger rows rather than held in a mutable balance column, so it cannot
- * drift away from the transactions that produced it.
+ * An account with no history returns zeroes and an empty series rather than a
+ * placeholder, and the dashboard says as much.
  */
 export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioSummary> {
-  const [investments, transactions, series] = await Promise.all([
-    getInvestments(),
-    getTransactions(),
+  const supabase = await createClient();
+
+  const [totalsResult, series] = await Promise.all([
+    supabase.from("portfolio_totals").select("*").maybeSingle(),
     getSeries(range),
   ]);
 
-  const active = investments.filter((i) => i.status === "active");
-  const invested = active.reduce((sum, i) => sum + Number(i.principal), 0);
-  const investedValue = active.reduce((sum, i) => sum + Number(i.current_value), 0);
+  const row = totalsResult.data as PortfolioTotals | null;
 
-  const available = transactions
-    .filter((t) => t.status === "completed")
-    .reduce((sum, t) => sum + Number(t.amount), 0);
+  if (!row) {
+    const { data: userData } = await supabase.auth.getUser();
+    return { user_id: userData.user?.id ?? "", ...EMPTY_TOTALS, series };
+  }
 
-  const totalValue = investedValue + Math.max(0, available);
-  const growth = investedValue - invested;
-
+  /* Postgres numeric arrives as a string over PostgREST when it exceeds the
+     safe range, so coerce every figure rather than trusting the type. */
   return {
-    totalValue,
-    invested,
-    growth,
-    growthPercent: invested > 0 ? (growth / invested) * 100 : 0,
-    available: Math.max(0, available),
-    activeCount: active.length,
+    user_id: row.user_id,
+    invested: Number(row.invested),
+    investment_value: Number(row.investment_value),
+    growth: Number(row.growth),
+    growth_percent: Number(row.growth_percent),
+    available: Number(row.available),
+    pending_out: Number(row.pending_out),
+    withdrawable: Number(row.withdrawable),
+    total_value: Number(row.total_value),
+    active_count: Number(row.active_count),
     series,
   };
 }
