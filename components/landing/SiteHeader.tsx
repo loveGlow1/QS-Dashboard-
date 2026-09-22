@@ -54,12 +54,20 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
             : "border-transparent"
         }`}
       >
-        <div className="mx-auto flex w-full max-w-[1180px] items-center gap-5 px-6">
-          <Logo />
+        {/* Three columns with equal outer tracks, so the centre one lands on
+            the container's midline no matter how wide the logo or the buttons
+            are. A flex row with mx-auto centres the nav in whatever space is
+            left over instead, which put it 99.5px left of the hero beneath it.
+            Every child names its column, so the ones that are hidden at a
+            given width cannot shift the others along. */}
+        <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[1fr_auto_1fr] items-center gap-5 px-6">
+          <div className="col-start-1 justify-self-start">
+            <Logo />
+          </div>
 
           <nav
             aria-label="Primary"
-            className="mx-auto hidden items-center gap-1 rounded-full border border-[var(--line-soft)] bg-[rgba(15,22,41,0.6)] p-1 backdrop-blur-[10px] min-[901px]:flex"
+            className="col-start-2 hidden items-center gap-1 rounded-full border border-[var(--line-soft)] bg-[rgba(15,22,41,0.6)] p-1 backdrop-blur-[10px] min-[901px]:flex"
           >
             {NAV.map((item) => (
               <Link
@@ -72,7 +80,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
             ))}
           </nav>
 
-          <div className="ml-auto hidden items-center gap-1.5 min-[421px]:flex">
+          <div className="col-start-3 hidden items-center gap-1.5 justify-self-end min-[421px]:flex">
             {signedIn ? (
               <ButtonLink href="/dashboard" variant="primary" size="sm">
                 Go to dashboard
@@ -95,7 +103,7 @@ export function SiteHeader({ signedIn }: { signedIn: boolean }) {
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="ml-auto grid size-10 place-content-center items-center gap-[5px] rounded-md border border-[var(--line)] bg-ink-800 min-[901px]:hidden"
+            className="col-start-3 grid size-10 place-content-center items-center gap-[5px] justify-self-end rounded-md border border-[var(--line)] bg-ink-800 min-[901px]:hidden"
           >
             <span
               className={`block h-[1.6px] w-4 rounded-sm bg-mist-200 transition-transform duration-200 ${open ? "translate-y-[3.3px] rotate-45" : ""}`}
