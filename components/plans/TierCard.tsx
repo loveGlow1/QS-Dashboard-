@@ -23,6 +23,8 @@ interface TierStyle {
   /** Wave crest and trough. The trough is the same hue at zero alpha, so the
       wave fades into the card instead of ending on a hard edge. */
   wave: [from: string, to: string];
+  /** When the band crosses, and how long a full cycle lasts. */
+  sweep: { duration: number; delay: number };
   border: string;
   glow: string;
   badge: string;
@@ -40,6 +42,7 @@ const STYLES: Record<PlanTier, TierStyle> = {
     surface:
       "bg-[linear-gradient(152deg,#39414f_0%,#2b3340_28%,#1f2530_58%,#171c25_82%,#12161d_100%)]",
     wave: ["rgba(214,225,244,0.16)", "rgba(214,225,244,0)"],
+    sweep: { duration: 11, delay: 0 },
     border: "border-[rgba(198,210,230,0.22)]",
     glow: "radial-gradient(70% 46% at 22% 0%, rgba(223,232,247,0.16) 0%, rgba(223,232,247,0) 72%)",
     badge: "border-[rgba(214,225,244,0.38)] bg-[rgba(214,225,244,0.07)] text-[#dbe3f1]",
@@ -55,6 +58,7 @@ const STYLES: Record<PlanTier, TierStyle> = {
     surface:
       "bg-[linear-gradient(152deg,#5e4520_0%,#4c3718_28%,#372711_58%,#281c0c_82%,#1d1408_100%)]",
     wave: ["rgba(240,200,130,0.18)", "rgba(240,200,130,0)"],
+    sweep: { duration: 11, delay: 2.4 },
     border: "border-[rgba(233,192,120,0.26)]",
     glow: "radial-gradient(70% 46% at 22% 0%, rgba(240,203,136,0.2) 0%, rgba(240,203,136,0) 72%)",
     badge: "border-[rgba(240,200,130,0.42)] bg-[rgba(240,200,130,0.08)] text-[#f0cf92]",
@@ -72,6 +76,7 @@ const STYLES: Record<PlanTier, TierStyle> = {
     surface:
       "bg-[linear-gradient(152deg,#1f6444_0%,#18543a_26%,#11402c_54%,#0c3021_80%,#092518_100%)]",
     wave: ["rgba(110,231,135,0.22)", "rgba(110,231,135,0)"],
+    sweep: { duration: 11, delay: 4.8 },
     border: "border-[rgba(94,214,138,0.3)]",
     glow: "radial-gradient(72% 48% at 20% 0%, rgba(120,235,150,0.22) 0%, rgba(120,235,150,0) 72%)",
     badge: "border-[rgba(110,231,135,0.5)] bg-[rgba(110,231,135,0.08)] text-[#6ee787]",
@@ -109,6 +114,18 @@ export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: s
         style={{ background: style.glow }}
       />
       <TierWave from={style.wave[0]} to={style.wave[1]} id={`wave-${plan.id}`} />
+
+      {/* The pass. Each tier is offset so the three cards do not sweep in
+          unison, which would read as one banner rather than three cards. */}
+      <span
+        aria-hidden="true"
+        className="qs-sweep pointer-events-none -z-10"
+        style={{
+          animationDuration: `${style.sweep.duration}s`,
+          animationDelay: `${style.sweep.delay}s`,
+          background: `linear-gradient(100deg, transparent, ${style.wave[0]}, transparent)`,
+        }}
+      />
 
       <div className="flex items-center justify-between gap-3">
         <span
