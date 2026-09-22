@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { StartInvesting } from "@/components/dashboard/StartInvesting";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { formatDate, money } from "@/lib/format";
 import type { Investment, PortfolioSummary, Transaction } from "@/lib/types";
@@ -114,25 +115,7 @@ export function MobileHome({
       </section>
 
       {/* --- The one action this screen is for -------------------------- */}
-      <Link
-        href="/investments"
-        className="relative flex items-center gap-3.5 overflow-hidden rounded-xl border border-[var(--em-line-strong)] bg-[linear-gradient(135deg,rgba(16,185,129,0.2),rgba(6,95,70,0.14)_52%,rgba(16,185,129,0.1))] px-4 py-4 shadow-[0_18px_44px_-26px_var(--em-glow),inset_0_1px_0_rgba(255,255,255,0.07)] transition-transform active:scale-[0.995]"
-      >
-        <span className="grid size-11 flex-none place-items-center rounded-lg border border-[var(--em-line-strong)] bg-[rgba(16,185,129,0.16)] text-em-200">
-          <Icon name="layers" size={20} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[1.0625rem] font-semibold tracking-[-0.02em] text-mist-50">
-            {invested ? "Invest again" : "Start Investing"}
-          </span>
-          <span className="mt-0.5 block text-[0.8125rem] leading-[1.5] text-[#bfe8d6]">
-            Choose a plan and put your money to work.
-          </span>
-        </span>
-        <span className="grid size-9 flex-none place-items-center rounded-full border border-[var(--em-line-strong)] bg-[rgba(16,185,129,0.18)] text-em-200">
-          <Icon name="arrowRight" size={17} />
-        </span>
-      </Link>
+      <StartInvesting invested={invested} />
 
       {/* --- Growth ----------------------------------------------------- */}
       <Link
