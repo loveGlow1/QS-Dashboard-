@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { Icon } from "@/components/ui/Icon";
-import { ACCOUNT, OVERVIEW, type NavItem } from "./nav";
+import { ACCOUNT, MONEY, OVERVIEW, type NavItem } from "./nav";
 import { signOut } from "@/app/auth-actions";
 
 function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
@@ -73,6 +73,13 @@ export function Sidebar({
           ))}
 
           <p className="mb-[7px] mt-[18px] px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-mist-500">
+            Money
+          </p>
+          {MONEY.map((item) => (
+            <NavLink key={item.href} item={item} onNavigate={onClose} />
+          ))}
+
+          <p className="mb-[7px] mt-[18px] px-2.5 text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-mist-500">
             Account
           </p>
           {ACCOUNT.map((item) => (
@@ -108,7 +115,7 @@ export function BottomNav() {
       aria-label="Sections"
       className="fixed inset-x-0 bottom-0 z-[44] grid grid-cols-4 border-t border-[var(--line)] bg-[rgba(4,7,15,0.94)] px-1.5 pb-[calc(7px+env(safe-area-inset-bottom))] pt-[7px] backdrop-blur-[18px] min-[721px]:hidden"
     >
-      {OVERVIEW.map((item) => {
+      {[...OVERVIEW, MONEY[0]!].map((item) => {
         const active = pathname === item.href;
         return (
           <Link

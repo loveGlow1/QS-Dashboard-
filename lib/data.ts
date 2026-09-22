@@ -4,6 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   BankAccount,
   ChartRange,
+  Deposit,
+  DepositDestination,
+  DepositMethod,
+  DepositNetwork,
   PayoutMethod,
   PayoutNetwork,
   Investment,
@@ -177,6 +181,71 @@ export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioS
       series,
     };
   }, empty);
+}
+
+/**
+ * The deposit methods the platform offers, the networks each crypto method
+ * accepts, and the destinations provisioned for this customer.
+ *
+ * A destination row exists only when a provider actually issued it, so a
+ * screen can render an address or account number only when there is a real
+ * one to render.
+ */
+export async function getDepositMethods(): Promise<DepositMethod[]> {
+  return safely("getDepositMethods", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("deposit_methods")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    return ((data as DepositMethod[]) ?? []).map((m) => ({
+      ...m,
+      minimum_amount: Number(m.minimum_amount),
+      fee_percent: Number(m.fee_percent),
+      fee_flat: Number(m.fee_flat),
+    }));
+  }, []);
+}
+
+export async function getDepositNetworks(): Promise<DepositNetwork[]> {
+  return safely("getDepositNetworks", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("deposit_networks")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    return ((data as DepositNetwork[]) ?? []).map((n) => ({
+      ...n,
+      minimum_amount: Number(n.minimum_amount),
+    }));
+  }, []);
+}
+
+export async function getDepositDestinations(): Promise<DepositDestination[]> {
+  return safely("getDepositDestinations", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("deposit_destinations")
+      .select("id, method_id, network_id, destination, bank_name, account_name, reference, provider, active")
+      .eq("active", true);
+    return (data as DepositDestination[]) ?? [];
+  }, []);
+}
+
+export async function getDeposits(): Promise<Deposit[]> {
+  return safely("getDeposits", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("deposits")
+      .select("*")
+      .order("created_at", { ascending: false });
+    return ((data as Deposit[]) ?? []).map((d) => ({
+      ...d,
+      amount: Number(d.amount),
+      fee_amount: Number(d.fee_amount),
+      credited_amount: Number(d.credited_amount),
+    }));
+  }, []);
 }
 
 /**

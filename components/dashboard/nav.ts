@@ -18,7 +18,12 @@ export const OVERVIEW: NavItem[] = [
   { href: "/dashboard", icon: "grid", label: "Dashboard", short: "Home" },
   { href: "/investments", icon: "chart", label: "Investments", short: "Invest" },
   { href: "/transactions", icon: "list", label: "Transactions", short: "Activity" },
-  { href: "/withdraw", icon: "download", label: "Withdraw", short: "Withdraw" },
+];
+
+/** Money in and money out, kept together. */
+export const MONEY: NavItem[] = [
+  { href: "/deposit", icon: "arrowDownLeft", label: "Deposit", short: "Deposit" },
+  { href: "/withdraw", icon: "arrowUpRight", label: "Withdraw", short: "Withdraw" },
 ];
 
 export const ACCOUNT: NavItem[] = [
