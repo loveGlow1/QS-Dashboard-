@@ -55,11 +55,6 @@ export function MethodCards({
             <span className="grid min-w-0 flex-1 gap-1">
               <span className="flex flex-wrap items-center gap-2">
                 <span className="text-[0.9375rem] font-semibold text-mist-50">{method.label}</span>
-                {disabled && (
-                  <span className="inline-flex h-[22px] items-center rounded-full border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-2 text-[0.625rem] font-semibold uppercase tracking-[0.06em] text-warn">
-                    Coming soon
-                  </span>
-                )}
               </span>
               <span className="text-[0.8125rem] leading-[1.5] text-mist-400">
                 {method.subtitle}

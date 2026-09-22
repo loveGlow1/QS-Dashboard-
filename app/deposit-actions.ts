@@ -73,3 +73,39 @@ export async function declareTransfer(
     return { error: "That could not be recorded. Please try again." };
   }
 }
+
+/**
+ * Ask for a deposit address.
+ *
+ * Addresses come from a rotating pool, so one is leased on request rather
+ * than handed out in advance — a customer who only opens the page and leaves
+ * should not hold an address nobody is sending to. Asking again returns the
+ * lease they already have.
+ */
+export async function requestDepositAddress(
+  _prev: DepositActionState,
+  formData: FormData,
+): Promise<DepositActionState> {
+  try {
+    const user = await getUser();
+    if (!user) return { error: "You must be signed in." };
+
+    const method = String(formData.get("method_id") ?? "").trim();
+    const network = String(formData.get("network_id") ?? "").trim() || null;
+    if (!method) return { error: "Choose a method first." };
+
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("lease_deposit_address", {
+      p_method: method,
+      p_network: network,
+    });
+
+    if (error) return { error: readable(error.message) };
+
+    revalidatePath("/deposit");
+    return { error: null, success: null };
+  } catch (error) {
+    unstable_rethrow(error);
+    return { error: "That could not be completed. Please try again." };
+  }
+}
