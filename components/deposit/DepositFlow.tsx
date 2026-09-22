@@ -193,9 +193,8 @@ export function DepositFlow({
             confirmed. Nothing you do on this screen credits your account.
           </p>
 
-          {/* Only bank transfers need declaring. A card payment and a chain
-              confirmation both arrive on their own. */}
-          {method.kind === "bank" && <DeclareTransfer destinationId={destination.id} />}
+          {/* Every method is declared, because nothing here announces itself. */}
+          <DeclareTransfer destinationId={destination.id} asset={method.asset_code} />
         </div>
       ) : (
         method.enabled && (
