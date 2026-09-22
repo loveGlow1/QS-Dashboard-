@@ -31,12 +31,10 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
 export function Sidebar({
   open,
   onClose,
-  verified,
   tier,
 }: {
   open: boolean;
   onClose: () => void;
-  verified: boolean;
   tier: string;
 }) {
   return (
@@ -84,16 +82,6 @@ export function Sidebar({
 
         <div className="grid gap-3 border-t border-[var(--line-soft)] pt-3.5">
           <div className="grid justify-items-start gap-1.5 px-2.5">
-            <span
-              className={`inline-flex h-6 items-center gap-1.5 rounded-full border px-[9px] text-[0.6875rem] font-medium uppercase tracking-[0.04em] ${
-                verified
-                  ? "border-[rgba(62,207,154,0.2)] bg-[var(--up-soft)] text-up"
-                  : "border-[rgba(233,184,114,0.2)] bg-[var(--warn-soft)] text-warn"
-              }`}
-            >
-              <span className="size-1.5 rounded-full bg-current" />
-              {verified ? "Verified" : "Unverified"}
-            </span>
             <p className="text-[0.6875rem] text-mist-500">{tier}</p>
           </div>
 

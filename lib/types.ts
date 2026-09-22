@@ -19,11 +19,17 @@ export interface Profile {
   created_at: string;
 }
 
+export type PlanTier = "silver" | "gold" | "vip";
+
 export interface Plan {
   id: string;
   name: string;
   summary: string;
   minimum: number;
+  /** Upper bound of the tier's range. Null means no stated ceiling. */
+  maximum: number | null;
+  /** Visual treatment only — carries no financial meaning. */
+  tier: PlanTier;
   term_label: string;
   term_months: number;
   status: PlanStatus;

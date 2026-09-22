@@ -3,7 +3,15 @@ import { createServerClient } from "@supabase/ssr";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
 /** Routes that require a signed-in customer. */
-const PROTECTED = ["/dashboard", "/investments", "/transactions", "/withdraw", "/profile", "/security"];
+const PROTECTED = [
+  "/dashboard",
+  "/investments",
+  "/transactions",
+  "/withdraw",
+  "/profile",
+  "/security",
+  "/help",
+];
 
 /** Routes a signed-in customer should not land on. */
 const AUTH_ONLY = ["/login", "/signup"];
