@@ -22,10 +22,12 @@ export function money(value: number, opts: { decimals?: number; signed?: boolean
 export function compactMoney(value: number): string {
   const n = Number(value) || 0;
   const abs = Math.abs(n);
-  if (abs >= 1e9) return `${NAIRA}${(n / 1e9).toFixed(2)}B`;
-  if (abs >= 1e6) return `${NAIRA}${(n / 1e6).toFixed(2)}M`;
-  if (abs >= 1e3) return `${NAIRA}${Math.round(n / 1e3)}K`;
-  return `${NAIRA}${Math.round(n)}`;
+  /* The sign belongs outside the symbol: -₦41K, not ₦-41K. */
+  const sign = n < 0 ? "-" : "";
+  if (abs >= 1e9) return `${sign}${NAIRA}${(abs / 1e9).toFixed(2)}B`;
+  if (abs >= 1e6) return `${sign}${NAIRA}${(abs / 1e6).toFixed(2)}M`;
+  if (abs >= 1e3) return `${sign}${NAIRA}${Math.round(abs / 1e3)}K`;
+  return `${sign}${NAIRA}${Math.round(abs)}`;
 }
 
 /** `7.043` → `+7.04%` */

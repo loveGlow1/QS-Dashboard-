@@ -101,15 +101,36 @@ export function LineChart({
     const innerH = Math.max(1, height - PAD.top - PAD.bottom);
 
     const values = points.map((p) => p.value);
-    let min = Math.min(...values);
-    let max = Math.max(...values);
-    if (min === max) {
-      min -= 1;
-      max += 1;
+    const rawMin = Math.min(...values);
+    const rawMax = Math.max(...values);
+
+    /* A portfolio that has not moved still needs an axis, and that axis has to
+       be anchored at zero. Padding a flat series symmetrically would put
+       negative naira on the ladder of an account that has simply never gone
+       below nothing. */
+    const atZero = rawMin === 0 && rawMax === 0;
+    const flat = rawMin === rawMax;
+
+    let min: number;
+    let max: number;
+    if (atZero) {
+      /* Lift the line a little off the floor so the trailing dot is not
+         clipped by the baseline it sits on. */
+      min = -0.12;
+      max = 1;
+    } else if (flat) {
+      min = Math.min(0, rawMin);
+      max = rawMax * 1.3;
+    } else {
+      const pad = (rawMax - rawMin) * 0.14;
+      /* Headroom below the low point, but never below zero when the account
+         never went below zero — padding a series that opens at ₦0 would put a
+         negative rung on the ladder of a portfolio that has only ever grown.
+         Since the series now carries a zero baseline forward, every newly
+         funded account opens at exactly ₦0. */
+      min = rawMin < 0 ? rawMin - pad : Math.max(0, rawMin - pad);
+      max = rawMax + pad;
     }
-    const pad = (max - min) * 0.14;
-    min -= pad;
-    max += pad;
     const span = max - min;
 
     const plotted = points.map((p, i) => ({
@@ -122,10 +143,14 @@ export function LineChart({
     const last = plotted[plotted.length - 1]!;
     const area = `${line}L${last.x.toFixed(2)},${height - PAD.bottom}L${plotted[0]!.x.toFixed(2)},${height - PAD.bottom}Z`;
 
-    const gridLines = Array.from({ length: 5 }, (_, g) => {
-      const ratio = g / 4;
-      return { y: PAD.top + innerH * ratio, label: compactMoney(max - span * ratio) };
-    });
+    /* At zero there is no ladder worth drawing — five rungs would all read
+       the same. One baseline, labelled honestly. */
+    const gridLines = atZero
+      ? [{ y: PAD.top + innerH - (-min / span) * innerH, label: compactMoney(0) }]
+      : Array.from({ length: 5 }, (_, g) => {
+          const ratio = g / 4;
+          return { y: PAD.top + innerH * ratio, label: compactMoney(max - span * ratio) };
+        });
 
     /* Thin the x labels so they never collide, but always keep the most
        recent point — that is the one a reader looks for first. */
