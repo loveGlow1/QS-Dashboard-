@@ -107,8 +107,9 @@
   function mountSignOut() {
     utils.qsa("[data-signout]").forEach(function (btn) {
       btn.addEventListener("click", function () {
+        btn.setAttribute("data-busy", "true");
+        /* signOut revokes the session server-side, then redirects. */
         QS.auth.signOut();
-        window.location.replace(QS.config.routes.login);
       });
     });
   }

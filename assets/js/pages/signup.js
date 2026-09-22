@@ -1,9 +1,9 @@
 /**
- * QuickStark — login page controller.
+ * QuickStark — account creation controller.
  *
- * Validation runs in the browser for feedback only. Credentials are checked
- * by the server: this page reports what QS.auth.signIn comes back with and
- * never decides on its own whether someone is signed in.
+ * Validation here is for feedback only. The account is created by the server,
+ * which also provisions the profile; this page writes no rows and decides
+ * nothing about the resulting account.
  */
 (function (window) {
   "use strict";
@@ -12,6 +12,7 @@
   var utils = QS.utils;
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var MIN_PASSWORD = 8;
 
   function init() {
     QS.bootstrap.mount(document);
@@ -23,12 +24,17 @@
   }
 
   function start() {
-    var form = utils.qs("[data-login-form]");
-    var submit = utils.qs("[data-login-submit]");
-    var alertBox = utils.qs("[data-login-error]");
-    var alertText = utils.qs("[data-login-error-text]");
+    var form = utils.qs("[data-signup-form]");
+    var submit = utils.qs("[data-signup-submit]");
+    var alertBox = utils.qs("[data-signup-error]");
+    var alertText = utils.qs("[data-signup-error-text]");
+    var doneBox = utils.qs("[data-signup-done]");
+    var doneText = utils.qs("[data-signup-done-text]");
+
+    var nameField = utils.qs('[data-field="name"]');
     var emailField = utils.qs('[data-field="email"]');
     var passwordField = utils.qs('[data-field="password"]');
+    var nameInput = utils.qs("#qs-name");
     var emailInput = utils.qs("#qs-email");
     var passwordInput = utils.qs("#qs-password");
 
@@ -62,21 +68,32 @@
     }
 
     function showAlert(message) {
+      doneBox.hidden = true;
       alertText.textContent = message;
       alertBox.hidden = false;
     }
 
-    [emailInput, passwordInput].forEach(function (input) {
+    [nameInput, emailInput, passwordInput].forEach(function (input) {
       input.addEventListener("input", function () {
-        setInvalid(input === emailInput ? emailField : passwordField, false);
+        setInvalid(
+          input === nameInput ? nameField : input === emailInput ? emailField : passwordField,
+          false
+        );
         clearAlert();
       });
     });
 
     function validate() {
       var ok = true;
-      var email = emailInput.value.trim();
 
+      if (!nameInput.value.trim()) {
+        setInvalid(nameField, true, "Enter your name.");
+        ok = false;
+      } else {
+        setInvalid(nameField, false);
+      }
+
+      var email = emailInput.value.trim();
       if (!email) {
         setInvalid(emailField, true, "Enter your email address.");
         ok = false;
@@ -87,8 +104,8 @@
         setInvalid(emailField, false);
       }
 
-      if (!passwordInput.value) {
-        setInvalid(passwordField, true, "Enter your password.");
+      if (passwordInput.value.length < MIN_PASSWORD) {
+        setInvalid(passwordField, true, "Use at least " + MIN_PASSWORD + " characters.");
         ok = false;
       } else {
         setInvalid(passwordField, false);
@@ -109,54 +126,33 @@
 
       submit.setAttribute("data-busy", "true");
 
-      QS.auth.signIn(emailInput.value, passwordInput.value)
-        .then(function () {
-          /* Replace, so the back button does not return to the form. */
+      QS.auth.signUp(nameInput.value, emailInput.value, passwordInput.value)
+        .then(function (result) {
+          if (result.needsConfirmation) {
+            /* The project requires a confirmed address before first sign-in. */
+            form.hidden = true;
+            doneText.textContent =
+              "Check " + emailInput.value.trim() +
+              " for a confirmation link, then sign in.";
+            doneBox.hidden = false;
+            return;
+          }
           window.location.replace(QS.config.routes.dashboard);
         })
         .catch(function (err) {
           submit.removeAttribute("data-busy");
-          showAlert(err && err.message ? err.message : "Sign in failed. Please try again.");
-          passwordInput.value = "";
-          passwordInput.focus();
+          showAlert(err && err.message ? err.message : "We could not create that account.");
+          if (err && err.code === "email_taken") {
+            setInvalid(emailField, true, "This email already has an account.");
+            emailInput.focus();
+          } else if (err && err.code === "weak_password") {
+            setInvalid(passwordField, true, "Use at least " + MIN_PASSWORD + " characters.");
+            passwordInput.focus();
+          }
         });
     });
 
-    /* ---------------- password reset ---------------- */
-    var forgot = utils.qs("[data-forgot-password]");
-    if (forgot) {
-      forgot.addEventListener("click", function (e) {
-        e.preventDefault();
-        var email = emailInput.value.trim();
-
-        if (!email || !EMAIL_RE.test(email)) {
-          setInvalid(emailField, true, "Enter your email address first.");
-          emailInput.focus();
-          return;
-        }
-
-        forgot.setAttribute("data-busy", "true");
-        QS.auth.sendPasswordReset(email)
-          .then(function () {
-            /* Worded so it reveals nothing about whether the account exists. */
-            QS.toast({
-              title: "Check your email",
-              message: "If an account uses " + email + ", a reset link is on its way.",
-              icon: "info"
-            });
-          })
-          .catch(function (err) {
-            QS.toast({
-              title: "Reset failed",
-              message: (err && err.message) || "Please try again shortly.",
-              icon: "alert"
-            });
-          })
-          .then(function () { forgot.removeAttribute("data-busy"); });
-      });
-    }
-
-    emailInput.focus();
+    nameInput.focus();
   }
 
   if (document.readyState === "loading") {

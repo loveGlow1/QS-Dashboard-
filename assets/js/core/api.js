@@ -1,165 +1,255 @@
 /**
  * QuickStark — data access layer.
  *
- * Every screen reads through this module. Each method returns a Promise that
- * resolves with exactly what the API sent, so loading, empty and error states
- * are real code paths rather than decoration.
+ * Every screen reads through this module, and every read goes to Postgres
+ * behind row level security: a customer's queries return their own rows and
+ * nothing else, enforced by the database rather than by this file.
  *
  * NOTE: nothing here performs a financial calculation. Balances, growth and
- * ledger entries arrive pre-computed and read-only; the browser is never the
- * source of truth for money. That contract must hold.
+ * ledger entries arrive pre-computed from the server, and no client role can
+ * write a financial row at all. The browser is never the source of truth for
+ * money, and must never become it.
  */
 (function (window) {
   "use strict";
 
   var QS = (window.QS = window.QS || {});
-  var cfg = QS.config;
+  var db = QS.db;
 
-  function url(path, query) {
-    var base = String(cfg.apiBaseUrl).replace(/\/+$/, "");
-    var full = base + "/" + String(path).replace(/^\/+/, "");
-    var parts = [];
+  /** Unwraps a PostgREST result, turning an error into a thrown Error. */
+  function unwrap(res) {
+    if (res.error) {
+      var err = new Error(friendly(res.error));
+      err.code = res.error.code;
+      err.details = res.error.details;
+      throw err;
+    }
+    return res.data;
+  }
 
-    Object.keys(query || {}).forEach(function (key) {
-      var value = query[key];
-      if (value === undefined || value === null || value === "") return;
-      parts.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+  function friendly(error) {
+    var message = String((error && error.message) || "");
+    if (/fetch|network|failed to fetch/i.test(message)) {
+      return "We could not reach the server. Check your connection.";
+    }
+    if (/jwt|token|expired/i.test(message)) {
+      return "Your session has expired. Please sign in again.";
+    }
+    return message || "The server could not complete that request.";
+  }
+
+  /** Chart points come back as {as_of, value}; the chart wants {date, value}. */
+  function toPoints(rows) {
+    return (rows || []).map(function (row) {
+      return { date: row.as_of, value: Number(row.value) };
     });
-
-    return parts.length ? full + "?" + parts.join("&") : full;
   }
 
-  function failure(code, message, status) {
-    var err = new Error(message);
-    err.code = code;
-    if (status) err.status = status;
-    return err;
-  }
-
-  /** Reads the bearer token lazily — QS.auth is defined after this module. */
-  function bearer() {
-    return QS.auth && QS.auth.token ? QS.auth.token() : null;
-  }
-
-  /**
-   * A single JSON request against the API.
-   *
-   * @param {string} path   resource path, relative to `apiBaseUrl`
-   * @param {{method?:string, query?:object, body?:object, auth?:boolean}} [opts]
-   * @returns {Promise<*>} the parsed response body
-   */
-  function request(path, opts) {
-    opts = opts || {};
-
-    var headers = { Accept: "application/json" };
-    var init = {
-      method: opts.method || "GET",
-      headers: headers,
-      /* Lets the API move to an httpOnly session cookie without a rewrite. */
-      credentials: "same-origin"
-    };
-
-    if (opts.body !== undefined) {
-      headers["Content-Type"] = "application/json";
-      init.body = JSON.stringify(opts.body);
-    }
-
-    if (opts.auth !== false) {
-      var token = bearer();
-      if (token) headers.Authorization = "Bearer " + token;
-    }
-
-    /* Abort rather than leave a screen spinning on a stalled connection. */
-    var controller = null;
-    var timer = null;
-    if (typeof window.AbortController === "function") {
-      controller = new window.AbortController();
-      init.signal = controller.signal;
-      timer = setTimeout(function () { controller.abort(); }, cfg.requestTimeout);
-    }
-
-    return window
-      .fetch(url(path, opts.query), init)
-      .then(
-        function (response) {
-          if (timer) clearTimeout(timer);
-          return response.text().then(function (text) {
-            var payload = null;
-            if (text) {
-              try { payload = JSON.parse(text); } catch (e) { payload = null; }
-            }
-
-            if (response.ok) return payload;
-
-            if (response.status === 401 && opts.auth !== false) {
-              /* The session is gone or was never valid — stop using it. */
-              if (QS.auth) QS.auth.signOut({ notify: false });
-            }
-
-            throw failure(
-              (payload && payload.code) || "http_" + response.status,
-              (payload && (payload.message || payload.error)) ||
-                "The server could not complete that request.",
-              response.status
-            );
-          });
-        },
-        function (err) {
-          if (timer) clearTimeout(timer);
-          if (err && err.name === "AbortError") {
-            throw failure("timeout", "That request took too long. Please try again.");
-          }
-          throw failure("network", "We could not reach the server. Check your connection.");
-        }
-      );
-  }
+  var RANGES = ["1M", "3M", "6M", "1Y"];
 
   QS.api = {
-    request: request,
+    ranges: function () { return RANGES.slice(); },
 
+    /** The signed-in customer's display identity. */
     getProfile: function () {
-      return request("me");
+      return db
+        .from("profiles")
+        .select("id, first_name, full_name, tier, verified")
+        .maybeSingle()
+        .then(unwrap)
+        .then(function (row) {
+          if (!row) return null;
+          return {
+            id: row.id,
+            firstName: row.first_name,
+            fullName: row.full_name,
+            email: (QS.auth.currentUser() || {}).email || "",
+            tier: row.tier,
+            verified: row.verified === true
+          };
+        });
     },
 
-    /** Portfolio totals plus the full set of chart ranges. */
+    /**
+     * Portfolio totals, derived server-side from the ledger and the customer's
+     * investments. These numbers are read-only by construction.
+     */
     getPortfolio: function () {
-      return request("portfolio");
+      return db
+        .from("portfolio_totals")
+        .select("invested, investment_value, growth, growth_percent, available, total_value, active_count")
+        .maybeSingle()
+        .then(unwrap)
+        .then(function (row) {
+          row = row || {};
+          return {
+            totalValue: Number(row.total_value || 0),
+            invested: Number(row.invested || 0),
+            investmentValue: Number(row.investment_value || 0),
+            growth: Number(row.growth || 0),
+            growthPercent: Number(row.growth_percent || 0),
+            available: Number(row.available || 0),
+            activeCount: Number(row.active_count || 0),
+            ranges: RANGES.slice()
+          };
+        });
     },
 
-    /** One chart range, fetched on demand as the visitor switches tabs. */
+    /** One chart range of the customer's own portfolio history. */
     getPortfolioSeries: function (range) {
-      return request("portfolio/series", { query: { range: range } });
+      return db
+        .rpc("portfolio_series", { p_range: range || "6M" })
+        .then(unwrap)
+        .then(function (rows) {
+          var points = toPoints(rows);
+          var change = points.length > 1
+            ? points[points.length - 1].value - points[0].value
+            : 0;
+          return { range: range, series: { points: points, change: change } };
+        });
     },
 
     getInvestments: function () {
-      return request("investments");
+      return db
+        .from("investments")
+        .select("id, plan_id, principal, current_value, start_date, maturity_date, status, plans(name, term_label)")
+        .order("start_date", { ascending: false })
+        .then(unwrap)
+        .then(function (rows) {
+          return (rows || []).map(function (row) {
+            var principal = Number(row.principal);
+            var value = Number(row.current_value);
+            return {
+              id: row.id,
+              plan: (row.plans && row.plans.name) || row.plan_id,
+              termLabel: (row.plans && row.plans.term_label) || "",
+              principal: principal,
+              currentValue: value,
+              growth: value - principal,
+              growthPercent: principal > 0
+                ? Math.round(((value - principal) / principal) * 10000) / 100
+                : 0,
+              startDate: row.start_date,
+              maturityDate: row.maturity_date,
+              status: row.status
+            };
+          });
+        });
     },
 
     getActiveInvestment: function () {
-      return request("investments", { query: { status: "active", limit: 1 } })
-        .then(function (rows) {
-          return (rows && rows.length) ? rows[0] : null;
-        });
+      return QS.api.getInvestments().then(function (rows) {
+        var active = rows.filter(function (i) { return i.status === "active"; });
+        return active.length ? active[0] : null;
+      });
     },
 
     /** @param {{limit?: number, type?: string}} [opts] */
     getTransactions: function (opts) {
       opts = opts || {};
-      return request("transactions", {
-        query: {
-          limit: opts.limit,
-          type: opts.type && opts.type !== "all" ? opts.type : null
-        }
+      var query = db
+        .from("transactions")
+        .select("id, type, label, method, amount, status, occurred_at")
+        .order("occurred_at", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (opts.type && opts.type !== "all") query = query.eq("type", opts.type);
+      if (opts.limit) query = query.limit(opts.limit);
+
+      return query.then(unwrap).then(function (rows) {
+        return (rows || []).map(function (row) {
+          return {
+            id: row.id,
+            type: row.type,
+            label: row.label,
+            method: row.method,
+            amount: Number(row.amount),
+            status: row.status,
+            date: row.occurred_at
+          };
+        });
       });
     },
 
     getNotifications: function () {
-      return request("notifications");
+      return db
+        .from("notifications")
+        .select("id, title, body, icon, unread, created_at")
+        .order("created_at", { ascending: false })
+        .limit(20)
+        .then(unwrap)
+        .then(function (rows) {
+          return (rows || []).map(function (row) {
+            return {
+              id: row.id,
+              title: row.title,
+              body: row.body,
+              icon: row.icon,
+              unread: row.unread,
+              date: String(row.created_at).slice(0, 10)
+            };
+          });
+        });
     },
 
-    /** Public — the plans list is readable without a session. */
+    /** Public — the catalogue is readable without a session. */
     getPlans: function () {
-      return request("plans", { auth: false });
+      return db
+        .from("plans")
+        .select("id, name, summary, minimum, term_label, status, eligibility, featured, features")
+        .order("sort_order", { ascending: true })
+        .then(unwrap)
+        .then(function (rows) {
+          return (rows || []).map(function (row) {
+            return {
+              id: row.id,
+              name: row.name,
+              summary: row.summary,
+              minimum: Number(row.minimum),
+              term: row.term_label,
+              status: row.status,
+              eligibility: row.eligibility,
+              featured: row.featured,
+              features: row.features || []
+            };
+          });
+        });
+    },
+
+    /**
+     * Public aggregate figures for the landing page. These come from a table
+     * of pre-computed totals, so an anonymous read never touches the customer
+     * tables — not even through a view.
+     */
+    getPlatformStats: function () {
+      return db
+        .from("platform_metrics")
+        .select("members, total_invested, active_investments, open_plans")
+        .maybeSingle()
+        .then(unwrap)
+        .then(function (row) {
+          row = row || {};
+          return {
+            members: Number(row.members || 0),
+            totalInvested: Number(row.total_invested || 0),
+            activeInvestments: Number(row.active_investments || 0),
+            openPlans: Number(row.open_plans || 0)
+          };
+        });
+    },
+
+    /** Public cumulative amount invested by month. */
+    getPlatformSeries: function () {
+      return db
+        .from("platform_monthly")
+        .select("month, total_invested")
+        .order("month", { ascending: true })
+        .then(unwrap)
+        .then(function (rows) {
+          return (rows || []).map(function (row) {
+            return { date: row.month, value: Number(row.total_invested) };
+          });
+        });
     }
   };
 })(window);

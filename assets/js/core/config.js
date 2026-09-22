@@ -18,6 +18,7 @@
   }
 
   var ROOT = resolveRoot();
+  var html = document.documentElement;
 
   QS.config = {
     brand: "QuickStark",
@@ -25,23 +26,24 @@
     currency: { code: "NGN", symbol: "₦", locale: "en-NG" },
 
     /**
-     * Base URL for the REST API. Every request `QS.api` makes is resolved
-     * against this. Override it here (or set `data-qs-api` on <html>) when
-     * the API is served from another origin.
+     * Supabase project. The publishable key is designed to ship in the
+     * browser: it grants nothing on its own. Every table is behind row level
+     * security, so a caller reads only their own records, and no client role
+     * can write a financial row at all. Override per deployment with
+     * `data-qs-supabase-url` / `data-qs-supabase-key` on <html>.
      */
-    apiBaseUrl:
-      document.documentElement.getAttribute("data-qs-api") || "/api/v1",
-
-    /** Abort an API request that has not responded within this many ms. */
-    requestTimeout: 15000,
-
-    /** Storage key for the session returned by the sign-in endpoint. */
-    sessionKey: "qs.session",
+    supabaseUrl:
+      html.getAttribute("data-qs-supabase-url") ||
+      "https://ihbwmebrflqkpchiqbpu.supabase.co",
+    supabaseKey:
+      html.getAttribute("data-qs-supabase-key") ||
+      "sb_publishable_Vkvk3jTSPh1zGlmmNVs50Q_E-3qLzJW",
 
     /** Named routes — the single source of truth for navigation. */
     routes: {
       home: ROOT + "/index.html",
       login: ROOT + "/pages/login.html",
+      signup: ROOT + "/pages/signup.html",
       dashboard: ROOT + "/pages/dashboard.html",
       /* These resolve to in-app sections today and become their own
          documents once those pages are built. */
@@ -55,4 +57,25 @@
       return ROOT + "/assets/" + String(path).replace(/^\/+/, "");
     }
   };
+
+  /* A missing client library would otherwise fail deep inside a page
+     controller with an opaque error. Fail loudly and early instead. */
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
+    throw new Error(
+      "QuickStark: assets/vendor/supabase.js must load before core/config.js."
+    );
+  }
+
+  /** The one Supabase client the whole app shares. */
+  QS.db = window.supabase.createClient(
+    QS.config.supabaseUrl,
+    QS.config.supabaseKey,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
 })(window);

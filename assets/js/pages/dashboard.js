@@ -48,6 +48,15 @@
       utils.qsa("[data-user-email]").forEach(function (n) { n.textContent = user.email; });
       utils.qsa("[data-account-tier]").forEach(function (n) { n.textContent = user.tier; });
 
+      /* Verification gates the plans, so it is shown only when the server
+         says the account actually holds it. */
+      utils.qsa("[data-account-status]").forEach(function (n) {
+        n.className = "qs-badge " + (user.verified ? "qs-badge--up" : "qs-badge--warn");
+        n.innerHTML = '<span class="qs-dot"></span>' +
+          (user.verified ? "Verified" : "Unverified");
+        n.hidden = false;
+      });
+
       document.title = "Dashboard — QuickStark";
       return user;
     }).catch(function () {
@@ -72,41 +81,58 @@
       });
     }
 
+    var total = portfolio.totalValue || 0;
+    var funded = total > 0 || portfolio.invested > 0;
     var up = portfolio.growth >= 0;
+
     if (deltaNode) {
-      deltaNode.innerHTML =
-        '<span class="qs-delta" data-dir="' + (up ? "up" : "down") + '">' +
-          QS.icon(up ? "trendUp" : "trendDown", { size: 13 }) +
-          utils.money(portfolio.growth, { signed: true }) +
-        "</span>" +
-        '<span class="qs-badge ' + (up ? "qs-badge--up" : "qs-badge--down") + '">' +
-          utils.percent(portfolio.growthPercent) +
-        "</span>" +
-        '<span class="qs-total__since">since you invested</span>';
+      /* Nothing invested means there is no change to describe — saying
+         "+0.00% since you invested" would describe an event that never
+         happened. */
+      deltaNode.innerHTML = !funded
+        ? '<span class="qs-total__since">Nothing invested yet.</span>'
+        : '<span class="qs-delta" data-dir="' + (up ? "up" : "down") + '">' +
+            QS.icon(up ? "trendUp" : "trendDown", { size: 13 }) +
+            utils.money(portfolio.growth, { signed: true }) +
+          "</span>" +
+          '<span class="qs-badge ' + (up ? "qs-badge--up" : "qs-badge--down") + '">' +
+            utils.percent(portfolio.growthPercent) +
+          "</span>" +
+          '<span class="qs-total__since">since you invested</span>';
     }
 
     /* Principal vs growth as a share of the total. Presentation only — the
        amounts themselves come straight from the service layer. */
-    var total = portfolio.totalValue || 0;
     var principalShare = total ? utils.clamp((portfolio.invested / total) * 100, 0, 100) : 0;
+    var growthShare = total ? 100 - principalShare : 0;
+
+    var bar = utils.qs("[data-total-bar]");
+    if (bar) bar.setAttribute("data-empty", funded ? "false" : "true");
 
     var fill = utils.qs("[data-total-bar-fill]");
     if (fill) {
-      requestAnimationFrame(function () { fill.style.width = principalShare.toFixed(2) + "%"; });
+      requestAnimationFrame(function () {
+        fill.style.width = (funded ? principalShare : 0).toFixed(2) + "%";
+      });
     }
 
     var legend = utils.qs("[data-total-legend]");
     if (legend) {
+      var share = function (pct) {
+        /* An empty portfolio has no composition; a share of nothing is not
+           100%, it is undefined. */
+        return funded ? pct.toFixed(1) + "%" : "—";
+      };
       legend.innerHTML =
         '<div class="qs-total__legend-row" data-kind="principal">' +
           '<dt><span class="qs-dot"></span>Principal</dt>' +
           '<dd><span class="qs-num">' + utils.money(portfolio.invested) + "</span>" +
-          '<span class="qs-total__share qs-num">' + principalShare.toFixed(1) + "%</span></dd>" +
+          '<span class="qs-total__share qs-num">' + share(principalShare) + "</span></dd>" +
         "</div>" +
         '<div class="qs-total__legend-row" data-kind="growth">' +
           '<dt><span class="qs-dot"></span>Growth</dt>' +
           '<dd><span class="qs-num qs-total__up">' + utils.money(portfolio.growth, { signed: true }) + "</span>" +
-          '<span class="qs-total__share qs-num">' + (100 - principalShare).toFixed(1) + "%</span></dd>" +
+          '<span class="qs-total__share qs-num">' + share(growthShare) + "</span></dd>" +
         "</div>";
     }
 
@@ -122,20 +148,10 @@
       if (card) card.textContent = "—";
     }
 
-    /* The count comes from the investments resource, not from the portfolio
-       summary, so it stays correct once both are served by the API. */
-    QS.api.getInvestments()
-      .then(function (list) {
-        var node = utils.qs("[data-total-count]");
-        if (!node) return;
-        node.textContent = String(
-          (list || []).filter(function (i) { return i.status === "active"; }).length
-        );
-      })
-      .catch(function () {
-        var node = utils.qs("[data-total-count]");
-        if (node) node.textContent = "—";
-      });
+    /* Counted by the database alongside the totals, so the figure can never
+       disagree with the investments behind it. */
+    var node = utils.qs("[data-total-count]");
+    if (node) node.textContent = String(portfolio.activeCount || 0);
   }
 
   /* ================================================================== *
@@ -154,32 +170,57 @@
     var subNode = utils.qs("[data-growth-sub]");
     if (!chartNode) return;
 
-    var series = (portfolio && portfolio.series) || {};
-    var ranges = (portfolio && portfolio.ranges) || Object.keys(series);
-
-    if (!ranges.length || !ranges.some(function (r) { return series[r]; })) {
-      chartNode.innerHTML =
-        '<div class="qs-empty">' + QS.icon("chart") +
-        "<p>No portfolio history yet. Your first investment starts this chart.</p></div>";
-      if (rangeNode) rangeNode.innerHTML = "";
-      if (subNode) subNode.innerHTML = "";
-      return;
-    }
-
-    /* Default to 6M when it exists, otherwise the first range offered. */
+    var ranges = portfolio.ranges || [];
     var active = ranges.indexOf("6M") !== -1 ? "6M" : ranges[0];
     var chart = null;
 
-    function describe(range) {
-      var entry = series[range];
-      if (!subNode || !entry) return;
-      var up = entry.change >= 0;
+    function describe(range, change) {
+      if (!subNode) return;
+      var up = change >= 0;
       subNode.innerHTML =
         '<span class="qs-delta" data-dir="' + (up ? "up" : "down") + '">' +
-          utils.money(entry.change, { signed: true }) +
+          utils.money(change, { signed: true }) +
         "</span>" +
         '<span class="qs-growth__sub-note">value change over ' + utils.esc(range) +
         ", deposits included</span>";
+    }
+
+    function empty(message, icon) {
+      chart = null;
+      chartNode.innerHTML =
+        '<div class="qs-empty">' + QS.icon(icon || "chart") +
+        "<p>" + utils.esc(message) + "</p></div>";
+      if (subNode) subNode.innerHTML = "";
+    }
+
+    function load(range) {
+      return QS.api.getPortfolioSeries(range)
+        .then(function (res) {
+          var points = res.series.points;
+
+          /* A new account has no history yet. Say so rather than drawing a
+             flat line that looks like data. */
+          if (points.length < 2) {
+            empty("No portfolio history yet. Your first investment starts this chart.");
+            return;
+          }
+
+          if (chart) {
+            chart.setPoints(points, true);
+          } else {
+            chartNode.innerHTML = "";
+            chart = QS.Chart(chartNode, {
+              points: points,
+              height: chartHeight(),
+              ariaLabel: "Portfolio value over time"
+            });
+          }
+          describe(range, res.series.change);
+        })
+        .catch(function () {
+          if (!chart) empty("Your portfolio history could not be loaded.", "alert");
+          else QS.toast({ message: "That range could not be loaded.", icon: "alert" });
+        });
     }
 
     rangeNode.innerHTML = ranges.map(function (r) {
@@ -195,24 +236,12 @@
         utils.qsa("[data-range]", rangeNode).forEach(function (b) {
           b.setAttribute("aria-selected", b === btn ? "true" : "false");
         });
-        QS.api.getPortfolioSeries(range)
-          .then(function (res) {
-            if (chart) chart.setPoints(res.series.points, true);
-            describe(range);
-          })
-          .catch(function () {
-            QS.toast({ message: "That range could not be loaded.", icon: "alert" });
-          });
+        load(range);
       });
     });
 
-    chartNode.innerHTML = "";
-    chart = QS.Chart(chartNode, {
-      points: series[active].points,
-      height: chartHeight(),
-      ariaLabel: "Portfolio value over time"
-    });
-    describe(active);
+    chartNode.innerHTML = '<div class="qs-skeleton" style="height:100%;border-radius:12px"></div>';
+    load(active);
 
     /* Keep the chart legible across breakpoints and drawer transitions. */
     window.addEventListener("resize", utils.debounce(function () {
@@ -456,8 +485,12 @@
 
   function init() {
     /* Gate first: never paint account data before the session is checked. */
-    if (!QS.auth.requireSession()) return;
+    QS.auth.requireSession().then(function (allowed) {
+      if (allowed) render();
+    });
+  }
 
+  function render() {
     QS.bootstrap.mount(document);
     QS.appShell.mount();
 

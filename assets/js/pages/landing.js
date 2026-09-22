@@ -93,6 +93,101 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * Platform figures
+   *
+   * Real aggregates across every QuickStark account — no customer, no
+   * individual record, and nothing fabricated. A brand-new platform shows
+   * honest zeros rather than an invented curve.
+   * ------------------------------------------------------------------ */
+
+  function mountPlatformStats() {
+    var valueNodes = utils.qsa("[data-stat-invested]");
+    var summary = utils.qs("[data-stat-summary]");
+    var plansBadge = utils.qs("[data-stat-plans]");
+    if (!valueNodes.length) return;
+
+    QS.api.getPlatformStats()
+      .then(function (stats) {
+        valueNodes.forEach(function (node) {
+          node.textContent = utils.money(stats.totalInvested);
+        });
+
+        var set = function (sel, text) {
+          utils.qsa(sel).forEach(function (n) { n.textContent = text; });
+        };
+        set("[data-stat-members]", utils.number(stats.members));
+        set("[data-stat-active]", utils.number(stats.activeInvestments));
+        set("[data-stat-open]", utils.number(stats.openPlans));
+
+        if (plansBadge && stats.openPlans > 0) {
+          plansBadge.innerHTML =
+            '<span class="qs-dot"></span>' + stats.openPlans +
+            (stats.openPlans === 1 ? " plan open" : " plans open");
+          plansBadge.hidden = false;
+        }
+
+        if (summary) {
+          summary.innerHTML = stats.activeInvestments
+            ? '<span class="qs-preview__stat-note">across ' +
+                utils.number(stats.activeInvestments) +
+                (stats.activeInvestments === 1 ? " active investment" : " active investments") +
+                " held by " + utils.number(stats.members) +
+                (stats.members === 1 ? " member" : " members") + "</span>"
+            : '<span class="qs-preview__stat-note">No investments placed yet — ' +
+                "the first one starts this total.</span>";
+        }
+      })
+      .catch(function () {
+        valueNodes.forEach(function (node) { node.textContent = "—"; });
+        if (summary) {
+          summary.innerHTML =
+            '<span class="qs-preview__stat-note">Platform figures are unavailable right now.</span>';
+        }
+      });
+  }
+
+  function mountPlatformChart() {
+    var nodes = utils.qsa("[data-platform-chart]");
+    if (!nodes.length) return;
+
+    nodes.forEach(function (node) {
+      node.innerHTML = '<div class="qs-skeleton" style="height:100%;border-radius:12px"></div>';
+    });
+
+    QS.api.getPlatformSeries()
+      .then(function (points) {
+        nodes.forEach(function (node) {
+          /* Under two points there is no line to draw, and drawing one anyway
+             would be inventing a trend. */
+          if (points.length < 2) {
+            node.innerHTML =
+              '<div class="qs-empty qs-empty--flush">' + QS.icon("chart") +
+              "<p>Growth appears here as investments are placed.</p></div>";
+            return;
+          }
+          node.innerHTML = "";
+          QS.Chart(node, {
+            points: points,
+            height: node.clientHeight || 150,
+            padding: { top: 10, right: 4, bottom: 6, left: 4 },
+            showYAxis: false,
+            showXAxis: false,
+            showGrid: false,
+            interactive: false,
+            ariaLabel: "Total invested on QuickStark over time"
+          });
+        });
+      })
+      .catch(function () {
+        nodes.forEach(function (node) {
+          node.innerHTML =
+            '<div class="qs-empty qs-empty--flush">' + QS.icon("alert") +
+            "<p>Chart unavailable.</p></div>";
+        });
+      });
+  }
+
+  /* ------------------------------------------------------------------ *
    * Init
    * ------------------------------------------------------------------ */
 
@@ -100,6 +195,8 @@
     QS.bootstrap.mount(document);
     QS.siteNav.mount();
     QS.accordion.mount(document);
+    mountPlatformStats();
+    mountPlatformChart();
     mountPlans();
   }
 

@@ -133,6 +133,15 @@
 .qs-auth__form .qs-btn--primary { margin-top: 4px; }
 
 .qs-alert[data-login-error] { margin-bottom: 18px; }
+.qs-alert[data-signup-error], .qs-alert[data-signup-done] { margin-bottom: 18px; }
+
+.qs-auth__fineprint {
+  margin-top: 2px;
+  font-size: 0.6875rem;
+  line-height: 1.55;
+  color: var(--qs-text-4);
+  text-align: center;
+}
 
 /* --- Footer ----------------------------------------------------------- */
 

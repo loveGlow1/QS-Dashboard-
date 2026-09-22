@@ -472,6 +472,10 @@
   border-right: 2px solid var(--qs-surface);
   transition: width 900ms var(--qs-ease);
 }
+/* An empty portfolio has no composition to show. Without this the track's
+   own colour reads as "100% growth" on an account holding nothing. */
+.qs-total__bar[data-empty="true"] { background: var(--qs-line); }
+.qs-total__bar[data-empty="true"] span { border-right: 0; }
 
 .qs-total__legend { display: grid; gap: 9px; margin-top: 14px; }
 .qs-total__legend-row {

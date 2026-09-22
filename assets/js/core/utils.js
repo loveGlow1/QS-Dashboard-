@@ -26,6 +26,11 @@
       return sign + cfg.currency.symbol + body;
     },
 
+    /** `1284` → `1,284`. Plain counts, no currency. */
+    number: function (value) {
+      return (Number(value) || 0).toLocaleString("en-US");
+    },
+
     /** Splits money into major/minor parts for typographic emphasis. */
     moneyParts: function (value) {
       var whole = Math.floor(Math.abs(Number(value) || 0));
