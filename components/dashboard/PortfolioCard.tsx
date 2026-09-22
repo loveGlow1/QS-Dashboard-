@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
+import { Sparkline } from "@/components/ui/Sparkline";
 import { formatDate, money, percent } from "@/lib/format";
 import type { Investment, PortfolioSummary } from "@/lib/types";
 
@@ -26,15 +27,24 @@ export function PortfolioCard({
   const up = portfolio.growth >= 0;
 
   return (
-    <Card as="article" className="flex flex-col bg-[linear-gradient(170deg,rgba(77,124,243,0.1)_0%,rgba(77,124,243,0)_44%),var(--color-ink-850)]">
+    <Card as="article" className="flex flex-col bg-[linear-gradient(170deg,rgba(16,185,129,0.1)_0%,rgba(16,185,129,0)_44%),var(--color-ink-850)]">
       <h2 className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-mist-500">
         Your Portfolio
       </h2>
 
-      <p className="mt-3 text-[clamp(1.875rem,1.4rem+1.6vw,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums max-[720px]:text-[2.125rem]">
-        {money(portfolio.total_value, { decimals: 2 })}
-      </p>
-      <p className="mt-1.5 text-[0.8125rem] text-mist-400">Current portfolio value</p>
+      <div className="mt-3 flex items-center justify-between gap-5">
+        <div className="min-w-0">
+          <p className="text-[clamp(1.875rem,1.4rem+1.6vw,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums max-[720px]:text-[2.125rem]">
+            {money(portfolio.total_value, { decimals: 2 })}
+          </p>
+          <p className="mt-1.5 text-[0.8125rem] text-mist-400">Current portfolio value</p>
+        </div>
+
+        {/* The same live curve the phone shows, from the same series. It is
+            the customer's own history, so it is flat while the account is —
+            never the rising line a mockup would draw here. */}
+        <Sparkline points={portfolio.series} width={92} height={40} className="self-center" />
+      </div>
 
       {hasPosition ? (
         <>

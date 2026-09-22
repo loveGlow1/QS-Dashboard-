@@ -1,19 +1,37 @@
+"use client";
+
+import { useId } from "react";
 import type { SeriesPoint } from "@/lib/types";
 
 /**
- * The small emerald curve beside the growth figure.
+ * The small curve that sits beside a portfolio figure.
+ *
+ * Used wherever a balance is shown without room for the full chart — the
+ * portfolio card on every screen size, and the growth row on a phone.
  *
  * It plots the customer's own series. A mockup draws a rising line here
  * because a rising line looks better, but an account holding ₦0 has not
  * risen — so at zero this draws the flat line that is true, and it only
  * climbs once the series does.
  */
-export function MobileSpark({ points }: { points: SeriesPoint[] }) {
-  const W = 104;
-  const H = 46;
+export function Sparkline({
+  points,
+  width = 104,
+  height = 46,
+  className = "",
+}: {
+  points: SeriesPoint[];
+  width?: number;
+  height?: number;
+  className?: string;
+}) {
+  /* Two sparklines on one page must not share a gradient id. */
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const W = width;
+  const H = height;
 
   if (points.length < 2) {
-    return <span aria-hidden="true" className="block h-[46px] w-[104px] flex-none" />;
+    return <span aria-hidden="true" className={`block flex-none ${className}`} style={{ width: W, height: H }} />;
   }
 
   const values = points.map((p) => p.value);
@@ -41,15 +59,15 @@ export function MobileSpark({ points }: { points: SeriesPoint[] }) {
       viewBox={`0 0 ${W} ${H}`}
       role="img"
       aria-label={flat ? "Portfolio flat over the period" : "Portfolio over the period"}
-      className="block flex-none overflow-visible"
+      className={`block flex-none overflow-visible ${className}`}
     >
       <defs>
-        <linearGradient id="ms-fill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={`${uid}-fill`} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#10b981" stopOpacity="0.28" />
           <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill="url(#ms-fill)" />
+      <path d={area} fill={`url(#${uid}-fill)`} />
       <path
         d={line}
         fill="none"

@@ -46,7 +46,7 @@ export function AppShell({
   }, []);
 
   return (
-    <div className="min-h-screen bg-ink-900 [--dash-pad:clamp(18px,2.4vw,32px)] [background:radial-gradient(60%_40%_at_78%_-6%,rgba(77,124,243,0.1)_0%,rgba(77,124,243,0)_60%),var(--color-ink-900)]">
+    <div className="min-h-screen bg-ink-900 [--dash-pad:clamp(18px,2.4vw,32px)] [background:radial-gradient(60%_40%_at_78%_-6%,rgba(16,185,129,0.1)_0%,rgba(16,185,129,0)_60%),var(--color-ink-900)]">
       <Sidebar
         open={menuOpen}
         onClose={() => setMenuOpen(false)}

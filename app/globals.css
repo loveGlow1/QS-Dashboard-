@@ -22,15 +22,22 @@
   --color-mist-400: #8290b4;
   --color-mist-500: #5d6a8c;
 
-  /* --- Accent: restrained cool blue ----------------------------------- */
-  --color-accent-300: #8fb0ff;
-  --color-accent-400: #6690f6;
-  --color-accent-500: #4d7cf3;
-  --color-accent-600: #3d68d8;
-  --color-accent-700: #2f56c4;
+  /* --- Accent: emerald ------------------------------------------------ */
+  /* One accent for every screen. The phone dashboard used to carry emerald
+     while everything else stayed blue, which made the product look like two
+     products depending on the device. */
+  --color-accent-300: #6ee7b7;
+  --color-accent-400: #34d399;
+  --color-accent-500: #10b981;
+  --color-accent-600: #059669;
+  --color-accent-700: #047857;
 
   /* --- Directional indicators (financial values only) ----------------- */
-  --color-up: #3ecf9a;
+  /* "Up" is deliberately a lighter, cooler green than the accent. With an
+     emerald interface a gain has to stay legible as a gain rather than
+     reading as more chrome, and a loss keeps the only colour that matters
+     at a glance. */
+  --color-up: #5ee9b5;
   --color-down: #f0687b;
   --color-warn: #e9b872;
 
@@ -39,7 +46,7 @@
   --color-grid-green: #3ecf9a;
   --color-grid-amber: #e9b872;
 
-  /* --- Emerald, the mobile dashboard's accent -------------------------- */
+  /* --- Emerald aliases, kept so existing markup keeps working ---------- */
   --color-em-200: #9df0cb;
   --color-em-300: #6ee7b7;
   --color-em-400: #34d399;
@@ -70,9 +77,9 @@
   --line: rgba(148, 168, 214, 0.12);
   --line-strong: rgba(148, 168, 214, 0.22);
   --line-soft: rgba(148, 168, 214, 0.07);
-  --accent-soft: rgba(77, 124, 243, 0.14);
-  --accent-line: rgba(77, 124, 243, 0.32);
-  --up-soft: rgba(62, 207, 154, 0.12);
+  --accent-soft: rgba(16, 185, 129, 0.13);
+  --accent-line: rgba(16, 185, 129, 0.3);
+  --up-soft: rgba(94, 233, 181, 0.12);
   --down-soft: rgba(240, 104, 123, 0.12);
   --warn-soft: rgba(233, 184, 114, 0.12);
 
