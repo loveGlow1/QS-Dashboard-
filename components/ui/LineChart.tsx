@@ -235,14 +235,14 @@ export function LineChart({
       >
         <defs>
           <linearGradient id={`${uid}-fill`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#4d7cf3" stopOpacity="0.2" />
-            <stop offset="58%" stopColor="#4d7cf3" stopOpacity="0.05" />
-            <stop offset="100%" stopColor="#4d7cf3" stopOpacity="0" />
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.2" />
+            <stop offset="58%" stopColor="#10b981" stopOpacity="0.05" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
           </linearGradient>
           <linearGradient id={`${uid}-line`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#4d7cf3" stopOpacity="0.55" />
-            <stop offset="38%" stopColor="#4d7cf3" stopOpacity="1" />
-            <stop offset="100%" stopColor="#7ea6ff" stopOpacity="1" />
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.55" />
+            <stop offset="38%" stopColor="#10b981" stopOpacity="1" />
+            <stop offset="100%" stopColor="#6ee7b7" stopOpacity="1" />
           </linearGradient>
         </defs>
 
@@ -276,8 +276,8 @@ export function LineChart({
           cx={geometry.last.x}
           cy={geometry.last.y}
           r="3.5"
-          fill="#4d7cf3"
-          className="[filter:drop-shadow(0_0_7px_rgba(77,124,243,0.85))]"
+          fill="#10b981"
+          className="[filter:drop-shadow(0_0_7px_rgba(16,185,129,0.85))]"
         />
 
         {active && (
@@ -291,8 +291,8 @@ export function LineChart({
               strokeWidth="1"
               strokeDasharray="3 4"
             />
-            <circle cx={active.x} cy={active.y} r="9" fill="rgba(77,124,243,0.2)" />
-            <circle cx={active.x} cy={active.y} r="4" fill="#4d7cf3" stroke="#060a16" strokeWidth="2.5" />
+            <circle cx={active.x} cy={active.y} r="9" fill="rgba(16,185,129,0.2)" />
+            <circle cx={active.x} cy={active.y} r="4" fill="#10b981" stroke="#060a16" strokeWidth="2.5" />
           </g>
         )}
       </svg>

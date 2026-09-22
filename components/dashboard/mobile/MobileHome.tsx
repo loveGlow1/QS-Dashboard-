@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { MobileSpark } from "@/components/dashboard/mobile/MobileSpark";
+import { Sparkline } from "@/components/ui/Sparkline";
 import { formatDate, money } from "@/lib/format";
 import type { Investment, PortfolioSummary, Transaction } from "@/lib/types";
 
@@ -150,7 +150,7 @@ export function MobileHome({
             Your portfolio is at {money(portfolio.investment_value, { decimals: 2 })}
           </span>
         </span>
-        <MobileSpark points={portfolio.series} />
+        <Sparkline points={portfolio.series} />
       </Link>
 
       <RecentActivity transactions={transactions} />

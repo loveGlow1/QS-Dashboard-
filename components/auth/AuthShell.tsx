@@ -22,7 +22,7 @@ export function AuthShell({
         className="pointer-events-none fixed -top-[30%] left-1/2 z-0 aspect-[1.2/1] w-[min(1000px,140vw)] -translate-x-1/2 blur-[4px]"
         style={{
           background:
-            "radial-gradient(46% 46% at 50% 44%, rgba(77,124,243,0.26) 0%, rgba(77,124,243,0) 70%), radial-gradient(40% 42% at 24% 34%, rgba(46,86,196,0.2) 0%, rgba(46,86,196,0) 74%)",
+            "radial-gradient(46% 46% at 50% 44%, rgba(16,185,129,0.26) 0%, rgba(16,185,129,0) 70%), radial-gradient(40% 42% at 24% 34%, rgba(4,120,87,0.2) 0%, rgba(4,120,87,0) 74%)",
         }}
       />
       <div
