@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 
-type Variant = "primary" | "ghost" | "quiet";
+type Variant = "primary" | "ghost" | "quiet" | "plain";
 type Size = "sm" | "md" | "lg";
 
 const BASE =
@@ -13,6 +13,10 @@ const VARIANTS: Record<Variant, string> = {
   ghost:
     "border border-[var(--line-strong)] text-mist-200 hover:bg-[rgba(148,168,214,0.07)] hover:text-mist-50",
   quiet: "text-mist-400 hover:text-mist-50 hover:bg-[rgba(148,168,214,0.07)]",
+  /* Sets no colours at all. For callers supplying their own palette, where a
+     variant's text colour would otherwise win on CSS source order regardless
+     of class order in the attribute. */
+  plain: "border",
 };
 
 const SIZES: Record<Size, string> = {
