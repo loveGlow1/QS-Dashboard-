@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   BankAccount,
   ChartRange,
+  PayoutMethod,
+  PayoutNetwork,
   Investment,
   Notification,
   Plan,
@@ -175,6 +177,43 @@ export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioS
       series,
     };
   }, empty);
+}
+
+/**
+ * The withdrawal methods the platform offers, and the networks each crypto
+ * method can settle on. Read from the database so the page can never offer a
+ * route the server would refuse.
+ */
+export async function getPayoutMethods(): Promise<PayoutMethod[]> {
+  return safely("getPayoutMethods", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("payout_methods")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    return ((data as PayoutMethod[]) ?? []).map((m) => ({
+      ...m,
+      minimum_amount: Number(m.minimum_amount),
+      fee_percent: Number(m.fee_percent),
+      fee_flat: Number(m.fee_flat),
+      fee_cap: m.fee_cap === null ? null : Number(m.fee_cap),
+    }));
+  }, []);
+}
+
+export async function getPayoutNetworks(): Promise<PayoutNetwork[]> {
+  return safely("getPayoutNetworks", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("payout_networks")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    return ((data as PayoutNetwork[]) ?? []).map((n) => ({
+      ...n,
+      network_fee: Number(n.network_fee),
+      minimum_amount: Number(n.minimum_amount),
+    }));
+  }, []);
 }
 
 /** The caller's own payout destinations. */
