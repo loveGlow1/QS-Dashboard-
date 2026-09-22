@@ -7,6 +7,7 @@ const PROTECTED = [
   "/dashboard",
   "/investments",
   "/transactions",
+  "/deposit",
   "/withdraw",
   "/profile",
   "/security",

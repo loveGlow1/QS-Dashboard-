@@ -248,3 +248,81 @@ export interface PayoutNetwork {
   minimum_amount: number;
   sort_order: number;
 }
+
+/* ------------------------------------------------------------------ *
+ * Deposits
+ * ------------------------------------------------------------------ */
+
+export type DepositKind = "bank" | "card" | "crypto";
+
+export type DepositStatus =
+  | "pending"
+  | "waiting_for_confirmations"
+  | "processing"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export interface DepositMethod {
+  id: string;
+  label: string;
+  subtitle: string;
+  kind: DepositKind;
+  asset_code: string | null;
+  /** Whether money can genuinely be received and credited this way. */
+  enabled: boolean;
+  unavailable_reason: string;
+  minimum_amount: number;
+  fee_percent: number;
+  fee_flat: number;
+  required_confirmations: number;
+  processing_time_label: string;
+  sort_order: number;
+}
+
+export interface DepositNetwork {
+  id: string;
+  method_id: string;
+  label: string;
+  address_hint: string;
+  enabled: boolean;
+  minimum_amount: number;
+  required_confirmations: number;
+  sort_order: number;
+}
+
+/**
+ * Where a customer is told to send money.
+ *
+ * Only ever provisioned by the provider that controls the destination. The
+ * application never generates one: an address it invented would take real
+ * funds somewhere nobody can recover them.
+ */
+export interface DepositDestination {
+  id: string;
+  method_id: string;
+  network_id: string | null;
+  destination: string;
+  bank_name: string;
+  account_name: string;
+  reference: string;
+  provider: string;
+  active: boolean;
+}
+
+export interface Deposit {
+  id: string;
+  method_id: string;
+  network_id: string | null;
+  reference: string;
+  amount: number;
+  fee_amount: number;
+  credited_amount: number;
+  asset_code: string;
+  status: DepositStatus;
+  confirmations: number;
+  tx_hash: string | null;
+  failure_reason: string | null;
+  created_at: string;
+  completed_at: string | null;
+}

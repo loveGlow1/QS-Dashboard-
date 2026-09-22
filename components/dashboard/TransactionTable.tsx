@@ -20,9 +20,9 @@ const STATUS_LABEL: Record<string, string> = {
 const LABELS: Record<string, string> = {
   all: "All",
   deposit: "Deposits",
+  withdrawal: "Withdrawals",
   investment: "Investments",
   return: "Returns",
-  withdrawal: "Withdrawals",
 };
 
 export function TransactionTable({

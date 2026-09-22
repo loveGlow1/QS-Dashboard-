@@ -8,7 +8,8 @@ export const metadata: Metadata = {
   description: "Every recorded transaction on your account.",
 };
 
-const FILTERS = ["all", "deposit", "investment", "return", "withdrawal"] as const;
+/* Money in and money out first; the two that move it between the two. */
+const FILTERS = ["all", "deposit", "withdrawal", "investment", "return"] as const;
 type Filter = (typeof FILTERS)[number];
 
 function isFilter(value: string | undefined): value is Filter {
