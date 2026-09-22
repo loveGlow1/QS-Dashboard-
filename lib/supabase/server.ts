@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { unstable_rethrow } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { supabaseAnonKey, supabaseUrl } from "./env";
 
@@ -57,6 +58,8 @@ export async function getUser() {
     if (error) return null;
     return data.user;
   } catch (error) {
+    /* Never swallow Next's own control-flow errors. */
+    unstable_rethrow(error);
     console.error("[supabase] getUser failed", error);
     return null;
   }

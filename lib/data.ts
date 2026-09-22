@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_rethrow } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type {
   ChartRange,
@@ -37,6 +38,10 @@ async function safely<T>(label: string, read: () => Promise<T>, fallback: T): Pr
   try {
     return await read();
   } catch (error) {
+    /* Next signals control flow with thrown errors — a dynamic-rendering
+       bailout, a redirect, a notFound. Swallowing those would leave the
+       framework unable to do its job, so they go straight back up. */
+    unstable_rethrow(error);
     console.error(`[data] ${label} failed`, error);
     return fallback;
   }
