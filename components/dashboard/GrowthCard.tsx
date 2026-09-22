@@ -96,27 +96,6 @@ export function GrowthCard({
           </p>
         </div>
 
-        <div
-          role="tablist"
-          aria-label="Chart range"
-          hidden={!hasHistory}
-          className="inline-flex gap-0.5 rounded-full border border-[var(--line)] bg-ink-800 p-[3px] max-[720px]:w-full"
-        >
-          {RANGES.map((r) => (
-            <button
-              key={r}
-              type="button"
-              role="tab"
-              aria-selected={r === range}
-              onClick={() => select(r)}
-              className={`h-7 rounded-full px-[13px] text-xs font-medium transition-colors max-[720px]:flex-1 ${
-                r === range ? "bg-ink-600 text-mist-50 shadow-sm" : "text-mist-400 hover:text-mist-200"
-              }`}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
       </header>
 
       <div className={`flex-1 transition-opacity ${loading ? "opacity-50" : "opacity-100"}`}>
@@ -139,17 +118,36 @@ export function GrowthCard({
         )}
       </div>
 
-      {/* The prompt sits under the chart rather than in place of it, and stays
-          there once the account is funded — adding money is not a thing you
-          only do once. When there is no chart at all, NoHistory carries its
-          own copy of it. */}
+      {/* The range control sits under the chart it changes, on the same side
+          as the value ladder it reads against, with the deposit action closing
+          the row. Above the chart it was a header ornament; here it is the
+          last thing under the line, which is where a reader looks after
+          reading it. */}
       {hasHistory && (
-        <div className="mt-[18px] flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-soft)] pt-4">
-          <p className="max-w-[42ch] text-[0.8125rem] leading-[1.6] text-mist-400">
-            {atZero
-              ? "Fund your account to start building your portfolio."
-              : "Add funds to keep building your portfolio."}
-          </p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--line-soft)] pt-4">
+          <div
+            role="tablist"
+            aria-label="Chart range"
+            className="inline-flex gap-0.5 rounded-full border border-[var(--line)] bg-ink-800 p-[3px] max-[560px]:w-full"
+          >
+            {RANGES.map((r) => (
+              <button
+                key={r}
+                type="button"
+                role="tab"
+                aria-selected={r === range}
+                onClick={() => select(r)}
+                className={`h-7 rounded-full px-[13px] text-xs font-medium transition-colors max-[560px]:flex-1 ${
+                  r === range
+                    ? "bg-ink-600 text-mist-50 shadow-sm"
+                    : "text-mist-400 hover:text-mist-200"
+                }`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+
           <ButtonLink href="/deposit" variant="ghost" size="sm">
             Make a deposit
           </ButtonLink>
