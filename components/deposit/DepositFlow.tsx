@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CopyField } from "@/components/deposit/CopyField";
+import { DeclareTransfer } from "@/components/deposit/DeclareTransfer";
 import { DepositMethodCards } from "@/components/deposit/MethodCards";
 import { Icon } from "@/components/ui/Icon";
 import { money } from "@/lib/format";
@@ -191,6 +192,10 @@ export function DepositFlow({
             Your balance updates once the deposit has been received and
             confirmed. Nothing you do on this screen credits your account.
           </p>
+
+          {/* Only bank transfers need declaring. A card payment and a chain
+              confirmation both arrive on their own. */}
+          {method.kind === "bank" && <DeclareTransfer destinationId={destination.id} />}
         </div>
       ) : (
         method.enabled && (
