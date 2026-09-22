@@ -10,11 +10,16 @@ const ICON: Record<string, IconName> = {
 };
 
 /**
- * Where the money is coming from. Every method the platform defines is
- * listed, and every one is selectable — a method that cannot receive money yet
- * opens on the reason it cannot, which is more use than a card that does
- * nothing when tapped. What it must never open on is an account number or
- * address, and that is the flow's job, not this one's.
+ * Where the money is coming from.
+ *
+ * The cards no longer wear a "coming soon" badge. Whether a method can take
+ * money is a live question — it depends on whether an address or an account
+ * has been provisioned for it — and a badge baked into the chooser answers it
+ * a screen too early and then goes stale. Selecting a method opens on the
+ * truth for that method right now.
+ *
+ * What a card must never lead to is a fabricated account number or address.
+ * That is the flow's job, not this one's.
  */
 export function DepositMethodCards({
   methods,
@@ -51,18 +56,12 @@ export function DepositMethodCards({
             <span className="grid min-w-0 flex-1 gap-1">
               <span className="flex flex-wrap items-center gap-2">
                 <span className="text-[0.9375rem] font-semibold text-mist-50">{method.label}</span>
-                {disabled && (
-                  <span className="inline-flex h-[22px] items-center rounded-full border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-2 text-[0.625rem] font-semibold uppercase tracking-[0.06em] text-warn">
-                    Coming soon
-                  </span>
-                )}
+
               </span>
               <span className="text-[0.8125rem] leading-[1.5] text-mist-400">
                 {method.subtitle}
               </span>
-              {disabled && method.unavailable_reason && (
-                <span className="text-xs text-mist-500">{method.unavailable_reason}</span>
-              )}
+
             </span>
 
             <Icon

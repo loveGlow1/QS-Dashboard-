@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CopyField } from "@/components/deposit/CopyField";
 import { DeclareTransfer } from "@/components/deposit/DeclareTransfer";
 import { DepositMethodCards } from "@/components/deposit/MethodCards";
+import { RequestAddress } from "@/components/deposit/RequestAddress";
 import { Icon } from "@/components/ui/Icon";
 import { money } from "@/lib/format";
 import type {
@@ -198,11 +199,19 @@ export function DepositFlow({
         </div>
       ) : (
         method.enabled && (
-          <p className="rounded-md border border-dashed border-[var(--line)] px-4 py-6 text-center text-[0.8125rem] text-mist-400">
-            {needsNetwork && !networkId
-              ? "Choose a network to see your deposit address."
-              : "No deposit destination has been issued for your account yet."}
-          </p>
+          <div className="rounded-md border border-dashed border-[var(--line)] px-4 py-5">
+            {needsNetwork && !networkId ? (
+              <p className="text-center text-[0.8125rem] text-mist-400">
+                Choose a network to see your deposit address.
+              </p>
+            ) : (
+              <RequestAddress
+                methodId={method.id}
+                networkId={networkId}
+                kind={method.kind}
+              />
+            )}
+          </div>
         )
       )}
     </div>
