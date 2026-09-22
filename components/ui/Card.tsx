@@ -4,13 +4,17 @@ export function Card({
   children,
   className = "",
   as: Tag = "div",
+  id,
 }: {
   children: ReactNode;
   className?: string;
   as?: "div" | "article" | "section";
+  /** Lets a card be an anchor target for in-page navigation. */
+  id?: string;
 }) {
   return (
     <Tag
+      id={id}
       className={`rounded-lg border border-[var(--line)] bg-ink-850 p-[22px] ${className}`}
     >
       {children}
