@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { Icon } from "@/components/ui/Icon";
-import { formatDate, initials } from "@/lib/format";
+import { formatDate, initials, titleCase } from "@/lib/format";
 import { ACCOUNT } from "./nav";
 import { signOut } from "@/app/auth-actions";
 import type { IconName } from "@/components/ui/Icon";
@@ -45,7 +45,7 @@ export function Topbar({
   }, []);
 
   const unread = notifications.some((n) => n.unread);
-  const name = profile?.full_name || "Your account";
+  const name = titleCase(profile?.full_name || "") || "Your account";
 
   return (
     <header className="sticky top-0 z-40 flex h-[66px] items-center gap-3.5 border-b border-[var(--line)] bg-[rgba(6,10,22,0.82)] px-[var(--dash-pad)] backdrop-blur-[16px] backdrop-saturate-[140%] max-[720px]:h-[60px]">

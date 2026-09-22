@@ -2,6 +2,7 @@ import { Logo } from "@/components/brand/Logo";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { LineChart } from "@/components/ui/LineChart";
 import { money } from "@/lib/format";
+import { DemoBadge } from "@/components/landing/DemoBadge";
 import { EXAMPLE, EXAMPLE_SERIES } from "@/components/landing/illustration";
 
 /**
@@ -77,9 +78,7 @@ export function ProductWindow() {
             <div>
               <p className="flex items-center gap-2 text-[0.6875rem] uppercase tracking-[0.08em] text-mist-500">
                 Total portfolio
-                <span className="rounded-[5px] border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-[7px] py-[2px] text-[0.625rem] font-semibold normal-case tracking-[0.07em] text-warn">
-                  Example
-                </span>
+                <DemoBadge />
               </p>
               <p className="mt-[5px] text-[clamp(1.5rem,1.1rem+1.4vw,2rem)] font-semibold tracking-[-0.03em] tabular-nums">
                 {money(EXAMPLE.total)}
