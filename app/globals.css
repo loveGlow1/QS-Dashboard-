@@ -156,10 +156,43 @@
     will-change: transform;
   }
 
+  /* A band of light crossing the card.
+     
+     The drift underneath never leaves, so it reads as texture rather than
+     movement. This passes: it crosses once, then waits. The wait is most of
+     the cycle — the keyframes finish the travel by 34% and hold the rest —
+     because a sweep that never stops becomes wallpaper, and three cards
+     sweeping in a loop would be a nightclub rather than a price list.
+     
+     translate3d keeps it on the compositor, so nothing here reflows. */
+  @keyframes qs-sweep {
+    0%   { transform: translate3d(-140%, 0, 0) skewX(-14deg); opacity: 0; }
+    6%   { opacity: 1; }
+    28%  { opacity: 1; }
+    34%  { transform: translate3d(240%, 0, 0) skewX(-14deg); opacity: 0; }
+    100% { transform: translate3d(240%, 0, 0) skewX(-14deg); opacity: 0; }
+  }
+
+  .qs-sweep {
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    width: 32%;
+    opacity: 0;
+    animation: qs-sweep linear infinite;
+    /* backwards, so the staggered cards adopt the 0% keyframe during their
+       delay. Without it an element waiting to start has no animated style at
+       all and sits parked at full opacity — which read as a hard vertical
+       seam across the two delayed cards rather than a band about to cross. */
+    animation-fill-mode: backwards;
+    will-change: transform, opacity;
+  }
+
   /* Motion is decoration here, so reduced-motion gets the shape and no
      movement rather than nothing at all. */
   @media (prefers-reduced-motion: reduce) {
     .qs-wave { animation: none; }
+    .qs-sweep { animation: none; opacity: 0; }
   }
 
   /* An appearance-none checkbox draws nothing when checked, so the tick is
