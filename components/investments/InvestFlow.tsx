@@ -43,9 +43,9 @@ export function InvestFlow({
   const problem = !valid
     ? null
     : typed < min
-      ? `The ${plan.name} plan starts at ${usd(min, { decimals: 0 })}.`
+      ? `The ${plan.name} plan starts at ${usd(min)}.`
       : max !== null && typed > max
-        ? `The ${plan.name} plan takes up to ${usd(max, { decimals: 0 })}.`
+        ? `The ${plan.name} plan takes up to ${usd(max)}.`
         : naira > availableNaira
           ? `That is more than your available balance of ${usd(availableUsd)}.`
           : null;
@@ -99,7 +99,7 @@ export function InvestFlow({
         <Row label="Plan" value={plan.name} />
         <Row
           label="Range"
-          value={`${usd(min, { decimals: 0 })} – ${max !== null ? usd(max, { decimals: 0 }) : "No ceiling"}`}
+          value={`${usd(min)} – ${max !== null ? usd(max) : "No ceiling"}`}
           sub={`${money(plan.minimum)} – ${plan.maximum ? money(plan.maximum) : "No ceiling"}`}
         />
         <Row label="Term" value={plan.term_label} />
