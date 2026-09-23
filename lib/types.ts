@@ -306,6 +306,9 @@ export interface DepositDestination {
   bank_name: string;
   account_name: string;
   reference: string;
+  /** Initials of the person responsible for the receiving account. Empty
+      where nobody is named. */
+  overseen_by: string;
   provider: string;
   active: boolean;
 }
