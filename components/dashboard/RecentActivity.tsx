@@ -1,7 +1,8 @@
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardHead } from "@/components/ui/Card";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { formatDate, money } from "@/lib/format";
+import { Figure } from "@/components/ui/Figure";
+import { formatDate } from "@/lib/format";
 import type { Transaction, TransactionType } from "@/lib/types";
 
 const TXN_ICON: Record<TransactionType, IconName> = {
@@ -17,7 +18,13 @@ const STATUS_LABEL: Record<string, string> = {
   failed: "Failed",
 };
 
-export function RecentActivity({ transactions }: { transactions: Transaction[] }) {
+export function RecentActivity({
+  transactions,
+  rate = 0,
+}: {
+  transactions: Transaction[];
+  rate?: number;
+}) {
   return (
     <Card as="article" id="activity">
       <CardHead className="mb-2">
@@ -73,7 +80,7 @@ export function RecentActivity({ transactions }: { transactions: Transaction[] }
                       positive ? "text-up" : "text-mist-200"
                     }`}
                   >
-                    {money(amount, { decimals: 2, signed: true })}
+                    <Figure naira={amount} rate={rate} signed />
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
                     <span

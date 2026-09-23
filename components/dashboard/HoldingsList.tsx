@@ -1,11 +1,18 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { clamp, daysBetween, formatDate, money, percent } from "@/lib/format";
+import { Figure } from "@/components/ui/Figure";
+import { clamp, daysBetween, formatDate, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
 const STATUS_TONE = { active: "up", matured: "accent", cancelled: "neutral" } as const;
 
-export function HoldingsList({ investments }: { investments: Investment[] }) {
+export function HoldingsList({
+  investments,
+  rate = 0,
+}: {
+  investments: Investment[];
+  rate?: number;
+}) {
   return (
     <div className="grid gap-4">
       {investments.map((inv) => {
@@ -40,13 +47,13 @@ export function HoldingsList({ investments }: { investments: Investment[] }) {
               <div>
                 <dt className="text-[0.6875rem] text-mist-500">Initial investment</dt>
                 <dd className="mt-1 text-[0.9375rem] font-semibold tabular-nums">
-                  {money(principal, { decimals: 2 })}
+                  <Figure naira={principal} rate={rate} />
                 </dd>
               </div>
               <div>
                 <dt className="text-[0.6875rem] text-mist-500">Current value</dt>
                 <dd className="mt-1 text-[0.9375rem] font-semibold tabular-nums">
-                  {money(current, { decimals: 2 })}
+                  <Figure naira={current} rate={rate} />
                 </dd>
               </div>
               <div>
@@ -54,7 +61,7 @@ export function HoldingsList({ investments }: { investments: Investment[] }) {
                 <dd
                   className={`mt-1 text-[0.9375rem] font-semibold tabular-nums ${up ? "text-up" : "text-down"}`}
                 >
-                  {money(growth, { decimals: 2, signed: true })}{" "}
+                  <Figure naira={growth} rate={rate} signed />{" "}
                   <span className="text-xs opacity-85">{percent(growthPercent)}</span>
                 </dd>
               </div>

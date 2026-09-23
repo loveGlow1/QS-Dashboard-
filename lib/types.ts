@@ -35,7 +35,8 @@ export interface Plan {
   /** Visual treatment only — carries no financial meaning. */
   tier: PlanTier;
   term_label: string;
-  term_months: number;
+  /** Length of the term in days. Every tier runs 30. */
+  term_days: number;
   status: PlanStatus;
   eligibility: string;
   featured: boolean;
@@ -116,8 +117,12 @@ export interface PortfolioTotals {
   /** Held against pending withdrawal requests, so it cannot be spent twice. */
   pending_out: number;
   withdrawable: number;
+  /** Investments plus cash plus referral bonuses earned but not released. */
   total_value: number;
   active_count: number;
+  /** Referral bonuses earned and still maturing. Counted in total_value,
+      deliberately not in withdrawable — they are not cash yet. */
+  referral_pending: number;
 }
 
 /** Portfolio totals plus the chart range the page asked for. */

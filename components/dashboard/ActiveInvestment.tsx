@@ -2,10 +2,18 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardHead } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
-import { clamp, daysBetween, formatDate, money, percent } from "@/lib/format";
+import { Figure } from "@/components/ui/Figure";
+import { clamp, daysBetween, formatDate, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
-export function ActiveInvestment({ investment }: { investment: Investment | null }) {
+export function ActiveInvestment({
+  investment,
+  rate = 0,
+}: {
+  investment: Investment | null;
+  /** Naira per dollar; zero shows naira alone. */
+  rate?: number;
+}) {
   return (
     <Card as="article" id="investments">
       <CardHead>
@@ -23,13 +31,19 @@ export function ActiveInvestment({ investment }: { investment: Investment | null
           </ButtonLink>
         </div>
       ) : (
-        <InvestmentDetail investment={investment} />
+        <InvestmentDetail investment={investment} rate={rate} />
       )}
     </Card>
   );
 }
 
-function InvestmentDetail({ investment }: { investment: Investment }) {
+function InvestmentDetail({
+  investment,
+  rate,
+}: {
+  investment: Investment;
+  rate: number;
+}) {
   const growth = Number(investment.current_value) - Number(investment.principal);
   const growthPercent = Number(investment.principal) > 0 ? (growth / Number(investment.principal)) * 100 : 0;
   const up = growth >= 0;
@@ -54,16 +68,16 @@ function InvestmentDetail({ investment }: { investment: Investment }) {
       <dl className="grid gap-px overflow-hidden rounded-md bg-[var(--line-soft)]">
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Initial investment</dt>
-          <dd className="text-sm font-medium tabular-nums">{money(investment.principal, { decimals: 2 })}</dd>
+          <dd className="text-sm font-medium tabular-nums"><Figure naira={investment.principal} rate={rate} /></dd>
         </div>
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Current value</dt>
-          <dd className="text-sm font-semibold tabular-nums">{money(investment.current_value, { decimals: 2 })}</dd>
+          <dd className="text-sm font-semibold tabular-nums"><Figure naira={investment.current_value} rate={rate} /></dd>
         </div>
         <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
           <dt className="text-xs text-mist-500">Growth</dt>
           <dd className={`text-sm font-medium tabular-nums ${up ? "text-up" : "text-down"}`}>
-            {money(growth, { decimals: 2, signed: true })}{" "}
+            <Figure naira={growth} rate={rate} signed />{" "}
             <span className="text-xs opacity-85">{percent(growthPercent)}</span>
           </dd>
         </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { TransactionTable } from "@/components/dashboard/TransactionTable";
-import { getTransactions } from "@/lib/data";
+import { getTransactions, getUsdRate } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Transactions",
@@ -25,7 +25,10 @@ export default async function TransactionsPage({
   /* Filtering happens in the query, not in the browser, so a page never
      holds rows it then hides. */
   const active: Filter = isFilter(type) ? type : "all";
-  const transactions = await getTransactions({ type: active });
+  const [transactions, rate] = await Promise.all([
+    getTransactions({ type: active }),
+    getUsdRate(),
+  ]);
 
   return (
     <>
@@ -33,7 +36,12 @@ export default async function TransactionsPage({
         title="Transactions"
         subtitle="Every deposit, investment, return and withdrawal recorded on your account."
       />
-      <TransactionTable transactions={transactions} active={active} filters={[...FILTERS]} />
+      <TransactionTable
+        transactions={transactions}
+        active={active}
+        filters={[...FILTERS]}
+        rate={rate}
+      />
     </>
   );
 }

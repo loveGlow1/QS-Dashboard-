@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Figure } from "@/components/ui/Figure";
 import { Icon } from "@/components/ui/Icon";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
@@ -74,28 +75,50 @@ export function PortfolioCard({
           </div>
 
           <dl className="mt-auto grid grid-cols-2 gap-x-4 gap-y-5 border-t border-[var(--line-soft)] pt-6">
-            <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
+            <Metric
+              label="Invested"
+              node={<Figure naira={portfolio.invested} rate={rate} />}
+            />
             <Metric
               label="Growth"
-              value={money(portfolio.growth, { decimals: 2, signed: true })}
+              node={<Figure naira={portfolio.growth} rate={rate} signed />}
               tone={up ? "up" : "down"}
             />
-            <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
+            <Metric
+              label="Withdrawable"
+              node={<Figure naira={portfolio.withdrawable} rate={rate} />}
+            />
             <Metric
               label="Maturity"
               value={investment ? formatDate(investment.maturity_date) : "—"}
             />
           </dl>
 
+        </>
+      ) : (
+        <EmptyPosition />
+      )}
+
+      {/* What the headline contains that the four figures above do not. An
+          account can hold referral bonuses without holding an investment, so
+          these sit outside the position branch — otherwise the total would
+          include money the card never accounts for. */}
+      {(portfolio.pending_out > 0 || portfolio.referral_pending > 0) && (
+        <div className="mt-4 grid gap-2 text-[0.6875rem] leading-[1.5] text-mist-500">
           {portfolio.pending_out > 0 && (
-            <p className="mt-4 text-[0.6875rem] leading-[1.5] text-mist-500">
+            <p>
               {money(portfolio.pending_out, { decimals: 2 })} is held against a
               pending withdrawal request.
             </p>
           )}
-        </>
-      ) : (
-        <EmptyPosition />
+          {portfolio.referral_pending > 0 && (
+            <p>
+              Includes {money(portfolio.referral_pending, { decimals: 2 })} in
+              referral bonuses still maturing. They join your withdrawable
+              balance on their maturity date, not before.
+            </p>
+          )}
+        </div>
       )}
     </Card>
   );
@@ -104,10 +127,14 @@ export function PortfolioCard({
 function Metric({
   label,
   value,
+  node,
   tone,
 }: {
   label: string;
-  value: string;
+  /** A plain string, for things that are not money. */
+  value?: string;
+  /** A rendered figure, for things that are. */
+  node?: React.ReactNode;
   tone?: "up" | "down";
 }) {
   return (
@@ -118,7 +145,7 @@ function Metric({
           tone === "up" ? "text-up" : tone === "down" ? "text-down" : "text-mist-50"
         }`}
       >
-        {value}
+        {node ?? value}
       </dd>
     </div>
   );
