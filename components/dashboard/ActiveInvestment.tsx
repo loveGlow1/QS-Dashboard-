@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardHead } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
-import { clamp, daysBetween, formatDate, money, percent } from "@/lib/format";
+import { clamp, daysBetween, formatDate, maturityLabel, money, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
 export function ActiveInvestment({ investment }: { investment: Investment | null }) {
@@ -27,20 +27,6 @@ export function ActiveInvestment({ investment }: { investment: Investment | null
       )}
     </Card>
   );
-}
-
-/**
- * What the countdown says when the days run out.
- *
- * "Matured" is a statement about the investment, not about the calendar: it
- * means the position has been closed and its value released. A position whose
- * date has passed while it is still active has not matured — nothing has been
- * paid out — and saying so would have the card contradict its own badge.
- */
-function maturityLabel(remaining: number, status: string): string {
-  if (remaining > 0) return `${remaining} ${remaining === 1 ? "day" : "days"} to maturity`;
-  if (status === "active") return "Maturity date reached";
-  return "Matured";
 }
 
 function InvestmentDetail({ investment }: { investment: Investment }) {
