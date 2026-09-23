@@ -5,6 +5,7 @@
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"] as const;
 
 export const NAIRA = "₦";
+export const DOLLAR = "$";
 
 /** `1284500` → `₦1,284,500` */
 export function money(value: number, opts: { decimals?: number; signed?: boolean } = {}): string {
@@ -90,4 +91,28 @@ export function initials(name: string): string {
 
 export function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
+}
+
+/**
+ * The platform quotes dollars and settles naira.
+ *
+ * Every naira figure the database holds is the real one; the dollar beside it
+ * is derived at the operator's rate. These two helpers are the only place that
+ * conversion happens, so a screen cannot quietly use a different rate from the
+ * one next to it.
+ */
+export function ngnToUsd(naira: number, rate: number): number {
+  if (!rate || rate <= 0) return 0;
+  return naira / rate;
+}
+
+/** `6.6667` → `$6.67`, `2500` → `$2,500.00` */
+export function usd(value: number, opts: { decimals?: number } = {}): string {
+  const decimals = opts.decimals ?? 2;
+  const n = Number(value) || 0;
+  const sign = n < 0 ? "-" : "";
+  return `${sign}${DOLLAR}${Math.abs(n).toLocaleString("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}`;
 }
