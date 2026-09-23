@@ -146,6 +146,16 @@ export function DepositFlow({
               <CopyField label="Account name" value={destination.account_name} mono={false} />
               <CopyField label="Account number" value={destination.destination} />
               <CopyField label="Reference" value={destination.reference} />
+              {/* Ours, not the bank's — the transfer screen will show the
+                  account name, so this is labelled as the person responsible
+                  rather than presented as something to check against. */}
+              {destination.overseen_by && (
+                <CopyField
+                  label="Account overseen by"
+                  value={destination.overseen_by}
+                  mono={false}
+                />
+              )}
             </>
           ) : (
             <CopyField
