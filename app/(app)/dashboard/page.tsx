@@ -80,7 +80,7 @@ export default async function DashboardPage() {
         className={`mb-4 grid gap-4 ${investment ? "min-[1025px]:grid-cols-[minmax(0,1fr)_minmax(0,380px)]" : ""}`}
       >
         <RecentActivity transactions={transactions} rate={rate} />
-        {investment && <ActiveInvestment investment={investment} rate={rate} />}
+        {investment && <ActiveInvestment investment={investment} />}
       </section>
       </div>
 
