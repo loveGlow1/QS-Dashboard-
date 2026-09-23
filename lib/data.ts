@@ -69,6 +69,7 @@ const EMPTY_TOTALS: Omit<PortfolioTotals, "user_id"> = {
   withdrawable: 0,
   total_value: 0,
   active_count: 0,
+  referral_pending: 0,
 };
 
 /**
@@ -195,6 +196,7 @@ export async function getPortfolio(range: ChartRange = "6M"): Promise<PortfolioS
       withdrawable: Number(row.withdrawable),
       total_value: Number(row.total_value),
       active_count: Number(row.active_count),
+      referral_pending: Number(row.referral_pending),
       series,
     };
   }, empty);
@@ -438,7 +440,9 @@ export async function getUsdRate(): Promise<number> {
   return safely("getUsdRate", async () => {
     const supabase = await createClient();
     const { data } = await supabase
-      .from("platform_settings")
+      /* The rate alone. platform_settings also records who changed it and
+         when, which no visitor needs, so the public view exposes one column. */
+      .from("usd_rate")
       .select("usd_ngn_rate")
       .maybeSingle();
     const rate = Number((data as { usd_ngn_rate: number } | null)?.usd_ngn_rate);

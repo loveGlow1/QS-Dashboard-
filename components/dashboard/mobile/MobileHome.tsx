@@ -93,6 +93,27 @@ export function MobileHome({
         )}
         <p className="mt-1 text-[0.8125rem] text-mist-400">Current portfolio value</p>
 
+        {/* Same notes as the desktop card, in the same words: the total is the
+            whole account, so anything inside it that is not yet spendable says
+            so here rather than leaving the figure unexplained. */}
+        {(portfolio.pending_out > 0 || portfolio.referral_pending > 0) && (
+          <div className="mt-3 grid gap-2 text-[0.6875rem] leading-[1.5] text-mist-500">
+            {portfolio.pending_out > 0 && (
+              <p>
+                {money(portfolio.pending_out, { decimals: 2 })} is held against a
+                pending withdrawal request.
+              </p>
+            )}
+            {portfolio.referral_pending > 0 && (
+              <p>
+                Includes {money(portfolio.referral_pending, { decimals: 2 })} in
+                referral bonuses still maturing. They join your withdrawable
+                balance on their maturity date, not before.
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="mt-5 border-t border-[var(--line-soft)] pt-5">
           {investment ? (
             <div className="flex items-start gap-3.5">

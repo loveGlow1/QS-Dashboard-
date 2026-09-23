@@ -100,6 +100,7 @@ export function InvestFlow({
         <Row
           label="Range"
           value={`${usd(min, { decimals: 0 })} – ${max !== null ? usd(max, { decimals: 0 }) : "No ceiling"}`}
+          sub={`${money(plan.minimum)} – ${plan.maximum ? money(plan.maximum) : "No ceiling"}`}
         />
         <Row label="Term" value={plan.term_label} />
       </dl>
@@ -140,11 +141,23 @@ export function InvestFlow({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  /** The same figure in naira, shown under it. */
+  sub?: string;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
       <dt className="text-xs text-mist-500">{label}</dt>
-      <dd className="text-right text-[0.8125rem] font-medium text-mist-200">{value}</dd>
+      <dd className="grid justify-items-end text-right text-[0.8125rem] font-medium text-mist-200">
+        {value}
+        {sub && <span className="text-xs font-normal tabular-nums text-mist-500">{sub}</span>}
+      </dd>
     </div>
   );
 }

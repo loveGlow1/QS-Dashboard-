@@ -94,15 +94,31 @@ export function PortfolioCard({
             />
           </dl>
 
+        </>
+      ) : (
+        <EmptyPosition />
+      )}
+
+      {/* What the headline contains that the four figures above do not. An
+          account can hold referral bonuses without holding an investment, so
+          these sit outside the position branch — otherwise the total would
+          include money the card never accounts for. */}
+      {(portfolio.pending_out > 0 || portfolio.referral_pending > 0) && (
+        <div className="mt-4 grid gap-2 text-[0.6875rem] leading-[1.5] text-mist-500">
           {portfolio.pending_out > 0 && (
-            <p className="mt-4 text-[0.6875rem] leading-[1.5] text-mist-500">
+            <p>
               {money(portfolio.pending_out, { decimals: 2 })} is held against a
               pending withdrawal request.
             </p>
           )}
-        </>
-      ) : (
-        <EmptyPosition />
+          {portfolio.referral_pending > 0 && (
+            <p>
+              Includes {money(portfolio.referral_pending, { decimals: 2 })} in
+              referral bonuses still maturing. They join your withdrawable
+              balance on their maturity date, not before.
+            </p>
+          )}
+        </div>
       )}
     </Card>
   );
