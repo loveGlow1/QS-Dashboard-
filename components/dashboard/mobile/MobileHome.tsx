@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { Badge } from "@/components/ui/Badge";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
 import { Sparkline } from "@/components/ui/Sparkline";
-import { formatDate, money, ngnToUsd, usd } from "@/lib/format";
+import {
+  clamp,
+  daysBetween,
+  formatDate,
+  maturityLabel,
+  money,
+  ngnToUsd,
+  percent,
+  usd,
+} from "@/lib/format";
 import type { Investment, PortfolioSummary, Transaction } from "@/lib/types";
 
 /**
@@ -49,6 +59,14 @@ export function MobileHome({
   rate?: number;
 }) {
   const invested = portfolio.invested > 0;
+  const up = portfolio.growth >= 0;
+
+  /* The same arithmetic the desktop panel does, so the phone cannot show a
+     different day count for the same position. */
+  const total = investment ? daysBetween(investment.start_date, investment.maturity_date) : 0;
+  const elapsed = investment ? daysBetween(investment.start_date, new Date()) : 0;
+  const progress = total > 0 ? clamp((elapsed / total) * 100, 0, 100) : 0;
+  const remaining = Math.max(0, total - elapsed);
 
   return (
     <div className="grid gap-4">
@@ -93,6 +111,15 @@ export function MobileHome({
         )}
         <p className="mt-1 text-[0.8125rem] text-mist-400">Current portfolio value</p>
 
+        {invested && (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className={up ? "text-up" : "text-down"}>
+              <Icon name={up ? "trendUp" : "trendDown"} size={13} />
+            </span>
+            <Badge tone={up ? "up" : "down"}>{percent(portfolio.growth_percent)}</Badge>
+          </div>
+        )}
+
         {/* Same notes as the desktop card, in the same words: the total is the
             whole account, so anything inside it that is not yet spendable says
             so here rather than leaving the figure unexplained. */}
@@ -114,26 +141,53 @@ export function MobileHome({
           </div>
         )}
 
+        {/* The same figures the desktop card carries. Withdrawable was not
+            on this screen at all, so a phone could not tell you what you
+            could actually take out. */}
+        <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-[var(--line-soft)] pt-5">
+          <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
+          <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
+        </dl>
+
         <div className="mt-5 border-t border-[var(--line-soft)] pt-5">
           {investment ? (
-            <div className="flex items-start gap-3.5">
-              <span className="grid size-11 flex-none place-items-center rounded-lg border border-[var(--em-line)] bg-[var(--em-soft)] text-em-300">
-                <Icon name="layers" size={20} />
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[0.9375rem] font-medium text-mist-50">
-                  {rate > 0
-                    ? `${usd(ngnToUsd(investment.current_value, rate))} held`
-                    : `${money(investment.current_value, { decimals: 2 })} held`}
-                </p>
-                <p className="mt-1 text-[0.8125rem] leading-[1.55] text-mist-400">
-                  {rate > 0
-                    ? `${usd(ngnToUsd(investment.principal, rate))} invested`
-                    : `${money(investment.principal, { decimals: 2 })} invested`}
-                  {investment.maturity_date
-                    ? ` · matures ${formatDate(investment.maturity_date)}`
-                    : ""}
-                </p>
+            <div className="grid gap-4">
+              <header className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[0.9375rem] font-semibold tracking-[-0.02em] text-mist-50">
+                    {investment.plan_name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-mist-500">
+                    {formatDate(investment.start_date)} start
+                  </p>
+                </div>
+                <Badge tone="live" tier={investment.plan_tier} dot>
+                  Active
+                </Badge>
+              </header>
+
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-xs text-mist-500">Current value</span>
+                <span className="text-sm font-semibold tabular-nums">
+                  {money(investment.current_value, { decimals: 2 })}
+                </span>
+              </div>
+
+              <div className="grid gap-2">
+                <div className="flex justify-between gap-3 text-[0.6875rem] font-medium text-mist-200">
+                  <span>{formatDate(investment.start_date)}</span>
+                  <span>{formatDate(investment.maturity_date)}</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full border border-[var(--line-soft)] bg-ink-700">
+                  <span
+                    className="block h-full rounded-full bg-gradient-to-r from-accent-600 to-accent-400"
+                    style={{ width: `${progress.toFixed(1)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between gap-3 text-[0.6875rem] text-mist-500">
+                  <span>Start date</span>
+                  <span>{maturityLabel(remaining, investment.status)}</span>
+                </div>
               </div>
             </div>
           ) : (
@@ -167,20 +221,27 @@ export function MobileHome({
             Portfolio Growth
           </span>
           <span className="mt-1.5 block text-[1.5rem] font-semibold leading-[1.1] tracking-[-0.03em] tabular-nums text-mist-50">
-            {rate > 0
-              ? `${portfolio.growth > 0 ? "+" : ""}${usd(ngnToUsd(portfolio.growth, rate))}`
-              : money(portfolio.growth, { decimals: 2, signed: portfolio.growth !== 0 })}
+            {money(portfolio.growth, { decimals: 2, signed: portfolio.growth !== 0 })}
           </span>
           <span className="mt-1 block text-[0.8125rem] text-mist-400">
-            {rate > 0
-              ? money(portfolio.growth, { decimals: 2, signed: portfolio.growth !== 0 })
-              : `Your portfolio is at ${money(portfolio.total_value, { decimals: 2 })}`}
+            {percent(portfolio.growth_percent)} since you started
           </span>
         </span>
         <Sparkline points={portfolio.series} />
       </Link>
 
       <RecentActivity transactions={transactions} rate={rate} />
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-[0.6875rem] text-mist-500">{label}</dt>
+      <dd className="mt-1 text-[0.9375rem] font-semibold tracking-[-0.015em] tabular-nums text-mist-50">
+        {value}
+      </dd>
     </div>
   );
 }

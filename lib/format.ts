@@ -116,3 +116,19 @@ export function usd(value: number, opts: { decimals?: number } = {}): string {
     maximumFractionDigits: decimals,
   })}`;
 }
+
+/**
+ * What an investment's countdown says when the days run out.
+ *
+ * "Matured" is a statement about the investment, not about the calendar: it
+ * means the position has been closed and its value released. A position whose
+ * date has passed while it is still active has not matured — nothing has been
+ * paid out — and saying so would have a card contradict its own badge.
+ *
+ * Shared, because the phone and the desktop must not answer this differently.
+ */
+export function maturityLabel(remaining: number, status: string): string {
+  if (remaining > 0) return `${remaining} ${remaining === 1 ? "day" : "days"} to maturity`;
+  if (status === "active") return "Maturity date reached";
+  return "Matured";
+}

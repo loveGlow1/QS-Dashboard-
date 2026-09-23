@@ -63,12 +63,12 @@ export function PortfolioCard({
 
       {hasPosition ? (
         <>
+          {/* The change as a percentage, once. The naira figure that used to
+              sit here said the same thing the percentage does, on a card that
+              already leads with the balance. */}
           <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span
-              className={`inline-flex items-center gap-1.5 text-[0.8125rem] font-medium tabular-nums ${up ? "text-up" : "text-down"}`}
-            >
+            <span className={up ? "text-up" : "text-down"}>
               <Icon name={up ? "trendUp" : "trendDown"} size={13} />
-              {money(portfolio.growth, { decimals: 2, signed: true })}
             </span>
             <Badge tone={up ? "up" : "down"}>{percent(portfolio.growth_percent)}</Badge>
           </div>
