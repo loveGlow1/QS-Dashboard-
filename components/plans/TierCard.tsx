@@ -109,7 +109,17 @@ function usd(value: number): string {
   return `$${value.toLocaleString("en-US")}`;
 }
 
-export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: string }) {
+export function TierCard({
+  plan,
+  href,
+}: {
+  plan: Plan;
+  /** Overridden on the public site, where the card sends a visitor to sign up
+      rather than to an amount they cannot yet commit. */
+  href?: string;
+}) {
+  /* Signed in, the card opens the amount step for its own tier. */
+  const target = href ?? `/investments?plan=${plan.id}`;
   const style = STYLES[plan.tier] ?? STYLES.silver;
   const open = plan.status === "open";
 
@@ -179,7 +189,7 @@ export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: s
 
       <div className="mt-8">
         {open ? (
-          <ButtonLink href={href} variant="plain" size="lg" block className={style.cta}>
+          <ButtonLink href={target} variant="plain" size="lg" block className={style.cta}>
             Start Investing
           </ButtonLink>
         ) : (

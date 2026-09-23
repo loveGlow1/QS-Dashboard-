@@ -9,8 +9,9 @@ import {
   getPayoutNetworks,
   getPortfolio,
   getWithdrawals,
+  getUsdRate,
 } from "@/lib/data";
-import { money } from "@/lib/format";
+import { money, ngnToUsd, usd } from "@/lib/format";
 import { toBankAccountView } from "@/lib/types";
 
 export const metadata: Metadata = {
@@ -19,12 +20,13 @@ export const metadata: Metadata = {
 };
 
 export default async function WithdrawPage() {
-  const [portfolio, accounts, methods, networks, withdrawals] = await Promise.all([
+  const [portfolio, accounts, methods, networks, withdrawals, rate] = await Promise.all([
     getPortfolio("1M"),
     getBankAccounts(),
     getPayoutMethods(),
     getPayoutNetworks(),
     getWithdrawals(),
+    getUsdRate(),
   ]);
 
   return (
@@ -39,9 +41,21 @@ export default async function WithdrawPage() {
           <h2 className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-mist-500">
             Withdrawable balance
           </h2>
-          <p className="mt-3 text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums">
-            {money(portfolio.withdrawable, { decimals: 2 })}
-          </p>
+          {rate > 0 ? (
+            <>
+              <p className="mt-3 text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums">
+                {usd(ngnToUsd(portfolio.withdrawable, rate))}
+              </p>
+              {/* Paid out in naira, so the naira is shown as well as quoted. */}
+              <p className="mt-1 text-[0.8125rem] tabular-nums text-mist-400">
+                {money(portfolio.withdrawable, { decimals: 2 })}
+              </p>
+            </>
+          ) : (
+            <p className="mt-3 text-[2rem] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums">
+              {money(portfolio.withdrawable, { decimals: 2 })}
+            </p>
+          )}
           <p className="mt-1.5 text-[0.8125rem] text-mist-400">
             Determined by your investments&apos; terms
           </p>

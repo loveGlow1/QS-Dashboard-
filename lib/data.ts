@@ -432,3 +432,16 @@ export async function getReferralBonuses(): Promise<ReferralBonus[]> {
     }));
   }, []);
 }
+
+/** The rate every dollar figure on the platform is derived at. */
+export async function getUsdRate(): Promise<number> {
+  return safely("getUsdRate", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("usd_ngn_rate")
+      .maybeSingle();
+    const rate = Number((data as { usd_ngn_rate: number } | null)?.usd_ngn_rate);
+    return Number.isFinite(rate) && rate > 0 ? rate : 0;
+  }, 0);
+}

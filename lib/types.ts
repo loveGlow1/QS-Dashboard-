@@ -362,3 +362,10 @@ export interface ReferralBonus {
   earned_at: string;
   matures_at: string;
 }
+
+export interface PlatformSettings {
+  /** Naira per dollar. Every dollar figure shown is derived from a naira
+      amount at this rate. */
+  usd_ngn_rate: number;
+  updated_at: string;
+}

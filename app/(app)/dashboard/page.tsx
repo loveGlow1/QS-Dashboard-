@@ -10,6 +10,7 @@ import {
   getPortfolio,
   getProfile,
   getTransactions,
+  getUsdRate,
 } from "@/lib/data";
 import { greeting, titleCase } from "@/lib/format";
 import type { ChartRange } from "@/lib/types";
@@ -25,11 +26,12 @@ export default async function DashboardPage() {
   /* Every figure below is fetched for the session's own user: row level
      security scopes each query to them, so no identifier from the request
      participates in deciding whose money is returned. */
-  const [profile, portfolio, investment, transactions] = await Promise.all([
+  const [profile, portfolio, investment, transactions, rate] = await Promise.all([
     getProfile(),
     getPortfolio(DEFAULT_RANGE),
     getActiveInvestment(),
     getTransactions({ limit: 5 }),
+    getUsdRate(),
   ]);
 
   const firstName =
@@ -66,7 +68,7 @@ export default async function DashboardPage() {
       <div className="max-[720px]:hidden">
 
       <section className="mb-4 grid gap-4 min-[1025px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)] min-[1181px]:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
-        <PortfolioCard portfolio={portfolio} investment={investment} />
+        <PortfolioCard portfolio={portfolio} investment={investment} rate={rate} />
         <GrowthCard initialRange={DEFAULT_RANGE} initialSeries={portfolio.series} />
       </section>
 

@@ -4,20 +4,52 @@ import { TierGrid } from "@/components/plans/TierCard";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { HoldingsList } from "@/components/dashboard/HoldingsList";
-import { getInvestments, getPlans, getPortfolio } from "@/lib/data";
-import { money } from "@/lib/format";
+import { InvestFlow } from "@/components/investments/InvestFlow";
+import { getInvestments, getPlans, getPortfolio, getUsdRate } from "@/lib/data";
+import { ngnToUsd, usd } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Investments",
   description: "Choose an investment tier and track your holdings.",
 };
 
-export default async function InvestmentsPage() {
-  const [plans, investments, portfolio] = await Promise.all([
+export default async function InvestmentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string }>;
+}) {
+  const [plans, investments, portfolio, rate, params] = await Promise.all([
     getPlans(),
     getInvestments(),
     getPortfolio("6M"),
+    getUsdRate(),
+    searchParams,
   ]);
+
+  /* ?plan= names the tier a card sent them here for. An id that matches
+     nothing falls through to the list rather than erroring — a stale link
+     should show the tiers, not a dead page. */
+  const chosen = params.plan ? plans.find((p) => p.id === params.plan) ?? null : null;
+
+  if (chosen) {
+    return (
+      <>
+        <PageHeader
+          title={`Invest in ${chosen.name}`}
+          subtitle="Choose how much to put in."
+        />
+        <div className="max-w-[560px]">
+          <Card as="article">
+            <InvestFlow
+              plan={chosen}
+              availableNaira={portfolio.available}
+              rate={rate}
+            />
+          </Card>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -41,7 +73,9 @@ export default async function InvestmentsPage() {
           Each tier states its range, its term and what your account gives you.
           Your available balance is{" "}
           <span className="font-medium tabular-nums text-mist-200">
-            {money(portfolio.available, { decimals: 2 })}
+            {rate > 0
+              ? usd(ngnToUsd(portfolio.available, rate))
+              : `₦${portfolio.available.toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
           </span>
           .
         </p>
@@ -57,7 +91,7 @@ export default async function InvestmentsPage() {
             </div>
           </Card>
         ) : (
-          <TierGrid plans={plans} href="/investments" />
+          <TierGrid plans={plans} />
         )}
 
         <p className="mt-7 flex max-w-[760px] items-start gap-2.5 text-xs leading-[1.65] text-mist-500">

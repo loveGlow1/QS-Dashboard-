@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
-import { formatDate, money, percent } from "@/lib/format";
+import { formatDate, money, ngnToUsd, percent, usd } from "@/lib/format";
 import type { Investment, PortfolioSummary } from "@/lib/types";
 
 /**
@@ -18,9 +18,12 @@ import type { Investment, PortfolioSummary } from "@/lib/types";
 export function PortfolioCard({
   portfolio,
   investment,
+  rate = 0,
 }: {
   portfolio: PortfolioSummary;
   investment: Investment | null;
+  /** Naira per dollar. Zero means none on file, and only naira is shown. */
+  rate?: number;
 }) {
   /* An account holds a position when the server says it does. */
   const hasPosition = portfolio.active_count > 0 || portfolio.invested > 0;
@@ -34,9 +37,21 @@ export function PortfolioCard({
 
       <div className="mt-3 flex items-center justify-between gap-5">
         <div className="min-w-0">
-          <p className="text-[clamp(1.875rem,1.4rem+1.6vw,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums max-[720px]:text-[2.125rem]">
-            {money(portfolio.total_value, { decimals: 2 })}
-          </p>
+          {rate > 0 ? (
+            <>
+              <p className="text-[clamp(1.875rem,1.4rem+1.6vw,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums max-[720px]:text-[2.125rem]">
+                {usd(ngnToUsd(portfolio.total_value, rate))}
+              </p>
+              {/* The naira is the amount that actually moves. */}
+              <p className="mt-1 text-[0.8125rem] tabular-nums text-mist-400">
+                {money(portfolio.total_value, { decimals: 2 })}
+              </p>
+            </>
+          ) : (
+            <p className="text-[clamp(1.875rem,1.4rem+1.6vw,2.375rem)] font-semibold leading-[1.1] tracking-[-0.035em] tabular-nums max-[720px]:text-[2.125rem]">
+              {money(portfolio.total_value, { decimals: 2 })}
+            </p>
+          )}
           <p className="mt-1.5 text-[0.8125rem] text-mist-400">Current portfolio value</p>
         </div>
 
