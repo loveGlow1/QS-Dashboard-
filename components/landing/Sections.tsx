@@ -171,7 +171,7 @@ export function FinalCta() {
             className="pointer-events-none absolute inset-x-0 -top-[60%] -z-10 h-[150%]"
             style={{
               background:
-                "radial-gradient(42% 46% at 50% 58%, rgba(16,185,129,0.26) 0%, rgba(16,185,129,0) 70%)",
+                "radial-gradient(42% 46% at 50% 58%, rgba(16,185,54,0.26) 0%, rgba(16,185,54,0) 70%)",
             }}
           />
           <h2 className="text-[clamp(1.6rem,1.1rem+1.9vw,2.4rem)] font-semibold leading-[1.16] tracking-[-0.03em]">

@@ -68,7 +68,7 @@ export function PlatformPreview() {
                     <Icon name="trendUp" size={13} />
                     {money(EXAMPLE.growth, { signed: true })}
                   </span>
-                  <span className="inline-flex h-6 items-center rounded-full border border-[rgba(62,207,154,0.2)] bg-[var(--up-soft)] px-[9px] text-[0.6875rem] font-medium text-up">
+                  <span className="inline-flex h-6 items-center rounded-full border border-[rgba(62,207,95,0.2)] bg-[var(--up-soft)] px-[9px] text-[0.6875rem] font-medium text-up">
                     {percent(EXAMPLE.growthPercent)}
                   </span>
                 </p>

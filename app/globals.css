@@ -22,36 +22,48 @@
   --color-mist-400: #8290b4;
   --color-mist-500: #5d6a8c;
 
-  /* --- Accent: emerald ------------------------------------------------ */
+  /* --- Accent: spring green ------------------------------------------- */
+  /* The brand green, taken from the QuickStark.Ai pricing card: hue 134,
+     not the 160 of Tailwind's emerald. That 26 degrees is the whole
+     difference — emerald leans teal and reads cold beside the reference,
+     which leans toward grass and reads bright. 400 is the reference swatch
+     itself, sampled rather than estimated; the rest of the ramp is the same
+     hue at other lightnesses, and 900 is the deep surface the bright tones
+     sit on. */
   /* One accent for every screen. The phone dashboard used to carry emerald
      while everything else stayed blue, which made the product look like two
      products depending on the device. */
-  --color-accent-300: #6ee7b7;
-  --color-accent-400: #34d399;
-  --color-accent-500: #10b981;
-  --color-accent-600: #059669;
-  --color-accent-700: #047857;
+  --color-accent-200: #9dfbb2;
+  --color-accent-300: #7cfb99;
+  --color-accent-400: #60fa83;
+  --color-accent-500: #2beb57;
+  --color-accent-600: #1eba41;
+  --color-accent-700: #208a38;
+  /* The deep end, for surfaces a bright green sits on. */
+  --color-accent-900: #2c683a;
+  /* The ink that goes on a bright green fill, defined once. */
+  --color-accent-ink: #063010;
 
   /* --- Directional indicators (financial values only) ----------------- */
   /* "Up" is deliberately a lighter, cooler green than the accent. With an
      emerald interface a gain has to stay legible as a gain rather than
      reading as more chrome, and a loss keeps the only colour that matters
      at a glance. */
-  --color-up: #5ee9b5;
+  --color-up: #7cf8b0;
   --color-down: #f0687b;
   --color-warn: #e9b872;
 
   /* --- Chart grid accents (decoration only, never a value) ------------ */
   --color-grid-violet: #a78bfa;
-  --color-grid-green: #3ecf9a;
+  --color-grid-green: #52e072;
   --color-grid-amber: #e9b872;
 
   /* --- Emerald aliases, kept so existing markup keeps working ---------- */
-  --color-em-200: #9df0cb;
-  --color-em-300: #6ee7b7;
-  --color-em-400: #34d399;
-  --color-em-500: #10b981;
-  --color-em-600: #059669;
+  --color-em-200: #9dfbb2;
+  --color-em-300: #7cfb99;
+  --color-em-400: #60fa83;
+  --color-em-500: #2beb57;
+  --color-em-600: #1eba41;
 
   /* --- Radii ---------------------------------------------------------- */
   --radius-sm: 8px;
@@ -77,18 +89,18 @@
   --line: rgba(148, 168, 214, 0.12);
   --line-strong: rgba(148, 168, 214, 0.22);
   --line-soft: rgba(148, 168, 214, 0.07);
-  --accent-soft: rgba(16, 185, 129, 0.13);
-  --accent-line: rgba(16, 185, 129, 0.3);
-  --up-soft: rgba(94, 233, 181, 0.12);
+  --accent-soft: rgba(96, 250, 131, 0.13);
+  --accent-line: rgba(96, 250, 131, 0.3);
+  --up-soft: rgba(124, 248, 176, 0.12);
   --down-soft: rgba(240, 104, 123, 0.12);
   --warn-soft: rgba(233, 184, 114, 0.12);
 
   /* Emerald surfaces. Kept low in opacity on purpose: the accent should read
      as a material the card is made of, not a colour laid on top of it. */
-  --em-soft: rgba(16, 185, 129, 0.1);
-  --em-line: rgba(16, 185, 129, 0.26);
-  --em-line-strong: rgba(52, 211, 153, 0.42);
-  --em-glow: rgba(16, 185, 129, 0.22);
+  --em-soft: rgba(96, 250, 131, 0.1);
+  --em-line: rgba(96, 250, 131, 0.26);
+  --em-line-strong: rgba(96, 250, 131, 0.42);
+  --em-glow: rgba(96, 250, 131, 0.22);
 }
 
 /* ==========================================================================
@@ -256,11 +268,11 @@
   }
 
   .qs-tier-vip {
-    --tier-light: #93f3ad;
-    --tier-base: #4dd87a;
-    --tier-ink: #06301b;
-    --tier-soft: rgba(77, 216, 122, 0.1);
-    --tier-line: rgba(77, 216, 122, 0.34);
+    --tier-light: #9dfbb2;
+    --tier-base: #60fa83;
+    --tier-ink: #06300f;
+    --tier-soft: rgba(96, 250, 131, 0.1);
+    --tier-line: rgba(96, 250, 131, 0.34);
   }
 
   *::-webkit-scrollbar { width: 9px; height: 9px; }

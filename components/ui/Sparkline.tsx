@@ -63,15 +63,15 @@ export function Sparkline({
     >
       <defs>
         <linearGradient id={`${uid}-fill`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10b981" stopOpacity="0.28" />
-          <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+          <stop offset="0%" stopColor="#10b936" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="#10b936" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#${uid}-fill)`} />
       <path
         d={line}
         fill="none"
-        stroke="#34d399"
+        stroke="#34d358"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -81,8 +81,8 @@ export function Sparkline({
         cx={last[0]}
         cy={last[1]}
         r="2.6"
-        fill="#6ee7b7"
-        className="[filter:drop-shadow(0_0_6px_rgba(52,211,153,0.9))]"
+        fill="#6ee789"
+        className="[filter:drop-shadow(0_0_6px_rgba(52,211,88,0.9))]"
       />
     </svg>
   );

@@ -6,7 +6,7 @@ type Tone = "neutral" | "up" | "down" | "warn" | "accent" | "live" | "tier";
 
 const TONES: Record<Tone, string> = {
   neutral: "bg-[rgba(148,168,214,0.09)] border-[var(--line-soft)] text-mist-400",
-  up: "bg-[var(--up-soft)] border-[rgba(62,207,154,0.2)] text-up",
+  up: "bg-[var(--up-soft)] border-[rgba(62,207,95,0.2)] text-up",
   down: "bg-[var(--down-soft)] border-[rgba(240,104,123,0.2)] text-down",
   warn: "bg-[var(--warn-soft)] border-[rgba(233,184,114,0.2)] text-warn",
   accent: "bg-[var(--accent-soft)] border-[var(--accent-line)] text-accent-300",

@@ -363,8 +363,8 @@ function Success({
   account: BankAccountView | null;
 }) {
   return (
-    <div className="grid justify-items-start gap-3 rounded-md border border-[rgba(62,207,154,0.26)] bg-[var(--up-soft)] p-6">
-      <span className="grid size-10 place-items-center rounded-md border border-[rgba(62,207,154,0.26)] text-up">
+    <div className="grid justify-items-start gap-3 rounded-md border border-[rgba(62,207,95,0.26)] bg-[var(--up-soft)] p-6">
+      <span className="grid size-10 place-items-center rounded-md border border-[rgba(62,207,95,0.26)] text-up">
         <Icon name="checkCircle" size={20} />
       </span>
       <p className="text-sm font-semibold text-mist-50">Withdrawal request submitted</p>

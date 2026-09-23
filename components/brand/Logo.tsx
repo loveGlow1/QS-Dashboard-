@@ -18,8 +18,8 @@ export function Mark({ size = 26, id = "qs" }: { size?: number; id?: string }) {
     <svg viewBox="0 0 32 32" width={size} height={size} fill="none" aria-hidden="true" className="flex-none">
       <defs>
         <linearGradient id={gradientId} x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#6ee7b7" />
-          <stop offset="0.55" stopColor="#10b981" />
+          <stop stopColor="#6ee789" />
+          <stop offset="0.55" stopColor="#10b936" />
           <stop offset="1" stopColor="#2f56c4" />
         </linearGradient>
       </defs>
