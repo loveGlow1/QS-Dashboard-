@@ -111,14 +111,6 @@ export function MobileHome({
         )}
         <p className="mt-1 text-[0.8125rem] text-mist-400">Current portfolio value</p>
 
-        {invested && (
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className={up ? "text-up" : "text-down"}>
-              <Icon name={up ? "trendUp" : "trendDown"} size={13} />
-            </span>
-            <Badge tone={up ? "up" : "down"}>{percent(portfolio.growth_percent)}</Badge>
-          </div>
-        )}
 
         {/* Same notes as the desktop card, in the same words: the total is the
             whole account, so anything inside it that is not yet spendable says
@@ -147,6 +139,13 @@ export function MobileHome({
         <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-[var(--line-soft)] pt-5">
           <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
           <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
+          {invested && (
+            <Metric
+              label="Growth"
+              value={percent(portfolio.growth_percent)}
+              tone={up ? "up" : "down"}
+            />
+          )}
         </dl>
 
         <div className="mt-5 border-t border-[var(--line-soft)] pt-5">
@@ -235,11 +234,23 @@ export function MobileHome({
   );
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function Metric({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone?: "up" | "down";
+}) {
   return (
     <div>
       <dt className="text-[0.6875rem] text-mist-500">{label}</dt>
-      <dd className="mt-1 text-[0.9375rem] font-semibold tracking-[-0.015em] tabular-nums text-mist-50">
+      <dd
+        className={`mt-1 text-[0.9375rem] font-semibold tracking-[-0.015em] tabular-nums ${
+          tone === "up" ? "text-up" : tone === "down" ? "text-down" : "text-mist-50"
+        }`}
+      >
         {value}
       </dd>
     </div>
