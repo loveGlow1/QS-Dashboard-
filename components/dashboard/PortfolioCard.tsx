@@ -1,6 +1,4 @@
-import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { Icon } from "@/components/ui/Icon";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
 import { formatDate, money, ngnToUsd, percent, usd } from "@/lib/format";
@@ -63,15 +61,6 @@ export function PortfolioCard({
 
       {hasPosition ? (
         <>
-          {/* The change as a percentage, once. The naira figure that used to
-              sit here said the same thing the percentage does, on a card that
-              already leads with the balance. */}
-          <div className="mt-3.5 flex flex-wrap items-center gap-2">
-            <span className={up ? "text-up" : "text-down"}>
-              <Icon name={up ? "trendUp" : "trendDown"} size={13} />
-            </span>
-            <Badge tone={up ? "up" : "down"}>{percent(portfolio.growth_percent)}</Badge>
-          </div>
 
           {/* Growth is stated once, in the row above with its percentage
               beside it. It used to be repeated here as a fourth figure,
@@ -82,6 +71,14 @@ export function PortfolioCard({
                 breakdown harder to read, not clearer. */}
             <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
             <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
+            {/* The return, stated once, in the row under Withdrawable. As a
+                percentage only — the naira it represents is already the
+                difference between Invested and the balance above. */}
+            <Metric
+              label="Growth"
+              value={percent(portfolio.growth_percent)}
+              tone={up ? "up" : "down"}
+            />
             <Metric
               label="Maturity"
               value={investment ? formatDate(investment.maturity_date) : "—"}
