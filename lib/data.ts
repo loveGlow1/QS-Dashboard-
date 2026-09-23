@@ -22,6 +22,8 @@ import type {
   Transaction,
   Withdrawal,
   WithdrawalSettings,
+  ReferralSummary,
+  ReferralBonus,
 } from "@/lib/types";
 
 /**
@@ -389,6 +391,44 @@ export async function getPlatformSeries(): Promise<SeriesPoint[]> {
     return ((data as { month: string; total_invested: number }[]) ?? []).map((row) => ({
       date: row.month,
       value: Number(row.total_invested),
+    }));
+  }, []);
+}
+
+/** The signed-in customer's referral code and what it has earned. */
+export async function getReferralSummary(): Promise<ReferralSummary | null> {
+  return safely("getReferralSummary", async () => {
+    const supabase = await createClient();
+    /* Matures anything that has come due before reading, so a bonus past its
+       date is not sitting pending on a page that says it has matured. */
+    await supabase.rpc("mature_referral_bonuses");
+    const { data } = await supabase.rpc("referral_summary");
+    const row = (data as ReferralSummary[] | null)?.[0];
+    if (!row) return null;
+    return {
+      ...row,
+      rate_percent: Number(row.rate_percent),
+      signups: Number(row.signups),
+      funded: Number(row.funded),
+      pending_amount: Number(row.pending_amount),
+      matured_amount: Number(row.matured_amount),
+    };
+  }, null);
+}
+
+/** Each bonus this customer has earned, newest first. */
+export async function getReferralBonuses(): Promise<ReferralBonus[]> {
+  return safely("getReferralBonuses", async () => {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("referral_bonuses")
+      .select("id, base_amount, rate_percent, amount, status, earned_at, matures_at")
+      .order("earned_at", { ascending: false });
+    return ((data as ReferralBonus[] | null) ?? []).map((b) => ({
+      ...b,
+      base_amount: Number(b.base_amount),
+      rate_percent: Number(b.rate_percent),
+      amount: Number(b.amount),
     }));
   }, []);
 }

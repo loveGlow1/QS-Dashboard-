@@ -27,6 +27,7 @@ export const MONEY: NavItem[] = [
 ];
 
 export const ACCOUNT: NavItem[] = [
+  { href: "/referrals", icon: "users", label: "Referrals" },
   { href: "/profile", icon: "user", label: "Profile" },
   { href: "/security", icon: "shield", label: "Security" },
   { href: "/help", icon: "help", label: "Help" },

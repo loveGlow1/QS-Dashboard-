@@ -9,6 +9,7 @@ const PROTECTED = [
   "/transactions",
   "/deposit",
   "/withdraw",
+  "/referrals",
   "/profile",
   "/security",
   "/help",

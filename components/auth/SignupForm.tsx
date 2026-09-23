@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 import { signUp, type AuthState } from "@/app/auth-actions";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -11,6 +12,9 @@ const INITIAL: AuthState = { error: null, notice: null };
 
 export function SignupForm() {
   const [state, formAction, pending] = useActionState(signUp, INITIAL);
+  /* A referral link carries the code, so someone arriving from one does not
+     have to copy it out of the URL. Typed codes are accepted just the same. */
+  const invited = (useSearchParams().get("ref") ?? "").trim().toUpperCase();
 
   return (
     <form action={formAction} className="grid gap-4">
@@ -71,6 +75,27 @@ export function SignupForm() {
         </label>
         <PasswordField id="password" autoComplete="new-password" placeholder="At least 8 characters" />
         <span className="text-xs text-mist-500">Use at least 8 characters.</span>
+      </div>
+
+      <div className="grid gap-[7px]">
+        <label className={LABEL_CLASS} htmlFor="referral_code">
+          Referral code <span className="font-normal text-mist-500">(optional)</span>
+        </label>
+        <input
+          id="referral_code"
+          name="referral_code"
+          type="text"
+          autoComplete="off"
+          spellCheck={false}
+          defaultValue={invited}
+          placeholder="If someone invited you"
+          className={`${FIELD_CLASS} uppercase placeholder:normal-case`}
+        />
+        <span className="text-xs text-mist-500">
+          {invited
+            ? "Applied from your invite link."
+            : "Leave this blank if you came on your own."}
+        </span>
       </div>
 
       <Button type="submit" variant="primary" size="lg" block busy={pending} className="mt-1">

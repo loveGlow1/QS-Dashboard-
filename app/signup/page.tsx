@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/AuthShell";
@@ -22,7 +23,12 @@ export default function SignupPage() {
         </>
       }
     >
-      <SignupForm />
+      {/* The form reads ?ref= to prefill an invite code, which opts it out of
+          static prerendering. The boundary keeps the rest of the page static
+          and the shell painted while the form resolves. */}
+      <Suspense fallback={<div className="min-h-[420px]" />}>
+        <SignupForm />
+      </Suspense>
     </AuthShell>
   );
 }

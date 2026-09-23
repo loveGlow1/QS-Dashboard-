@@ -332,3 +332,29 @@ export interface Deposit {
   created_at: string;
   completed_at: string | null;
 }
+
+export interface ReferralSummary {
+  code: string;
+  rate_percent: number;
+  window_hours: number;
+  maturity_days: number;
+  enabled: boolean;
+  /** Accounts that signed up with this code. */
+  signups: number;
+  /** Of those, how many funded an account inside the window and earned. */
+  funded: number;
+  pending_amount: number;
+  matured_amount: number;
+}
+
+export type ReferralBonusStatus = "pending" | "matured" | "cancelled";
+
+export interface ReferralBonus {
+  id: string;
+  base_amount: number;
+  rate_percent: number;
+  amount: number;
+  status: ReferralBonusStatus;
+  earned_at: string;
+  matures_at: string;
+}
