@@ -14,6 +14,7 @@ import type {
   Investment,
   Notification,
   Plan,
+  PlanTier,
   PlatformMetrics,
   PortfolioSummary,
   PortfolioTotals,
@@ -109,11 +110,23 @@ export async function getPlans(): Promise<Plan[]> {
 export async function getInvestments(): Promise<Investment[]> {
   return safely("getInvestments", async () => {
     const supabase = await createClient();
+    /* The plan is embedded rather than looked up per row: the name and the
+       tier are what a holding is labelled and coloured with, and reading them
+       from the plan means a rename lands everywhere at once. */
     const { data } = await supabase
       .from("investments")
-      .select("*")
+      .select("*, plans(name, tier)")
       .order("start_date", { ascending: false });
-    return (data as Investment[]) ?? [];
+
+    type Row = Omit<Investment, "plan_name" | "plan_tier"> & {
+      plans: { name: string; tier: PlanTier } | null;
+    };
+
+    return ((data as Row[]) ?? []).map(({ plans, ...row }) => ({
+      ...row,
+      plan_name: plans?.name ?? row.plan_id,
+      plan_tier: plans?.tier ?? "silver",
+    }));
   }, []);
 }
 

@@ -1,18 +1,13 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
-import { Figure } from "@/components/ui/Figure";
-import { clamp, daysBetween, formatDate, percent } from "@/lib/format";
+import { clamp, daysBetween, formatDate, money, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
-const STATUS_TONE = { active: "live", matured: "accent", cancelled: "neutral" } as const;
+/* Running wears the tier filled, finished wears it as an outline, and a
+   cancelled holding wears no tier colour at all. */
+const STATUS_TONE = { active: "live", matured: "tier", cancelled: "neutral" } as const;
 
-export function HoldingsList({
-  investments,
-  rate = 0,
-}: {
-  investments: Investment[];
-  rate?: number;
-}) {
+export function HoldingsList({ investments }: { investments: Investment[] }) {
   return (
     <div className="grid gap-4">
       {investments.map((inv) => {
@@ -31,29 +26,32 @@ export function HoldingsList({
           <Card key={inv.id}>
             <header className="mb-5 flex items-start justify-between gap-3">
               <div>
-                <p className="text-[1.0625rem] font-semibold tracking-[-0.02em] capitalize">
-                  {inv.plan_id}
+                <p className="text-[1.0625rem] font-semibold tracking-[-0.02em]">
+                  {inv.plan_name}
                 </p>
                 <p className="mt-[3px] text-xs text-mist-500">
                   Started {formatDate(inv.start_date)}
                 </p>
               </div>
-              <Badge tone={STATUS_TONE[inv.status] ?? "neutral"} dot>
+              <Badge tone={STATUS_TONE[inv.status] ?? "neutral"} tier={inv.plan_tier} dot>
                 {inv.status}
               </Badge>
             </header>
 
+            {/* One line a figure. The dollar-over-naira pair belongs to the
+                portfolio headline; in a three-column breakdown it doubled the
+                height of every row without telling anyone anything new. */}
             <dl className="grid gap-4 min-[601px]:grid-cols-3">
               <div>
                 <dt className="text-[0.6875rem] text-mist-500">Initial investment</dt>
                 <dd className="mt-1 text-[0.9375rem] font-semibold tabular-nums">
-                  <Figure naira={principal} rate={rate} />
+                  {money(principal, { decimals: 2 })}
                 </dd>
               </div>
               <div>
                 <dt className="text-[0.6875rem] text-mist-500">Current value</dt>
                 <dd className="mt-1 text-[0.9375rem] font-semibold tabular-nums">
-                  <Figure naira={current} rate={rate} />
+                  {money(current, { decimals: 2 })}
                 </dd>
               </div>
               <div>
@@ -61,7 +59,7 @@ export function HoldingsList({
                 <dd
                   className={`mt-1 text-[0.9375rem] font-semibold tabular-nums ${up ? "text-up" : "text-down"}`}
                 >
-                  <Figure naira={growth} rate={rate} signed />{" "}
+                  {money(growth, { decimals: 2, signed: true })}{" "}
                   <span className="text-xs opacity-85">{percent(growthPercent)}</span>
                 </dd>
               </div>

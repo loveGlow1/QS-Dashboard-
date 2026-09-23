@@ -63,7 +63,7 @@ export default async function InvestmentsPage({
           <h2 className="mb-4 text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-mist-500">
             Your holdings
           </h2>
-          <HoldingsList investments={investments} rate={rate} />
+          <HoldingsList investments={investments} />
         </section>
       )}
 

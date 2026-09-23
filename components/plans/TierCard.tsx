@@ -2,7 +2,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { TierWave } from "@/components/plans/TierWave";
 import { Sweep } from "@/components/ui/Sweep";
-import { money, usd } from "@/lib/format";
+import { money } from "@/lib/format";
 import type { Plan, PlanTier } from "@/lib/types";
 
 /**
@@ -13,7 +13,8 @@ import type { Plan, PlanTier } from "@/lib/types";
  * differ, so they read as tiers of one product rather than three unrelated
  * designs.
  *
- * Each card states a range, a term and what the account gives you. None
+ * Each card states its naira range — the figures the database enforces when
+ * an investment is placed — a term, and what the account gives you. None
  * states or implies a return, because the platform does not promise one.
  */
 
@@ -91,16 +92,14 @@ const STYLES: Record<PlanTier, TierStyle> = {
   },
 };
 
-/**
- * `7.56` → `$7.56`, `7558.57` → `$7.6K`.
- *
- * The dollar figures are derived from the naira ones, which are the price, so
- * they rarely land on round numbers and the cents matter.
- */
-function shortUsd(value: number): string {
-  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
-  return usd(value);
+/** `10000` → `₦10K`, `10000000` → `₦10M`. */
+function short(value: number): string {
+  if (value >= 1_000_000) {
+    const m = value / 1_000_000;
+    return `₦${Number.isInteger(m) ? m : m.toFixed(1)}M`;
+  }
+  if (value >= 1000) return `₦${Math.round(value / 1000)}K`;
+  return money(value);
 }
 
 export function TierCard({
@@ -153,18 +152,15 @@ export function TierCard({
       <p className={`mt-3 min-h-[5em] text-sm leading-[1.65] ${style.body}`}>{plan.summary}</p>
 
       <div className="mt-6 border-t border-white/10 pt-6">
+        {/* Two lines reserved. The top tier's range runs to two at this size
+            and the other two do not, so without the reservation VIP's feature
+            list sits a line below its neighbours'. Shortening the figures
+            would fix the alignment by hiding the amounts the server actually
+            enforces, which is the wrong trade. */}
         <p
-          className={`text-2xl font-semibold leading-[1.15] tracking-[-0.03em] tabular-nums ${style.amount}`}
+          className={`min-h-[2.3em] text-2xl font-semibold leading-[1.15] tracking-[-0.03em] tabular-nums ${style.amount}`}
         >
-          {plan.usd_minimum === null
-            ? money(plan.minimum)
-            : usd(plan.usd_minimum)}{" "}
-          –{" "}
-          {plan.usd_maximum === null
-            ? plan.maximum
-              ? money(plan.maximum)
-              : "No ceiling"
-            : usd(plan.usd_maximum)}
+          {money(plan.minimum)} – {plan.maximum ? money(plan.maximum) : "No ceiling"}
         </p>
         <p className={`mt-1.5 text-[0.8125rem] ${style.body}`}>Investment range</p>
       </div>
@@ -192,9 +188,7 @@ export function TierCard({
           </span>
         )}
         <p className={`mt-3 text-center text-[0.6875rem] opacity-70 ${style.body}`}>
-          {plan.term_label} term ·{" "}
-          {plan.usd_minimum === null ? money(plan.minimum) : shortUsd(plan.usd_minimum)}{" "}
-          minimum
+          {plan.term_label} term · {short(plan.minimum)} minimum
         </p>
       </div>
     </article>
