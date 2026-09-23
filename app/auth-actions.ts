@@ -73,6 +73,13 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   const fullName = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  /* Normalised here so a pasted code with stray spaces or in lower case still
+     matches. An unknown code is not an error: the database links nothing and
+     the account is still created, because failing a sign-up over a mistyped
+     referral is worse than losing the referral. */
+  const referralCode = String(formData.get("referral_code") ?? "")
+    .trim()
+    .toUpperCase();
 
   if (!fullName) return { error: "Enter your name." };
   if (!EMAIL_RE.test(email)) return { error: "Enter a valid email address." };
@@ -87,7 +94,12 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: {
+          full_name: fullName,
+          ...(referralCode ? { referral_code: referralCode } : {}),
+        },
+      },
     });
     if (error) return { error: readable(error.message) };
     needsConfirmation = !data.session;
