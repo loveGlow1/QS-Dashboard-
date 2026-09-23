@@ -91,14 +91,22 @@ const STYLES: Record<PlanTier, TierStyle> = {
   },
 };
 
-/** `50000` → `₦50K`, `10000000` → `₦10M`. Ranges read better abbreviated. */
-function short(value: number): string {
+/** `50` → `$50`, `2500` → `$2.5K`, `50000` → `$50K`. */
+function shortUsd(value: number): string {
   if (value >= 1_000_000) {
     const m = value / 1_000_000;
-    return `₦${Number.isInteger(m) ? m : m.toFixed(1)}M`;
+    return `$${Number.isInteger(m) ? m : m.toFixed(1)}M`;
   }
-  if (value >= 1000) return `₦${Math.round(value / 1000)}K`;
-  return money(value);
+  if (value >= 1000) {
+    const k = value / 1000;
+    return `$${Number.isInteger(k) ? k : k.toFixed(1)}K`;
+  }
+  return `$${value}`;
+}
+
+/** `2500` → `$2,500`. */
+function usd(value: number): string {
+  return `$${value.toLocaleString("en-US")}`;
 }
 
 export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: string }) {
@@ -144,7 +152,15 @@ export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: s
         <p
           className={`text-2xl font-semibold leading-[1.15] tracking-[-0.03em] tabular-nums ${style.amount}`}
         >
-          {money(plan.minimum)} – {plan.maximum ? money(plan.maximum) : "No ceiling"}
+          {plan.usd_minimum === null
+            ? money(plan.minimum)
+            : usd(plan.usd_minimum)}{" "}
+          –{" "}
+          {plan.usd_maximum === null
+            ? plan.maximum
+              ? money(plan.maximum)
+              : "No ceiling"
+            : usd(plan.usd_maximum)}
         </p>
         <p className={`mt-1.5 text-[0.8125rem] ${style.body}`}>Investment range</p>
       </div>
@@ -172,7 +188,9 @@ export function TierCard({ plan, href = "/investments" }: { plan: Plan; href?: s
           </span>
         )}
         <p className={`mt-3 text-center text-[0.6875rem] opacity-70 ${style.body}`}>
-          {plan.term_label} term · {short(plan.minimum)} minimum
+          {plan.term_label} term ·{" "}
+          {plan.usd_minimum === null ? money(plan.minimum) : shortUsd(plan.usd_minimum)}{" "}
+          minimum
         </p>
       </div>
     </article>
