@@ -172,16 +172,6 @@ export function TierCard({
               : "No ceiling"
             : usd(plan.usd_maximum)}
         </p>
-        {/* The naira underneath is not a conversion of the dollars above it:
-            it is plan.minimum and plan.maximum, the figures the database
-            enforces when an investment is placed. A customer here reads their
-            own currency and the number that will actually be checked. */}
-        {plan.usd_minimum !== null && (
-          <p className={`mt-1 text-[0.8125rem] tabular-nums opacity-80 ${style.body}`}>
-            {money(plan.minimum)} –{" "}
-            {plan.maximum ? money(plan.maximum) : "No ceiling"}
-          </p>
-        )}
         <p className={`mt-1.5 text-[0.8125rem] ${style.body}`}>Investment range</p>
       </div>
 
