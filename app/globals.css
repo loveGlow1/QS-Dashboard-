@@ -207,70 +207,60 @@
     transform: translateY(-1px) rotate(-45deg);
   }
 
-  /* --- Live status badge ------------------------------------------------
-     Emerald falling into silver, built the way a physical control is rather
-     than painted as one flat colour: a machined dark fill, a bright gradient
-     rim around it, a lit top edge and a little emerald spill.
+  /* --- Tier status badge ------------------------------------------------
+     Bright and flat, not glossy. One clean fill, a lit top edge, dark text —
+     no outer glow, no gradient rim, nothing that reads as a lit component.
+     The pill should look like a label the tier printed on itself.
 
-     Two background layers do it — the fill clipped to the padding box, the
-     rim to the border box — which is what lets the border carry a gradient
-     without a wrapper element. The fill is opaque on purpose: the rim layer
-     is painted under the whole badge, not just its edge, so a translucent
-     fill lets the bright rim show through and washes the word out. Opaque
-     also makes it a material rather than a tint, which is the point.
-
-     The light travels from emerald at the top left to a cool steel at the
-     bottom right. That, and not the colour alone, is where the depth at
-     24px tall comes from. */
-  .qs-badge-live {
+     Colour comes from the plan, not from the status, so a Gold holding is
+     never wearing emerald. Each tier's hue matches the tier card it came
+     from. The filled form marks a position that is running; the outline
+     marks one that has finished. */
+  .qs-status {
     border-color: transparent;
-    background:
-      linear-gradient(
-        135deg,
-        #17493b 0%,
-        #153c34 34%,
-        #202a39 70%,
-        #2b3446 100%
-      ) padding-box,
-      linear-gradient(
-        135deg,
-        rgba(126, 240, 195, 0.9) 0%,
-        rgba(52, 211, 153, 0.55) 30%,
-        rgba(198, 210, 230, 0.5) 64%,
-        rgba(240, 245, 253, 0.85) 100%
-      ) border-box;
+  }
+
+  .qs-status-solid {
+    background-image: linear-gradient(
+      180deg,
+      var(--tier-light) 0%,
+      var(--tier-base) 100%
+    );
+    color: var(--tier-ink);
     box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      inset 0 -1px 0 rgba(2, 8, 18, 0.3),
-      0 1px 2px rgba(3, 9, 20, 0.5),
-      0 0 14px -6px rgba(16, 185, 129, 0.7);
+      inset 0 1px 0 rgba(255, 255, 255, 0.45),
+      0 1px 1.5px rgba(3, 9, 20, 0.3);
   }
 
-  /* The label takes the same journey as the pill. Both ends stay light
-     against a fill that stays dark the whole way across, so no part of the
-     word drops out the way it would over a fill that brightens under it. */
-  .qs-badge-live-label {
-    color: #e2f1ea;
+  /* Finished: the same hue, stated quietly. */
+  .qs-status-outline {
+    background-color: var(--tier-soft);
+    border-color: var(--tier-line);
+    color: var(--tier-base);
   }
 
-  /* Guarded: without the clip, `color: transparent` would leave the word
-     invisible rather than ungradiented. */
-  @supports (-webkit-background-clip: text) or (background-clip: text) {
-    .qs-badge-live-label {
-      background: linear-gradient(104deg, #93f2c8 0%, #ccf3e0 44%, #eef2fb 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
+  .qs-tier-silver {
+    --tier-light: #f4f7fc;
+    --tier-base: #ccd6e8;
+    --tier-ink: #1a2130;
+    --tier-soft: rgba(204, 214, 232, 0.1);
+    --tier-line: rgba(204, 214, 232, 0.34);
   }
 
-  /* The dot is the only part that stays pure emerald: it is the signal, and
-     a signal should not be in two minds about its colour. */
-  .qs-badge-live-dot {
-    background: #6ee7b7;
-    box-shadow:
-      0 0 0 2px rgba(16, 185, 129, 0.18),
-      0 0 7px rgba(52, 211, 153, 0.9);
+  .qs-tier-gold {
+    --tier-light: #f8ddaa;
+    --tier-base: #e0b068;
+    --tier-ink: #33240b;
+    --tier-soft: rgba(224, 176, 104, 0.1);
+    --tier-line: rgba(224, 176, 104, 0.34);
+  }
+
+  .qs-tier-vip {
+    --tier-light: #93f3ad;
+    --tier-base: #4dd87a;
+    --tier-ink: #06301b;
+    --tier-soft: rgba(77, 216, 122, 0.1);
+    --tier-line: rgba(77, 216, 122, 0.34);
   }
 
   *::-webkit-scrollbar { width: 9px; height: 9px; }

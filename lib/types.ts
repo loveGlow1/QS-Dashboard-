@@ -47,7 +47,13 @@ export interface Plan {
 export interface Investment {
   id: string;
   user_id: string;
+  /** The plan's key, e.g. "vip". A slug, never shown to a customer. */
   plan_id: string;
+  /** What the plan is called: "Gold", "VIP Premium". Shown instead of the
+      slug, which capitalises into "Vip" and reads like a typo. */
+  plan_name: string;
+  /** The plan's tier, so a status badge can wear its colour. */
+  plan_tier: PlanTier;
   principal: number;
   current_value: number;
   start_date: string;

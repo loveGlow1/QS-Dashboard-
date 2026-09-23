@@ -4,7 +4,9 @@ import { Figure } from "@/components/ui/Figure";
 import { clamp, daysBetween, formatDate, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
-const STATUS_TONE = { active: "live", matured: "accent", cancelled: "neutral" } as const;
+/* Running wears the tier filled, finished wears it as an outline, and a
+   cancelled holding wears no tier colour at all. */
+const STATUS_TONE = { active: "live", matured: "tier", cancelled: "neutral" } as const;
 
 export function HoldingsList({
   investments,
@@ -31,14 +33,14 @@ export function HoldingsList({
           <Card key={inv.id}>
             <header className="mb-5 flex items-start justify-between gap-3">
               <div>
-                <p className="text-[1.0625rem] font-semibold tracking-[-0.02em] capitalize">
-                  {inv.plan_id}
+                <p className="text-[1.0625rem] font-semibold tracking-[-0.02em]">
+                  {inv.plan_name}
                 </p>
                 <p className="mt-[3px] text-xs text-mist-500">
                   Started {formatDate(inv.start_date)}
                 </p>
               </div>
-              <Badge tone={STATUS_TONE[inv.status] ?? "neutral"} dot>
+              <Badge tone={STATUS_TONE[inv.status] ?? "neutral"} tier={inv.plan_tier} dot>
                 {inv.status}
               </Badge>
             </header>

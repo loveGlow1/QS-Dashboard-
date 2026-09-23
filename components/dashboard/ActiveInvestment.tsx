@@ -57,10 +57,10 @@ function InvestmentDetail({
     <div className="grid gap-[18px]">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[1.0625rem] font-semibold tracking-[-0.02em]">{investment.plan_id}</p>
+          <p className="text-[1.0625rem] font-semibold tracking-[-0.02em]">{investment.plan_name}</p>
           <p className="mt-[3px] text-xs text-mist-500">{formatDate(investment.start_date)} start</p>
         </div>
-        <Badge tone="live" dot>
+        <Badge tone="live" tier={investment.plan_tier} dot>
           Active
         </Badge>
       </header>
