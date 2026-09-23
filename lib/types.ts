@@ -22,6 +22,10 @@ export interface Profile {
 export type PlanTier = "silver" | "gold" | "vip";
 
 export interface Plan {
+  /** What the tier card shows. Separate from minimum and maximum, which are
+      the naira amounts the server enforces — see the plans migration. */
+  usd_minimum: number | null;
+  usd_maximum: number | null;
   id: string;
   name: string;
   summary: string;
