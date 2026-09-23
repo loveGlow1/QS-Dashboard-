@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { Figure } from "@/components/ui/Figure";
 import { Icon } from "@/components/ui/Icon";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
@@ -74,13 +75,19 @@ export function PortfolioCard({
           </div>
 
           <dl className="mt-auto grid grid-cols-2 gap-x-4 gap-y-5 border-t border-[var(--line-soft)] pt-6">
-            <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
+            <Metric
+              label="Invested"
+              node={<Figure naira={portfolio.invested} rate={rate} />}
+            />
             <Metric
               label="Growth"
-              value={money(portfolio.growth, { decimals: 2, signed: true })}
+              node={<Figure naira={portfolio.growth} rate={rate} signed />}
               tone={up ? "up" : "down"}
             />
-            <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
+            <Metric
+              label="Withdrawable"
+              node={<Figure naira={portfolio.withdrawable} rate={rate} />}
+            />
             <Metric
               label="Maturity"
               value={investment ? formatDate(investment.maturity_date) : "—"}
@@ -104,10 +111,14 @@ export function PortfolioCard({
 function Metric({
   label,
   value,
+  node,
   tone,
 }: {
   label: string;
-  value: string;
+  /** A plain string, for things that are not money. */
+  value?: string;
+  /** A rendered figure, for things that are. */
+  node?: React.ReactNode;
   tone?: "up" | "down";
 }) {
   return (
@@ -118,7 +129,7 @@ function Metric({
           tone === "up" ? "text-up" : tone === "down" ? "text-down" : "text-mist-50"
         }`}
       >
-        {value}
+        {node ?? value}
       </dd>
     </div>
   );

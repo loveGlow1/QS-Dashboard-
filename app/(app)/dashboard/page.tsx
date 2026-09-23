@@ -62,6 +62,7 @@ export default async function DashboardPage() {
           portfolio={portfolio}
           investment={investment}
           transactions={transactions}
+          rate={rate}
         />
       </div>
 
@@ -78,8 +79,8 @@ export default async function DashboardPage() {
       <section
         className={`mb-4 grid gap-4 ${investment ? "min-[1025px]:grid-cols-[minmax(0,1fr)_minmax(0,380px)]" : ""}`}
       >
-        <RecentActivity transactions={transactions} />
-        {investment && <ActiveInvestment investment={investment} />}
+        <RecentActivity transactions={transactions} rate={rate} />
+        {investment && <ActiveInvestment investment={investment} rate={rate} />}
       </section>
       </div>
 
