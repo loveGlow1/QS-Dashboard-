@@ -207,6 +207,72 @@
     transform: translateY(-1px) rotate(-45deg);
   }
 
+  /* --- Live status badge ------------------------------------------------
+     Emerald falling into silver, built the way a physical control is rather
+     than painted as one flat colour: a machined dark fill, a bright gradient
+     rim around it, a lit top edge and a little emerald spill.
+
+     Two background layers do it — the fill clipped to the padding box, the
+     rim to the border box — which is what lets the border carry a gradient
+     without a wrapper element. The fill is opaque on purpose: the rim layer
+     is painted under the whole badge, not just its edge, so a translucent
+     fill lets the bright rim show through and washes the word out. Opaque
+     also makes it a material rather than a tint, which is the point.
+
+     The light travels from emerald at the top left to a cool steel at the
+     bottom right. That, and not the colour alone, is where the depth at
+     24px tall comes from. */
+  .qs-badge-live {
+    border-color: transparent;
+    background:
+      linear-gradient(
+        135deg,
+        #17493b 0%,
+        #153c34 34%,
+        #202a39 70%,
+        #2b3446 100%
+      ) padding-box,
+      linear-gradient(
+        135deg,
+        rgba(126, 240, 195, 0.9) 0%,
+        rgba(52, 211, 153, 0.55) 30%,
+        rgba(198, 210, 230, 0.5) 64%,
+        rgba(240, 245, 253, 0.85) 100%
+      ) border-box;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -1px 0 rgba(2, 8, 18, 0.3),
+      0 1px 2px rgba(3, 9, 20, 0.5),
+      0 0 14px -6px rgba(16, 185, 129, 0.7);
+  }
+
+  /* The label takes the same journey as the pill. Both ends stay light
+     against a fill that stays dark the whole way across, so no part of the
+     word drops out the way it would over a fill that brightens under it. */
+  .qs-badge-live-label {
+    color: #e2f1ea;
+  }
+
+  /* Guarded: without the clip, `color: transparent` would leave the word
+     invisible rather than ungradiented. */
+  @supports (-webkit-background-clip: text) or (background-clip: text) {
+    .qs-badge-live-label {
+      background: linear-gradient(104deg, #93f2c8 0%, #ccf3e0 44%, #eef2fb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+  }
+
+  /* The dot is the only part that stays pure emerald: it is the signal, and
+     a signal should not be in two minds about its colour. */
+  .qs-badge-live-dot {
+    background: #6ee7b7;
+    box-shadow:
+      0 0 0 2px rgba(16, 185, 129, 0.18),
+      0 0 7px rgba(52, 211, 153, 0.9);
+  }
+
   *::-webkit-scrollbar { width: 9px; height: 9px; }
   *::-webkit-scrollbar-track { background: transparent; }
   *::-webkit-scrollbar-thumb {

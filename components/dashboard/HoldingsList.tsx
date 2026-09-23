@@ -4,7 +4,7 @@ import { Figure } from "@/components/ui/Figure";
 import { clamp, daysBetween, formatDate, percent } from "@/lib/format";
 import type { Investment } from "@/lib/types";
 
-const STATUS_TONE = { active: "up", matured: "accent", cancelled: "neutral" } as const;
+const STATUS_TONE = { active: "live", matured: "accent", cancelled: "neutral" } as const;
 
 export function HoldingsList({
   investments,
