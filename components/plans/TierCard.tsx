@@ -2,7 +2,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { TierWave } from "@/components/plans/TierWave";
 import { Sweep } from "@/components/ui/Sweep";
-import { money } from "@/lib/format";
+import { money, usd } from "@/lib/format";
 import type { Plan, PlanTier } from "@/lib/types";
 
 /**
@@ -91,22 +91,16 @@ const STYLES: Record<PlanTier, TierStyle> = {
   },
 };
 
-/** `50` → `$50`, `2500` → `$2.5K`, `50000` → `$50K`. */
+/**
+ * `7.56` → `$7.56`, `7558.57` → `$7.6K`.
+ *
+ * The dollar figures are derived from the naira ones, which are the price, so
+ * they rarely land on round numbers and the cents matter.
+ */
 function shortUsd(value: number): string {
-  if (value >= 1_000_000) {
-    const m = value / 1_000_000;
-    return `$${Number.isInteger(m) ? m : m.toFixed(1)}M`;
-  }
-  if (value >= 1000) {
-    const k = value / 1000;
-    return `$${Number.isInteger(k) ? k : k.toFixed(1)}K`;
-  }
-  return `$${value}`;
-}
-
-/** `2500` → `$2,500`. */
-function usd(value: number): string {
-  return `$${value.toLocaleString("en-US")}`;
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+  return usd(value);
 }
 
 export function TierCard({
