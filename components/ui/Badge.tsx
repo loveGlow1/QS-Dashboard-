@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Sweep } from "@/components/ui/Sweep";
 import type { PlanTier } from "@/lib/types";
 
 type Tone = "neutral" | "up" | "down" | "warn" | "accent" | "live" | "tier";
@@ -47,10 +48,18 @@ export function Badge({
 
   return (
     <span
-      className={`inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full border px-[9px] text-[0.6875rem] font-medium uppercase tracking-[0.04em] ${TONES[tone]} ${
+      className={`relative isolate inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full border px-[9px] text-[0.6875rem] font-medium uppercase tracking-[0.04em] ${TONES[tone]} ${
         wearsTier ? TIER[tier] : ""
       }`}
     >
+      {/* Only the running state moves. The band crosses the fill and passes
+          under the text — a negative z-index child paints above the badge's
+          own background but below its content, which is why the word stays
+          crisp while the light goes by. Rounded so it is clipped to the pill
+          rather than to a rectangle inside it. */}
+      {tone === "live" && (
+        <Sweep color="rgba(255,255,255,0.5)" seconds={4.5} className="-z-10 rounded-full" />
+      )}
       {dot && <span className="size-1.5 flex-none rounded-full bg-current" />}
       {children}
     </span>

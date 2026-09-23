@@ -116,6 +116,13 @@ export function PortfolioCard({
           )}
         </div>
       )}
+
+      {/* The one action this card leads to, on the card whether or not there
+          is already a position — the phone has always shown it in both
+          states, and it was only ever on the desktop card while the account
+          was empty, so it vanished the moment someone invested. It reads
+          "Invest again" once they hold something. */}
+      <StartInvesting invested={hasPosition} className="mt-4 w-full" />
     </Card>
   );
 }
@@ -154,9 +161,8 @@ function Metric({
    above it, and the layered icon appeared twice in the same 200 pixels. */
 function EmptyPosition() {
   return (
-    <div className="mt-auto grid justify-items-start gap-3.5 border-t border-[var(--line-soft)] pt-6">
+    <div className="mt-auto border-t border-[var(--line-soft)] pt-6">
       <p className="text-sm font-medium text-mist-50">No active investments yet.</p>
-      <StartInvesting className="w-full" />
     </div>
   );
 }
