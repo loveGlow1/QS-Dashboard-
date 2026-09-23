@@ -82,7 +82,7 @@ export function DeclareTransfer({
         </p>
       )}
       {state.success && (
-        <p className="flex items-start gap-2 rounded-md border border-[rgba(62,207,154,0.24)] bg-[var(--up-soft)] px-3.5 py-2.5 text-[0.8125rem] leading-[1.55] text-up">
+        <p className="flex items-start gap-2 rounded-md border border-[rgba(62,207,95,0.24)] bg-[var(--up-soft)] px-3.5 py-2.5 text-[0.8125rem] leading-[1.55] text-up">
           <Icon name="check" size={15} className="mt-0.5 flex-none" />
           {state.success}
         </p>

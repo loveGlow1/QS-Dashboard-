@@ -73,22 +73,23 @@ const STYLES: Record<PlanTier, TierStyle> = {
     cta: "border-transparent bg-[#e8c07a] font-semibold text-[#2a1d09] hover:bg-[#f2cf90]",
   },
   vip: {
-    /* Emerald with depth: a lit upper-left falling away to a deep base,
-       rather than a dark card wearing a green tint. */
+    /* The brand green with depth: a lit upper-left falling away to a deep
+       base, rather than a dark card wearing a green tint. The base is the
+       ramp's 900, the same deep green the reference card is built on. */
     surface:
-      "bg-[linear-gradient(152deg,#1f6444_0%,#18543a_26%,#11402c_54%,#0c3021_80%,#092518_100%)]",
-    wave: ["rgba(110,231,135,0.22)", "rgba(110,231,135,0)"],
+      "bg-[linear-gradient(152deg,#2c683a_0%,#245730_26%,#194020_54%,#112e17_80%,#0c2311_100%)]",
+    wave: ["rgba(96,250,131,0.22)", "rgba(96,250,131,0)"],
     sweep: { offset: 4.6 },
-    border: "border-[rgba(94,214,138,0.3)]",
-    glow: "radial-gradient(72% 48% at 20% 0%, rgba(120,235,150,0.22) 0%, rgba(120,235,150,0) 72%)",
-    badge: "border-[rgba(110,231,135,0.5)] bg-[rgba(110,231,135,0.08)] text-[#6ee787]",
+    border: "border-[rgba(96,250,131,0.3)]",
+    glow: "radial-gradient(72% 48% at 20% 0%, rgba(157,251,178,0.22) 0%, rgba(157,251,178,0) 72%)",
+    badge: "border-[rgba(96,250,131,0.5)] bg-[rgba(96,250,131,0.08)] text-[#60fa83]",
     icon: "trendUp",
-    iconWrap: "border-[rgba(110,231,135,0.32)] bg-[rgba(110,231,135,0.12)] text-[#6ee787]",
+    iconWrap: "border-[rgba(96,250,131,0.32)] bg-[rgba(96,250,131,0.12)] text-[#60fa83]",
     title: "text-white",
-    body: "text-[#a6c5b2]",
+    body: "text-[#a9c9b2]",
     amount: "text-white",
-    tick: "text-[#4ade80]",
-    cta: "border-transparent bg-[#6ee787] font-semibold text-[#06301b] shadow-[0_12px_34px_-14px_rgba(110,231,135,0.8)] hover:bg-[#82ee97]",
+    tick: "text-[#60fa83]",
+    cta: "border-transparent bg-[#60fa83] font-semibold text-[#06300f] shadow-[0_12px_34px_-14px_rgba(96,250,131,0.8)] hover:bg-[#7cfb99]",
   },
 };
 

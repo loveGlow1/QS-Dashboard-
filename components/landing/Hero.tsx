@@ -11,7 +11,7 @@ export function Hero() {
         className="pointer-events-none absolute -top-[34%] left-1/2 -z-20 aspect-[1.35/1] w-[min(1180px,130vw)] -translate-x-1/2 blur-[6px]"
         style={{
           background:
-            "radial-gradient(48% 46% at 50% 42%, rgba(16,185,129,0.3) 0%, rgba(16,185,129,0) 68%), radial-gradient(38% 40% at 22% 30%, rgba(4,120,87,0.24) 0%, rgba(4,120,87,0) 72%), radial-gradient(40% 44% at 80% 26%, rgba(110,231,183,0.16) 0%, rgba(110,231,183,0) 70%)",
+            "radial-gradient(48% 46% at 50% 42%, rgba(16,185,54,0.3) 0%, rgba(16,185,54,0) 68%), radial-gradient(38% 40% at 22% 30%, rgba(4,120,30,0.24) 0%, rgba(4,120,30,0) 72%), radial-gradient(40% 44% at 80% 26%, rgba(110,231,137,0.16) 0%, rgba(110,231,137,0) 70%)",
         }}
       />
       <div

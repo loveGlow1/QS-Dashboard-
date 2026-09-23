@@ -84,7 +84,7 @@ export function ProductWindow() {
                 {money(EXAMPLE.total)}
               </p>
             </div>
-            <span className="inline-flex h-6 flex-none items-center gap-1.5 rounded-full border border-[rgba(62,207,154,0.2)] bg-[var(--up-soft)] px-[9px] text-[0.6875rem] font-medium text-up">
+            <span className="inline-flex h-6 flex-none items-center gap-1.5 rounded-full border border-[rgba(62,207,95,0.2)] bg-[var(--up-soft)] px-[9px] text-[0.6875rem] font-medium text-up">
               <span className="size-1.5 rounded-full bg-current" />+{EXAMPLE.growthPercent}%
             </span>
           </div>

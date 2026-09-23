@@ -8,8 +8,11 @@ const BASE =
   "inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-[-0.01em] whitespace-nowrap transition-[background-color,border-color,color,transform,opacity] duration-150 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none";
 
 const VARIANTS: Record<Variant, string> = {
+  /* A bright fill with dark ink, matching the tier-card CTAs and the brand
+     reference. White on a mid green was the one button in the app that did
+     not look like the rest of it. */
   primary:
-    "bg-accent-500 text-white border border-accent-500 shadow-[0_8px_24px_-12px_rgba(16,185,129,0.9)] hover:bg-accent-400 hover:border-accent-400",
+    "bg-accent-400 text-[var(--color-accent-ink)] border border-accent-400 shadow-[0_8px_24px_-12px_rgba(96,250,131,0.55)] hover:bg-accent-300 hover:border-accent-300",
   ghost:
     "border border-[var(--line-strong)] text-mist-200 hover:bg-[rgba(148,168,214,0.07)] hover:text-mist-50",
   quiet: "text-mist-400 hover:text-mist-50 hover:bg-[rgba(148,168,214,0.07)]",

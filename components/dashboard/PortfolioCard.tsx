@@ -30,7 +30,7 @@ export function PortfolioCard({
   const up = portfolio.growth >= 0;
 
   return (
-    <Card as="article" className="flex flex-col bg-[linear-gradient(170deg,rgba(16,185,129,0.1)_0%,rgba(16,185,129,0)_44%),var(--color-ink-850)]">
+    <Card as="article" className="flex flex-col bg-[linear-gradient(170deg,rgba(16,185,54,0.1)_0%,rgba(16,185,54,0)_44%),var(--color-ink-850)]">
       <h2 className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-mist-500">
         Your Portfolio
       </h2>
@@ -73,16 +73,14 @@ export function PortfolioCard({
             <Badge tone={up ? "up" : "down"}>{percent(portfolio.growth_percent)}</Badge>
           </div>
 
+          {/* Growth is stated once, in the row above with its percentage
+              beside it. It used to be repeated here as a fourth figure,
+              which said the same thing twice on one card. */}
           <dl className="mt-auto grid grid-cols-2 gap-x-4 gap-y-5 border-t border-[var(--line-soft)] pt-6">
             {/* One line each. The dollar-over-naira pair belongs to the
                 headline above; repeating it in all four cells made the
                 breakdown harder to read, not clearer. */}
             <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
-            <Metric
-              label="Growth"
-              value={money(portfolio.growth, { decimals: 2, signed: true })}
-              tone={up ? "up" : "down"}
-            />
             <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
             <Metric
               label="Maturity"

@@ -47,7 +47,7 @@ export function BankAccounts({ accounts }: { accounts: BankAccountView[] }) {
               <span
                 className={`inline-flex h-6 flex-none items-center gap-1.5 rounded-full border px-[9px] text-[0.6875rem] font-medium ${
                   account.verified
-                    ? "border-[rgba(62,207,154,0.2)] bg-[var(--up-soft)] text-up"
+                    ? "border-[rgba(62,207,95,0.2)] bg-[var(--up-soft)] text-up"
                     : "border-[rgba(233,184,114,0.2)] bg-[var(--warn-soft)] text-warn"
                 }`}
               >
@@ -159,7 +159,7 @@ function Note({ tone, children }: { tone: "error" | "warn" | "ok"; children: Rea
   const styles = {
     error: "border-[rgba(240,104,123,0.26)] bg-[var(--down-soft)] text-[#f8b3bd]",
     warn: "border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] text-[#edd0a4]",
-    ok: "border-[rgba(62,207,154,0.26)] bg-[var(--up-soft)] text-[#9fe8c8]",
+    ok: "border-[rgba(62,207,95,0.26)] bg-[var(--up-soft)] text-[#9fe8b0]",
   }[tone];
   return (
     <p className={`rounded-md border px-3.5 py-3 text-[0.8125rem] leading-[1.6] ${styles}`}>
