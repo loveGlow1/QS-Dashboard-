@@ -46,7 +46,12 @@ async function passwordConfirmed(email: string, password: string): Promise<boole
       auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     });
     const { error } = await probe.auth.signInWithPassword({ email, password });
-    if (!error) await probe.auth.signOut();
+    /* Local scope, and it is load-bearing. signOut defaults to 'global',
+       which revokes every refresh token the customer has — including the
+       session in the browser that is mid-request. Confirming a password was
+       signing people out and bouncing them to the login page. Nothing is
+       persisted by this probe client anyway, so there is nothing to revoke. */
+    if (!error) await probe.auth.signOut({ scope: "local" });
     return !error;
   } catch {
     return false;

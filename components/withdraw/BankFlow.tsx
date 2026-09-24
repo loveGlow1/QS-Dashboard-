@@ -3,7 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import { requestWithdrawal, type ActionState } from "@/app/withdraw-actions";
 import { BankAccounts } from "@/components/withdraw/BankAccounts";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { money, ngnToUsd, usd } from "@/lib/format";
 import { maskAccount, type BankAccountView, type PayoutMethod } from "@/lib/types";
@@ -379,9 +379,13 @@ function Success({
       <span className="grid size-10 place-items-center rounded-md border border-[rgba(62,207,95,0.26)] text-up">
         <Icon name="checkCircle" size={20} />
       </span>
-      <p className="text-sm font-semibold text-mist-50">Withdrawal request submitted</p>
+      <p className="text-[1.0625rem] font-semibold tracking-[-0.02em] text-mist-50">
+        Withdrawal request successful
+      </p>
       <p className="max-w-[48ch] text-[0.8125rem] leading-[1.65] text-mist-300">
-        Your withdrawal has been received and is being processed.
+        Your request has been logged and stays pending until it is confirmed
+        and the transfer is made. Your balance already reflects the amount
+        being held for it.
       </p>
 
       <dl className="mt-1 grid w-full max-w-[420px] gap-2">
@@ -412,6 +416,12 @@ function Success({
           </div>
         )}
       </dl>
+
+      {/* Acknowledging it goes back to the dashboard rather than leaving the
+          customer on a confirmation with nowhere to go. */}
+      <ButtonLink href="/dashboard" variant="primary" size="sm" className="mt-2">
+        OK
+      </ButtonLink>
     </div>
   );
 }
