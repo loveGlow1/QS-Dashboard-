@@ -132,7 +132,7 @@ export function DeclareTransfer({
           <p className="text-xs leading-[1.6] text-mist-500">
             {asset
               ? "Send only to the address above, and only on the network shown."
-              : "Use the reference above on the transfer so it can be matched to you."}
+              : "Attach the receipt below so your transfer can be matched to you."}
           </p>
         )}
       </div>
