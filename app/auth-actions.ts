@@ -127,3 +127,26 @@ export async function signOut() {
   }
   redirect("/login");
 }
+
+/**
+ * Sends the activation email again.
+ *
+ * Supabase decides whether there is anything to send: an address that is
+ * already activated gets nothing. The reply is deliberately the same either
+ * way, so this cannot be used to find out which addresses have accounts.
+ */
+export async function resendActivation(): Promise<AuthState> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) return { error: "You must be signed in." };
+
+  await supabase.auth.resend({ type: "signup", email: user.email });
+
+  return {
+    error: null,
+    notice: "Activation email sent. Check your inbox, and your spam folder.",
+  };
+}

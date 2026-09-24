@@ -24,6 +24,7 @@ export function WithdrawFlow({
   accounts,
   withdrawable,
   rate = 0,
+  verified = false,
 }: {
   methods: PayoutMethod[];
   networks: PayoutNetwork[];
@@ -31,8 +32,31 @@ export function WithdrawFlow({
   withdrawable: number;
   /** Naira per dollar; zero states the minimum in naira alone. */
   rate?: number;
+  /** Set by the server from the account's own record, never from the client. */
+  verified?: boolean;
 }) {
   const [method, setMethod] = useState<PayoutMethod | null>(null);
+
+  /* The gate, stated before anything is filled in. The server refuses an
+     unverified request regardless — this is here so the refusal is not a
+     surprise at the end of a form. */
+  if (!verified) {
+    return (
+      <div className="grid justify-items-start gap-3 rounded-md border border-[rgba(233,184,114,0.26)] bg-[var(--warn-soft)] p-5">
+        <span className="grid size-10 place-items-center rounded-md border border-[rgba(233,184,114,0.28)] bg-[rgba(233,184,114,0.1)] text-warn">
+          <Icon name="alert" size={19} />
+        </span>
+        <p className="text-sm font-medium text-mist-50">
+          Please verify your email address to submit withdrawal requests.
+        </p>
+        <p className="max-w-[52ch] text-[0.8125rem] leading-[1.65] text-mist-400">
+          Activating the address on your account unlocks deposits, investments
+          and withdrawals. The activation link is in your inbox — you can send
+          it again from the panel on the left.
+        </p>
+      </div>
+    );
+  }
 
   if (!method) {
     return (

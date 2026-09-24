@@ -6,6 +6,7 @@ import { Logo } from "@/components/brand/Logo";
 import { Icon } from "@/components/ui/Icon";
 import { ACCOUNT, MONEY, OVERVIEW, type NavItem } from "./nav";
 import { signOut } from "@/app/auth-actions";
+import { VerificationBadge } from "@/components/account/VerificationBadge";
 
 function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -31,11 +32,11 @@ function NavLink({ item, onNavigate }: { item: NavItem; onNavigate?: () => void 
 export function Sidebar({
   open,
   onClose,
-  tier,
+  verified,
 }: {
   open: boolean;
   onClose: () => void;
-  tier: string;
+  verified: boolean;
 }) {
   return (
     <>
@@ -88,9 +89,7 @@ export function Sidebar({
         </nav>
 
         <div className="grid gap-3 border-t border-[var(--line-soft)] pt-3.5">
-          <div className="grid justify-items-start gap-1.5 px-2.5">
-            <p className="text-[0.6875rem] text-mist-500">{tier}</p>
-          </div>
+          <VerificationBadge verified={verified} />
 
           <form action={signOut}>
             <button

@@ -8,6 +8,7 @@ import {
   getPayoutMethods,
   getPayoutNetworks,
   getPortfolio,
+  getProfile,
   getWithdrawals,
   getUsdRate,
 } from "@/lib/data";
@@ -20,14 +21,16 @@ export const metadata: Metadata = {
 };
 
 export default async function WithdrawPage() {
-  const [portfolio, accounts, methods, networks, withdrawals, rate] = await Promise.all([
-    getPortfolio("1M"),
-    getBankAccounts(),
-    getPayoutMethods(),
-    getPayoutNetworks(),
-    getWithdrawals(),
-    getUsdRate(),
-  ]);
+  const [portfolio, accounts, methods, networks, withdrawals, rate, profile] =
+    await Promise.all([
+      getPortfolio("1M"),
+      getBankAccounts(),
+      getPayoutMethods(),
+      getPayoutNetworks(),
+      getWithdrawals(),
+      getUsdRate(),
+      getProfile(),
+    ]);
 
   return (
     <>
@@ -85,6 +88,7 @@ export default async function WithdrawPage() {
               accounts={accounts.map(toBankAccountView)}
               withdrawable={portfolio.withdrawable}
               rate={rate}
+              verified={Boolean(profile?.verified)}
             />
           </Card>
 
