@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useActionState, useMemo, useState } from "react";
 import { requestWithdrawal, type ActionState } from "@/app/withdraw-actions";
 import { BankAccounts } from "@/components/withdraw/BankAccounts";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { money, ngnToUsd, usd } from "@/lib/format";
 import { maskAccount, type BankAccountView, type PayoutMethod } from "@/lib/types";
@@ -42,6 +43,7 @@ export function BankFlow({
   const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
   const [amount, setAmount] = useState("");
   const [state, formAction, pending] = useActionState(requestWithdrawal, INITIAL);
+  const router = useRouter();
 
   const account = accounts.find((a) => a.id === accountId) ?? null;
   const parsed = Number(amount.replace(/,/g, ""));
@@ -67,7 +69,28 @@ export function BankFlow({
   const ready = valid && !problem && account !== null;
 
   if (state.success) {
-    return <Success reference={state.reference ?? null} quote={quote} account={account} />;
+    return (
+      <Success
+        reference={state.reference ?? null}
+        quote={quote}
+        account={account}
+        /* Handing them back to the chooser unmounts this flow, which is what
+           actually clears it — the amount, the step and the action's own
+           state all go with it, so the next request starts blank. A link to
+           /withdraw did not: it is the page they are already on, so the
+           navigation was a no-op and the receipt just sat there. The refresh
+           is for the balance and the requests list, which the server renders
+           and which this request has just changed. */
+        onDone={() => {
+          router.refresh();
+          onBack();
+          /* The receipt is a tall card. Without this a phone is left halfway
+             down a page that just got shorter, looking at the requests list
+             rather than the chooser it was sent back to. */
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+    );
   }
 
   return (
@@ -369,10 +392,12 @@ function Success({
   reference,
   quote,
   account,
+  onDone,
 }: {
   reference: string | null;
   quote: { net: number } | null;
   account: BankAccountView | null;
+  onDone: () => void;
 }) {
   return (
     <div className="grid justify-items-start gap-3 rounded-md border border-[rgba(62,207,95,0.26)] bg-[var(--up-soft)] p-6">
@@ -417,11 +442,9 @@ function Success({
         )}
       </dl>
 
-      {/* Back to where they came from, ready for another request — not to a
-          dashboard they did not ask for. */}
-      <ButtonLink href="/withdraw" variant="primary" size="sm" className="mt-2">
+      <Button type="button" variant="primary" size="sm" className="mt-2" onClick={onDone}>
         OK
-      </ButtonLink>
+      </Button>
     </div>
   );
 }
