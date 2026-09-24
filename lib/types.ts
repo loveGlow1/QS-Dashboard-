@@ -367,6 +367,9 @@ export interface Deposit {
   confirmations: number;
   tx_hash: string | null;
   failure_reason: string | null;
+  /** Path of the receipt in the private bucket. Not a URL — a link is signed
+      on demand and expires. */
+  proof_of_payment_url: string | null;
   created_at: string;
   completed_at: string | null;
 }
