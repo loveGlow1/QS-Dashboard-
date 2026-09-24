@@ -1,11 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import Link from "next/link";
+import { useActionState, useRef, useState } from "react";
 import { declareTransfer, type DepositActionState } from "@/app/deposit-actions";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { money } from "@/lib/format";
 
 const INITIAL: DepositActionState = { error: null };
+
+const MAX_BYTES = 5 * 1024 * 1024;
+const TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
 
 /**
  * "I've sent it."
@@ -16,18 +21,86 @@ const INITIAL: DepositActionState = { error: null };
  * is written pending, no balance moves, and the copy says so rather than
  * implying the money is on its way in.
  *
- * Crypto asks for the transaction hash, because without it there is nothing to
- * look up on a shared address that many customers send to.
+ * The receipt is optional but asked for, because it is the difference between
+ * the back office matching a transfer in a minute and hunting for it.
  */
 export function DeclareTransfer({
   destinationId,
   asset,
+  minimum,
 }: {
   destinationId: string;
   /** null for naira; a ticker means the chain needs a transaction hash. */
   asset: string | null;
+  /** The method's own floor, the same one the database enforces. */
+  minimum: number;
 }) {
   const [state, action, pending] = useActionState(declareTransfer, INITIAL);
+  const [amount, setAmount] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [fileProblem, setFileProblem] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const typed = Number(amount.replace(/[₦,\s]/g, ""));
+  const valid = Number.isFinite(typed) && typed > 0;
+  const belowMinimum = valid && minimum > 0 && typed < minimum;
+  const ready = valid && !belowMinimum && !pending;
+
+  function take(chosen: File | null) {
+    if (!chosen) {
+      setFile(null);
+      setFileProblem(null);
+      return;
+    }
+    if (!TYPES.includes(chosen.type)) {
+      setFileProblem("Attach a PNG, JPG, WEBP or PDF.");
+      return;
+    }
+    if (chosen.size > MAX_BYTES) {
+      setFileProblem("That file is over 5MB. Attach a smaller one.");
+      return;
+    }
+    setFileProblem(null);
+    setFile(chosen);
+  }
+
+  /* Filed. The claim, its reference and what happens next — not a balance. */
+  if (state.success) {
+    return (
+      <div className="grid justify-items-start gap-3 border-t border-[var(--line-soft)] pt-4">
+        <span className="grid size-11 place-items-center rounded-lg border border-[rgba(233,184,114,0.28)] bg-[var(--warn-soft)] text-warn">
+          <Icon name="clock" size={21} />
+        </span>
+        <p className="text-[1.0625rem] font-semibold tracking-[-0.02em] text-mist-50">
+          Deposit request logged
+        </p>
+        <p className="max-w-[52ch] text-[0.8125rem] leading-[1.65] text-mist-400">
+          We are verifying your transfer
+          {state.amount ? ` of ${money(state.amount, { decimals: 2 })}` : ""}. Your
+          balance updates once it is confirmed as received — nothing on this
+          screen credits your account.
+        </p>
+
+        {state.reference && (
+          <div className="w-full rounded-md border border-[var(--line)] bg-ink-800 px-3.5 py-3">
+            <p className="text-[0.6875rem] font-medium uppercase tracking-[0.08em] text-mist-500">
+              Reference
+            </p>
+            <p className="mt-1 font-mono text-[0.9375rem] text-mist-50">{state.reference}</p>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href="/transactions" variant="primary" size="sm">
+            View transactions
+          </ButtonLink>
+          <ButtonLink href="/dashboard" variant="ghost" size="sm">
+            Return to dashboard
+          </ButtonLink>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="grid gap-3 border-t border-[var(--line-soft)] pt-4">
@@ -45,14 +118,23 @@ export function DeclareTransfer({
             inputMode="decimal"
             autoComplete="off"
             placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             className="h-[46px] min-w-0 flex-1 bg-transparent text-[0.9375rem] tabular-nums outline-none placeholder:text-mist-500"
           />
         </div>
-        <p className="text-xs leading-[1.6] text-mist-500">
-          {asset
-            ? "Send only to the address above, and only on the network shown."
-            : "Use the reference above on the transfer so it can be matched to you."}
-        </p>
+        {belowMinimum ? (
+          <p className="text-xs leading-[1.6] text-warn">
+            The smallest deposit is{" "}
+            {asset ? `${minimum} ${asset}` : money(minimum, { decimals: 2 })}.
+          </p>
+        ) : (
+          <p className="text-xs leading-[1.6] text-mist-500">
+            {asset
+              ? "Send only to the address above, and only on the network shown."
+              : "Use the reference above on the transfer so it can be matched to you."}
+          </p>
+        )}
       </div>
 
       {asset && (
@@ -75,20 +157,90 @@ export function DeclareTransfer({
         </div>
       )}
 
+      {/* --- Receipt ---------------------------------------------------- */}
+      <div className="grid gap-[7px]">
+        <label htmlFor="declare-proof" className="text-[0.8125rem] font-medium text-mist-200">
+          Upload payment receipt or screenshot{" "}
+          <span className="font-normal text-mist-500">(recommended)</span>
+        </label>
+
+        <input
+          ref={inputRef}
+          id="declare-proof"
+          name="proof"
+          type="file"
+          accept={TYPES.join(",")}
+          onChange={(e) => take(e.target.files?.[0] ?? null)}
+          className="sr-only"
+        />
+
+        {file ? (
+          <div className="flex items-center gap-3 rounded-md border border-[var(--line)] bg-ink-800 px-3.5 py-3">
+            <span className="grid size-9 flex-none place-items-center rounded-sm bg-[var(--accent-soft)] text-accent-300">
+              <Icon name="file" size={17} />
+            </span>
+            <span className="grid min-w-0 flex-1 gap-[2px]">
+              <span className="truncate text-[0.8125rem] font-medium">{file.name}</span>
+              <span className="text-xs text-mist-500">
+                {(file.size / 1024).toFixed(0)} KB
+              </span>
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                take(null);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
+              className="flex-none text-xs font-medium text-mist-400 transition-colors hover:text-down"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const dropped = e.dataTransfer.files?.[0] ?? null;
+              if (dropped && inputRef.current) {
+                const bag = new DataTransfer();
+                bag.items.add(dropped);
+                inputRef.current.files = bag.files;
+              }
+              take(dropped);
+            }}
+            className="grid justify-items-center gap-1.5 rounded-md border border-dashed border-[var(--line-strong)] bg-ink-800 px-4 py-5 text-center transition-colors hover:border-[var(--accent-line)]"
+          >
+            <Icon name="download" size={18} className="rotate-180 text-mist-400" />
+            <span className="text-[0.8125rem] font-medium text-mist-200">
+              Drag a file here, or click to attach
+            </span>
+            <span className="text-xs text-mist-500">PNG, JPG, WEBP or PDF · up to 5MB</span>
+          </button>
+        )}
+
+        {fileProblem && <p className="text-xs text-down">{fileProblem}</p>}
+        <p className="text-xs leading-[1.6] text-mist-500">
+          It is how your transfer gets matched quickly. You can file without one.
+        </p>
+      </div>
+
       {state.error && (
         <p className="flex items-start gap-2 rounded-md border border-[rgba(240,104,123,0.24)] bg-[var(--down-soft)] px-3.5 py-2.5 text-[0.8125rem] leading-[1.55] text-down">
           <Icon name="alert" size={15} className="mt-0.5 flex-none" />
           {state.error}
         </p>
       )}
-      {state.success && (
-        <p className="flex items-start gap-2 rounded-md border border-[rgba(62,207,95,0.24)] bg-[var(--up-soft)] px-3.5 py-2.5 text-[0.8125rem] leading-[1.55] text-up">
-          <Icon name="check" size={15} className="mt-0.5 flex-none" />
-          {state.success}
-        </p>
-      )}
 
-      <Button type="submit" variant="ghost" size="sm" disabled={pending} className="justify-self-start">
+      <Button
+        type="submit"
+        variant="ghost"
+        size="sm"
+        disabled={!ready}
+        className="justify-self-start"
+      >
         {pending ? "Recording…" : "I've sent it"}
       </Button>
 

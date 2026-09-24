@@ -151,7 +151,7 @@ export function DepositFlow({
                   rather than presented as something to check against. */}
               {destination.overseen_by && (
                 <CopyField
-                  label="Account overseen by"
+                  label="Account manager"
                   value={destination.overseen_by}
                   mono={false}
                 />
@@ -205,7 +205,11 @@ export function DepositFlow({
           </p>
 
           {/* Every method is declared, because nothing here announces itself. */}
-          <DeclareTransfer destinationId={destination.id} asset={method.asset_code} />
+          <DeclareTransfer
+            destinationId={destination.id}
+            asset={method.asset_code}
+            minimum={minimum}
+          />
         </div>
       ) : (
         method.enabled && (
