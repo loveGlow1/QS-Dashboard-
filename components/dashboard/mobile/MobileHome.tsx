@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { Badge } from "@/components/ui/Badge";
+import { ButtonLink } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { StartInvesting } from "@/components/dashboard/StartInvesting";
 import { Sparkline } from "@/components/ui/Sparkline";
@@ -68,15 +69,31 @@ export function MobileHome({
   const progress = total > 0 ? clamp((elapsed / total) * 100, 0, 100) : 0;
   const remaining = Math.max(0, total - elapsed);
 
+  /* The position's own growth, not the account's. Same derivation as the
+     desktop panel so the two cannot disagree about one investment. */
+  const positionGrowth = investment
+    ? Number(investment.current_value) - Number(investment.principal)
+    : 0;
+  const positionPercent =
+    investment && Number(investment.principal) > 0
+      ? (positionGrowth / Number(investment.principal)) * 100
+      : 0;
+  const positionUp = positionGrowth >= 0;
+
   return (
-    <div className="grid gap-4">
+    /* grid-cols-1, not a bare grid: an implicit column is `auto`, which sizes
+       to its content and lets any wide child push the whole stack past the
+       screen. At 320px the action tiles did exactly that and every card below
+       inherited the drift. An explicit minmax(0,1fr) track pins the stack to
+       the screen and makes the children shrink instead. */
+    <div className="grid grid-cols-1 gap-4">
       {/* --- Quick actions, 2×2 ---------------------------------------- */}
       <div className="grid grid-cols-2 gap-2.5">
         {ACTIONS.map((a) => (
           <Link
             key={a.href}
             href={a.href}
-            className="flex min-h-[64px] items-center gap-3 rounded-lg border border-[var(--line)] bg-[rgba(15,22,41,0.72)] px-3 py-3 backdrop-blur-[10px] transition-[border-color,background-color] active:bg-ink-700"
+            className="flex min-h-[64px] items-center gap-3 rounded-lg border border-[var(--line)] bg-[rgba(15,22,41,0.72)] px-3 py-3 backdrop-blur-[10px] transition-[border-color,background-color] active:bg-ink-700 max-[359px]:gap-2.5 max-[359px]:px-2.5"
           >
             <span className={`grid size-9 flex-none place-items-center rounded-full border ${TONES[a.tone]}`}>
               <Icon name={a.icon} size={17} />
@@ -84,7 +101,14 @@ export function MobileHome({
             <span className="min-w-0 flex-1 truncate text-[0.9375rem] font-medium text-mist-50">
               {a.label}
             </span>
-            <Icon name="chevronRight" size={16} className="flex-none text-mist-500" />
+            {/* The label is the point of the tile. Below 360px the chevron is
+                what pushes it into an ellipsis, so it goes and the word
+                stays — "Withdraw", not "Wi…". */}
+            <Icon
+              name="chevronRight"
+              size={16}
+              className="flex-none text-mist-500 max-[359px]:hidden"
+            />
           </Link>
         ))}
       </div>
@@ -133,18 +157,26 @@ export function MobileHome({
           </div>
         )}
 
-        {/* The same figures the desktop card carries. Withdrawable was not
-            on this screen at all, so a phone could not tell you what you
-            could actually take out. */}
+        {/* The same four figures the desktop card carries, in the same
+            order. Withdrawable was not on this screen at all, and Maturity
+            was the last one still missing — the date was further down beside
+            the progress bar, but not here among the figures, so the two
+            cards did not read the same. */}
         <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-[var(--line-soft)] pt-5">
           <Metric label="Invested" value={money(portfolio.invested, { decimals: 2 })} />
           <Metric label="Withdrawable" value={money(portfolio.withdrawable, { decimals: 2 })} />
           {invested && (
-            <Metric
-              label="Growth"
-              value={percent(portfolio.growth_percent)}
-              tone={up ? "up" : "down"}
-            />
+            <>
+              <Metric
+                label="Growth"
+                value={percent(portfolio.growth_percent)}
+                tone={up ? "up" : "down"}
+              />
+              <Metric
+                label="Maturity"
+                value={investment ? formatDate(investment.maturity_date) : "—"}
+              />
+            </>
           )}
         </dl>
 
@@ -165,12 +197,35 @@ export function MobileHome({
                 </Badge>
               </header>
 
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-xs text-mist-500">Current value</span>
-                <span className="text-sm font-semibold tabular-nums">
-                  {money(investment.current_value, { decimals: 2 })}
-                </span>
-              </div>
+              {/* The three figures the desktop panel states for the
+                  position. Only Current value was here, so a phone could
+                  see what the investment is worth but not what went in or
+                  what it has made. */}
+              <dl className="grid gap-px overflow-hidden rounded-md bg-[var(--line-soft)]">
+                <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
+                  <dt className="text-xs text-mist-500">Initial investment</dt>
+                  <dd className="text-sm font-medium tabular-nums">
+                    {money(investment.principal, { decimals: 2 })}
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
+                  <dt className="text-xs text-mist-500">Current value</dt>
+                  <dd className="text-sm font-semibold tabular-nums">
+                    {money(investment.current_value, { decimals: 2 })}
+                  </dd>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
+                  <dt className="text-xs text-mist-500">Growth</dt>
+                  <dd
+                    className={`text-sm font-medium tabular-nums ${
+                      positionUp ? "text-up" : "text-down"
+                    }`}
+                  >
+                    {money(positionGrowth, { decimals: 2, signed: true })}{" "}
+                    <span className="text-xs opacity-85">{percent(positionPercent)}</span>
+                  </dd>
+                </div>
+              </dl>
 
               <div className="grid gap-2">
                 <div className="flex justify-between gap-3 text-[0.6875rem] font-medium text-mist-200">
@@ -188,6 +243,10 @@ export function MobileHome({
                   <span>{maturityLabel(remaining, investment.status)}</span>
                 </div>
               </div>
+
+              <ButtonLink href="/investments" variant="ghost" block>
+                View Investment
+              </ButtonLink>
             </div>
           ) : (
             <div className="flex items-start gap-3.5">
@@ -219,14 +278,14 @@ export function MobileHome({
           <span className="block text-[0.9375rem] font-semibold tracking-[-0.02em] text-mist-50">
             Portfolio Growth
           </span>
-          <span className="mt-1.5 block text-[1.5rem] font-semibold leading-[1.1] tracking-[-0.03em] tabular-nums text-mist-50">
+          <span className="mt-1.5 block whitespace-nowrap text-[1.5rem] font-semibold leading-[1.1] tracking-[-0.03em] tabular-nums text-mist-50 max-[359px]:text-[1.25rem]">
             {money(portfolio.growth, { decimals: 2, signed: portfolio.growth !== 0 })}
           </span>
           <span className="mt-1 block text-[0.8125rem] text-mist-400">
             {percent(portfolio.growth_percent)} since you started
           </span>
         </span>
-        <Sparkline points={portfolio.series} />
+        <Sparkline points={portfolio.series} className="flex-none max-[359px]:hidden" />
       </Link>
 
       <RecentActivity transactions={transactions} rate={rate} />
