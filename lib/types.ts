@@ -7,8 +7,17 @@
 
 export type PlanStatus = "open" | "waitlist" | "closed";
 export type InvestmentStatus = "active" | "matured" | "cancelled";
-export type TransactionType = "deposit" | "withdrawal" | "investment" | "return";
-export type TransactionStatus = "completed" | "pending" | "failed";
+/* `release` is written by mature_referral_bonuses when a referral bonus
+   becomes spendable. */
+export type TransactionType =
+  | "deposit"
+  | "withdrawal"
+  | "investment"
+  | "return"
+  | "release";
+/* `cancelled` is a withdrawal the customer pulled back. The row stays so the
+   history shows what happened; spendable_balance stops holding against it. */
+export type TransactionStatus = "completed" | "pending" | "failed" | "cancelled";
 
 /**
  * How far an account has been verified.
