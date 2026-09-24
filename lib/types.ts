@@ -10,12 +10,30 @@ export type InvestmentStatus = "active" | "matured" | "cancelled";
 export type TransactionType = "deposit" | "withdrawal" | "investment" | "return";
 export type TransactionStatus = "completed" | "pending" | "failed";
 
+/**
+ * How far an account has been verified.
+ *
+ * EMAIL_VERIFIED is the starter tier and the only one the platform grants
+ * today. The KYC levels exist so Persona can be slotted in without a second
+ * migration of everything that reads this.
+ */
+export type VerificationTier = "EMAIL_VERIFIED" | "KYC_LEVEL_1" | "KYC_LEVEL_2";
+
 export interface Profile {
   id: string;
   first_name: string;
   full_name: string;
   tier: string;
+  /**
+   * The spec's `is_verified`, under the name every gate in this codebase
+   * already reads. Derived by the database from the address being activated;
+   * never written by hand and not writable by the account holder.
+   */
   verified: boolean;
+  /** When the address was activated. Null until it is. */
+  email_verified_at: string | null;
+  /** Null until activated. */
+  verification_tier: VerificationTier | null;
   created_at: string;
 }
 

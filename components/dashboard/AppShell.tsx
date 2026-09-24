@@ -50,7 +50,7 @@ export function AppShell({
       <Sidebar
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
-        tier={profile?.tier ?? "Account"}
+        verified={Boolean(profile?.verified)}
       />
 
       <div className="flex min-h-screen flex-col min-[1025px]:ml-[var(--spacing-rail)]">
