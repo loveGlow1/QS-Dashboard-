@@ -417,9 +417,9 @@ function Success({
         )}
       </dl>
 
-      {/* Acknowledging it goes back to the dashboard rather than leaving the
-          customer on a confirmation with nowhere to go. */}
-      <ButtonLink href="/dashboard" variant="primary" size="sm" className="mt-2">
+      {/* Back to where they came from, ready for another request — not to a
+          dashboard they did not ask for. */}
+      <ButtonLink href="/withdraw" variant="primary" size="sm" className="mt-2">
         OK
       </ButtonLink>
     </div>

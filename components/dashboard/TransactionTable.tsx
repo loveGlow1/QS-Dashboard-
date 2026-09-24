@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { TransactionDetail } from "@/components/dashboard/TransactionDetail";
 import { Card } from "@/components/ui/Card";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Figure } from "@/components/ui/Figure";
@@ -38,6 +42,8 @@ export function TransactionTable({
   /** Naira per dollar; zero shows naira alone. */
   rate?: number;
 }) {
+  const [open, setOpen] = useState<Transaction | null>(null);
+
   return (
     <>
       <nav aria-label="Filter transactions" className="mb-5 flex flex-wrap gap-2">
@@ -75,10 +81,13 @@ export function TransactionTable({
               const amount = Number(txn.amount);
               const positive = amount >= 0;
               return (
-                <li
-                  key={txn.id}
-                  className="-mx-2.5 flex items-center gap-3 rounded-md border-b border-[var(--line-soft)] px-2.5 py-3.5 transition-colors last:border-b-0 hover:bg-ink-800"
-                >
+                <li key={txn.id} className="border-b border-[var(--line-soft)] last:border-b-0">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(txn)}
+                    aria-label={`${txn.label}, ${txn.status}. Open details`}
+                    className="-mx-2.5 flex w-[calc(100%+20px)] items-center gap-3 rounded-md px-2.5 py-3.5 text-left transition-colors hover:bg-ink-800"
+                  >
                   <span
                     className={`grid size-[34px] flex-none place-items-center rounded-sm ${
                       positive ? "bg-[var(--up-soft)] text-up" : "bg-[rgba(148,168,214,0.09)] text-mist-400"
@@ -120,13 +129,23 @@ export function TransactionTable({
                       />
                       {STATUS_LABEL[txn.status] ?? txn.status}
                     </span>
-                  </span>
+                    </span>
+                    <Icon
+                      name="chevronRight"
+                      size={15}
+                      className="flex-none text-mist-500"
+                    />
+                  </button>
                 </li>
               );
             })}
           </ul>
         )}
       </Card>
+
+      {open && (
+        <TransactionDetail txn={open} rate={rate} onClose={() => setOpen(null)} />
+      )}
     </>
   );
 }

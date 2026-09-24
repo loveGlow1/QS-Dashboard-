@@ -156,3 +156,27 @@ export async function requestDepositAddress(
     return { error: "That could not be completed. Please try again." };
   }
 }
+
+/**
+ * A short-lived link to a receipt the customer uploaded.
+ *
+ * The bucket is private and the stored value is a path, not a URL. The link
+ * is signed here, under the caller's own session, so the storage policy still
+ * decides: a path in somebody else's folder signs nothing.
+ */
+export async function receiptLink(path: string): Promise<{ url: string | null }> {
+  try {
+    const user = await getUser();
+    if (!user || !path) return { url: null };
+
+    const supabase = await createClient();
+    const { data } = await supabase.storage
+      .from("deposit-proofs")
+      .createSignedUrl(path, 120);
+
+    return { url: data?.signedUrl ?? null };
+  } catch (error) {
+    unstable_rethrow(error);
+    return { url: null };
+  }
+}

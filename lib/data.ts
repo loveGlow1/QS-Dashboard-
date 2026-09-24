@@ -140,9 +140,11 @@ export async function getTransactions(
 ): Promise<Transaction[]> {
   return safely("getTransactions", async () => {
     const supabase = await createClient();
+    /* The receipt belongs to the deposit, not the ledger row, so it is
+       embedded rather than copied — one fact, one place. */
     let query = supabase
       .from("transactions")
-      .select("*")
+      .select("*, deposits(proof_of_payment_url)")
       .order("occurred_at", { ascending: false })
       .order("created_at", { ascending: false });
 
@@ -150,7 +152,13 @@ export async function getTransactions(
     if (opts.limit) query = query.limit(opts.limit);
 
     const { data } = await query;
-    return (data as Transaction[]) ?? [];
+
+    type Row = Transaction & { deposits: { proof_of_payment_url: string | null }[] | null };
+
+    return ((data as Row[]) ?? []).map(({ deposits, ...row }) => ({
+      ...row,
+      receipt_path: deposits?.[0]?.proof_of_payment_url ?? null,
+    }));
   }, []);
 }
 
