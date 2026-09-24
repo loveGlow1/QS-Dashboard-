@@ -145,7 +145,6 @@ export function DepositFlow({
               <CopyField label="Bank" value={destination.bank_name} mono={false} />
               <CopyField label="Account name" value={destination.account_name} mono={false} />
               <CopyField label="Account number" value={destination.destination} />
-              <CopyField label="Reference" value={destination.reference} />
               {/* Ours, not the bank's — the transfer screen will show the
                   account name, so this is labelled as the person responsible
                   rather than presented as something to check against. */}
@@ -193,8 +192,9 @@ export function DepositFlow({
               </span>
             ) : (
               <span>
-                Include the reference above with your transfer so your deposit
-                can be matched to your account.
+                Transfer from an account in your own name, then tell us the
+                amount below and attach the receipt so your deposit can be
+                matched to your account.
               </span>
             )}
           </p>
