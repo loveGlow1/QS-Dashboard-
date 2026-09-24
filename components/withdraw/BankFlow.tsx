@@ -5,7 +5,7 @@ import { requestWithdrawal, type ActionState } from "@/app/withdraw-actions";
 import { BankAccounts } from "@/components/withdraw/BankAccounts";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { money } from "@/lib/format";
+import { money, ngnToUsd, usd } from "@/lib/format";
 import { maskAccount, type BankAccountView, type PayoutMethod } from "@/lib/types";
 
 const INITIAL: ActionState = { error: null };
@@ -24,11 +24,14 @@ export function BankFlow({
   method,
   withdrawable,
   accounts,
+  rate = 0,
   onBack,
 }: {
   method: PayoutMethod;
   withdrawable: number;
   accounts: BankAccountView[];
+  /** Naira per dollar; zero states the minimum in naira alone. */
+  rate?: number;
   onBack: () => void;
 }) {
   /* Every saved account is a destination. Payouts are settled by hand, so
@@ -166,7 +169,13 @@ export function BankFlow({
             label="Withdrawal amount"
             aside={`${money(withdrawable, { decimals: 2 })} available`}
             problem={problem}
-            hint={`Minimum ${money(method.minimum_amount, { decimals: 2 })}.`}
+            hint={
+              rate > 0
+                ? `Minimum ${money(method.minimum_amount, { decimals: 2 })} (${usd(
+                    ngnToUsd(method.minimum_amount, rate),
+                  )}) — the same as the entry tier.`
+                : `Minimum ${money(method.minimum_amount, { decimals: 2 })}.`
+            }
           >
             <div className="relative flex">
               <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[0.9375rem] text-mist-400">

@@ -23,11 +23,14 @@ export function WithdrawFlow({
   networks,
   accounts,
   withdrawable,
+  rate = 0,
 }: {
   methods: PayoutMethod[];
   networks: PayoutNetwork[];
   accounts: BankAccountView[];
   withdrawable: number;
+  /** Naira per dollar; zero states the minimum in naira alone. */
+  rate?: number;
 }) {
   const [method, setMethod] = useState<PayoutMethod | null>(null);
 
@@ -68,6 +71,7 @@ export function WithdrawFlow({
       method={method}
       withdrawable={withdrawable}
       accounts={accounts}
+      rate={rate}
       onBack={() => setMethod(null)}
     />
   );

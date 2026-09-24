@@ -84,6 +84,7 @@ export default async function WithdrawPage() {
               /* Narrowed here: full account numbers stay on the server. */
               accounts={accounts.map(toBankAccountView)}
               withdrawable={portfolio.withdrawable}
+              rate={rate}
             />
           </Card>
 
