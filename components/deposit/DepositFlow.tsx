@@ -182,22 +182,32 @@ export function DepositFlow({
             )}
           </dl>
 
-          <p className="flex items-start gap-2.5 rounded-md border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-3.5 py-3 text-[0.8125rem] leading-[1.6] text-[#e3c79c]">
-            <Icon name="alert" size={16} className="mt-0.5 flex-none text-warn" />
-            {method.kind === "crypto" ? (
+          {/* Two different kinds of message, so two treatments. Sending the
+              wrong asset to a chain address loses the money, which is a
+              warning and keeps the amber. Attaching a screenshot is how a
+              bank transfer gets matched — that is instruction, not hazard,
+              and dressing it as a hazard trained people to skim past it. */}
+          {method.kind === "crypto" ? (
+            <p className="flex items-start gap-2.5 rounded-md border border-[rgba(233,184,114,0.22)] bg-[var(--warn-soft)] px-3.5 py-3 text-[0.8125rem] leading-[1.6] text-[#e3c79c]">
+              <Icon name="alert" size={16} className="mt-0.5 flex-none text-warn" />
               <span>
                 Only send {method.asset_code}
                 {network ? ` over ${network.label}` : ""}. Sending another asset,
                 or using another network, may result in loss of funds.
               </span>
-            ) : (
-              <span>
+            </p>
+          ) : (
+            <div className="flex items-start gap-3.5 rounded-lg border border-[var(--em-line)] bg-[linear-gradient(135deg,rgba(96,250,131,0.09),rgba(96,250,131,0.02))] p-4">
+              <span className="grid size-10 flex-none place-items-center rounded-lg border border-[var(--em-line)] bg-[var(--em-soft)] text-em-300">
+                <Icon name="file" size={18} />
+              </span>
+              <span className="self-center text-[0.8125rem] leading-[1.65] text-mist-300">
                 Transfer from an account in your own name, then tell us the
                 amount below and attach the receipt so your deposit can be
                 matched to your account.
               </span>
-            )}
-          </p>
+            </div>
+          )}
 
           <p className="text-xs leading-[1.6] text-mist-500">
             Your balance updates once the deposit has been received and
