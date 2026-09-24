@@ -5,13 +5,8 @@ import { receiptLink } from "@/app/deposit-actions";
 import { Icon } from "@/components/ui/Icon";
 import { Figure } from "@/components/ui/Figure";
 import { formatDate, money } from "@/lib/format";
+import { txnStatus } from "@/lib/status";
 import type { Transaction } from "@/lib/types";
-
-const STATUS: Record<string, { label: string; dot: string; text: string }> = {
-  completed: { label: "Completed", dot: "bg-up", text: "text-up" },
-  pending: { label: "Pending", dot: "bg-warn", text: "text-warn" },
-  failed: { label: "Failed", dot: "bg-down", text: "text-down" },
-};
 
 /**
  * One transaction, opened from the history.
@@ -51,7 +46,7 @@ export function TransactionDetail({
     }
   }
 
-  const status = STATUS[txn.status] ?? { label: txn.status, dot: "bg-mist-500", text: "text-mist-400" };
+  const status = txnStatus(txn.status);
 
   return (
     <div

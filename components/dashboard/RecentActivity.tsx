@@ -3,6 +3,7 @@ import { Card, CardHead } from "@/components/ui/Card";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Figure } from "@/components/ui/Figure";
 import { formatDate } from "@/lib/format";
+import { txnStatus } from "@/lib/status";
 import type { Transaction, TransactionType } from "@/lib/types";
 
 const TXN_ICON: Record<TransactionType, IconName> = {
@@ -10,12 +11,7 @@ const TXN_ICON: Record<TransactionType, IconName> = {
   withdrawal: "arrowUpRight",
   investment: "layers",
   return: "trendUp",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  completed: "Completed",
-  pending: "Pending",
-  failed: "Failed",
+  release: "users",
 };
 
 export function RecentActivity({
@@ -77,22 +73,18 @@ export function RecentActivity({
                 <span className="grid flex-none justify-items-end gap-1">
                   <span
                     className={`text-sm font-semibold tracking-[-0.015em] tabular-nums ${
-                      positive ? "text-up" : "text-mist-200"
+                      txn.status === "cancelled"
+                        ? "text-mist-500 line-through decoration-[1.5px]"
+                        : positive
+                          ? "text-up"
+                          : "text-mist-200"
                     }`}
                   >
                     <Figure naira={amount} rate={rate} signed />
                   </span>
                   <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
-                    <span
-                      className={`size-[5px] rounded-full ${
-                        txn.status === "completed"
-                          ? "bg-up"
-                          : txn.status === "pending"
-                            ? "bg-warn"
-                            : "bg-down"
-                      }`}
-                    />
-                    {STATUS_LABEL[txn.status] ?? txn.status}
+                    <span className={`size-[5px] rounded-full ${txnStatus(txn.status).dot}`} />
+                    {txnStatus(txn.status).label}
                   </span>
                 </span>
               </li>
