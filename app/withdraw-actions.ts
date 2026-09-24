@@ -86,11 +86,7 @@ export async function addBankAccount(
   }
 
   revalidatePath("/withdraw");
-  return {
-    error: null,
-    success:
-      "Account saved. It has to be verified against the bank before you can withdraw to it.",
-  };
+  return { error: null, success: "Bank account saved successfully." };
 }
 
 export async function removeBankAccount(

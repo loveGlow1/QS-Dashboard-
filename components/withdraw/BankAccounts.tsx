@@ -44,16 +44,6 @@ export function BankAccounts({ accounts }: { accounts: BankAccountView[] }) {
                 </span>
                 <span className="truncate text-xs text-mist-500">{account.account_name}</span>
               </span>
-              <span
-                className={`inline-flex h-6 flex-none items-center gap-1.5 rounded-full border px-[9px] text-[0.6875rem] font-medium ${
-                  account.verified
-                    ? "border-[rgba(62,207,95,0.2)] bg-[var(--up-soft)] text-up"
-                    : "border-[rgba(233,184,114,0.2)] bg-[var(--warn-soft)] text-warn"
-                }`}
-              >
-                <span className="size-1.5 rounded-full bg-current" />
-                {account.verified ? "Verified" : "Unverified"}
-              </span>
               <form action={removeAction} className="flex-none">
                 <input type="hidden" name="id" value={account.id} />
                 <button
@@ -70,14 +60,6 @@ export function BankAccounts({ accounts }: { accounts: BankAccountView[] }) {
       )}
 
       {removeState.error && <Note tone="error">{removeState.error}</Note>}
-
-      {accounts.some((a) => !a.verified) && (
-        <Note tone="warn">
-          An account has to be verified against the bank before you can withdraw
-          to it. Verification is not connected yet, so saved accounts stay
-          unverified for now.
-        </Note>
-      )}
 
       {adding ? (
         <form action={addAction} className="grid gap-3 rounded-md border border-[var(--line)] bg-ink-800 p-4">
@@ -148,7 +130,7 @@ export function BankAccounts({ accounts }: { accounts: BankAccountView[] }) {
       ) : (
         <Button type="button" variant="ghost" onClick={() => setAdding(true)}>
           <Icon name="plus" size={16} />
-          Add bank account
+          {accounts.length > 0 ? "Add another account" : "Add bank account"}
         </Button>
       )}
     </div>

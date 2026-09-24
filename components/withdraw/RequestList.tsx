@@ -12,6 +12,7 @@ const STATUS: Record<WithdrawalStatus, { label: string; dot: string; text: strin
   pending: { label: "Pending", dot: "bg-warn", text: "text-warn" },
   processing: { label: "Processing", dot: "bg-accent-500", text: "text-accent-300" },
   completed: { label: "Completed", dot: "bg-up", text: "text-up" },
+  rejected: { label: "Rejected", dot: "bg-down", text: "text-down" },
   failed: { label: "Failed", dot: "bg-down", text: "text-down" },
   cancelled: { label: "Cancelled", dot: "bg-mist-500", text: "text-mist-400" },
 };

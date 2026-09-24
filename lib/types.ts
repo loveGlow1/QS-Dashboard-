@@ -147,6 +147,8 @@ export type WithdrawalStatus =
   | "pending"
   | "processing"
   | "completed"
+  /** Turned down by the back office. The amount goes back to the balance. */
+  | "rejected"
   | "failed"
   | "cancelled";
 

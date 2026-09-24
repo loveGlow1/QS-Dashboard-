@@ -5,7 +5,7 @@ import { requestWithdrawal, type ActionState } from "@/app/withdraw-actions";
 import { BankAccounts } from "@/components/withdraw/BankAccounts";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { money } from "@/lib/format";
+import { money, ngnToUsd, usd } from "@/lib/format";
 import { maskAccount, type BankAccountView, type PayoutMethod } from "@/lib/types";
 
 const INITIAL: ActionState = { error: null };
@@ -24,20 +24,26 @@ export function BankFlow({
   method,
   withdrawable,
   accounts,
+  rate = 0,
   onBack,
 }: {
   method: PayoutMethod;
   withdrawable: number;
   accounts: BankAccountView[];
+  /** Naira per dollar; zero states the minimum in naira alone. */
+  rate?: number;
   onBack: () => void;
 }) {
-  const verified = accounts.filter((a) => a.verified);
-  const [step, setStep] = useState<Step>(verified.length > 0 ? "amount" : "destination");
-  const [accountId, setAccountId] = useState(verified[0]?.id ?? "");
+  /* Every saved account is a destination. Payouts are settled by hand, so
+     the control is the person making the transfer with the account details
+     in front of them — there is no bank verification step to wait on, and
+     gating on one only ever dead-ended the flow. */
+  const [step, setStep] = useState<Step>(accounts.length > 0 ? "amount" : "destination");
+  const [accountId, setAccountId] = useState(accounts[0]?.id ?? "");
   const [amount, setAmount] = useState("");
   const [state, formAction, pending] = useActionState(requestWithdrawal, INITIAL);
 
-  const account = verified.find((a) => a.id === accountId) ?? null;
+  const account = accounts.find((a) => a.id === accountId) ?? null;
   const parsed = Number(amount.replace(/,/g, ""));
   const valid = Number.isFinite(parsed) && parsed > 0;
 
@@ -67,10 +73,10 @@ export function BankFlow({
   return (
     <div className="grid gap-5">
       <StepBack
-        label={step === "destination" || verified.length === 0 ? "All methods" : "Back"}
+        label={step === "destination" || accounts.length === 0 ? "All methods" : "Back"}
         onClick={() => {
           if (step === "review") setStep("amount");
-          else if (step === "amount" && verified.length > 0) setStep("destination");
+          else if (step === "amount" && accounts.length > 0) setStep("destination");
           else onBack();
         }}
       />
@@ -82,16 +88,16 @@ export function BankFlow({
         <section className="grid gap-4">
           <header>
             <h2 className="text-lg font-semibold tracking-[-0.02em]">
-              {verified.length > 0 ? "Choose an account" : "Add a bank account"}
+              {accounts.length > 0 ? "Choose an account" : "Add a bank account"}
             </h2>
             <p className="mt-1 text-[0.8125rem] leading-[1.6] text-mist-400">
-              Add and verify a bank account where your withdrawal will be sent.
+              This is where your withdrawal will be sent.
             </p>
           </header>
 
-          {verified.length > 0 && (
+          {accounts.length > 0 && (
             <div className="grid gap-2">
-              {verified.map((a) => (
+              {accounts.map((a) => (
                 <label
                   key={a.id}
                   className={`flex cursor-pointer items-center gap-3 rounded-md border px-3.5 py-3 transition-colors ${
@@ -163,7 +169,13 @@ export function BankFlow({
             label="Withdrawal amount"
             aside={`${money(withdrawable, { decimals: 2 })} available`}
             problem={problem}
-            hint={`Minimum ${money(method.minimum_amount, { decimals: 2 })}.`}
+            hint={
+              rate > 0
+                ? `Minimum ${money(method.minimum_amount, { decimals: 2 })} (${usd(
+                    ngnToUsd(method.minimum_amount, rate),
+                  )}) — the same as the entry tier.`
+                : `Minimum ${money(method.minimum_amount, { decimals: 2 })}.`
+            }
           >
             <div className="relative flex">
               <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[0.9375rem] text-mist-400">
@@ -230,7 +242,7 @@ export function BankFlow({
               ["Amount", money(quote.gross, { decimals: 2 })],
               ["Fee", quote.fee > 0 ? money(quote.fee, { decimals: 2 }) : "None"],
               ["You receive", money(quote.net, { decimals: 2 }), true],
-              ["Estimated processing", method.processing_time_label],
+              ["Estimated arrival", method.processing_time_label],
             ]}
           />
 
@@ -259,7 +271,7 @@ export function BankFlow({
 
           <div className="flex flex-wrap gap-2">
             <Button type="submit" variant="primary" size="lg" busy={pending}>
-              Confirm withdrawal
+              Confirm &amp; request
             </Button>
             <Button type="button" variant="ghost" size="lg" onClick={() => setStep("amount")}>
               Back
