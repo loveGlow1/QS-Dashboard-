@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Icon } from "@/components/ui/Icon";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { RequestList } from "@/components/withdraw/RequestList";
 import { WithdrawFlow } from "@/components/withdraw/WithdrawFlow";
@@ -93,8 +95,19 @@ export default async function WithdrawPage() {
           </Card>
 
           <Card as="article">
-            <h2 className="mb-4 text-lg font-semibold tracking-[-0.02em]">Your requests</h2>
-            <RequestList withdrawals={withdrawals} />
+            {/* These lists are the recent ones; the full record, every type
+                together, lives on the transactions page. */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold tracking-[-0.02em]">Your requests</h2>
+              <Link
+                href="/transactions?type=withdrawal"
+                className="inline-flex items-center gap-1 text-[0.8125rem] font-medium text-accent-300 transition-colors hover:text-accent-200"
+              >
+                View all
+                <Icon name="chevronRight" size={15} />
+              </Link>
+            </div>
+            <RequestList withdrawals={withdrawals} rate={rate} />
           </Card>
         </div>
       </div>

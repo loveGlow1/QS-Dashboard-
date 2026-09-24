@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { DepositFlow } from "@/components/deposit/DepositFlow";
 import { DepositList } from "@/components/deposit/DepositList";
@@ -63,7 +64,18 @@ export default async function DepositPage() {
           </Card>
 
           <Card as="article">
-            <h2 className="mb-4 text-lg font-semibold tracking-[-0.02em]">Your deposits</h2>
+            {/* These lists are the recent ones; the full record, every type
+                together, lives on the transactions page. */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold tracking-[-0.02em]">Your deposits</h2>
+              <Link
+                href="/transactions?type=deposit"
+                className="inline-flex items-center gap-1 text-[0.8125rem] font-medium text-accent-300 transition-colors hover:text-accent-200"
+              >
+                View all
+                <Icon name="chevronRight" size={15} />
+              </Link>
+            </div>
             <DepositList deposits={deposits} rate={rate} />
 
             <p className="mt-4 flex items-start gap-2.5 text-xs leading-[1.6] text-mist-500">
