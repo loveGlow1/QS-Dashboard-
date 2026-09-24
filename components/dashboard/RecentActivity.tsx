@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { TransactionDetail } from "@/components/dashboard/TransactionDetail";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardHead } from "@/components/ui/Card";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -14,6 +18,12 @@ const TXN_ICON: Record<TransactionType, IconName> = {
   release: "users",
 };
 
+/**
+ * The last few entries, opening the same record the transactions page opens.
+ *
+ * The row used to carry a hover tint and no behaviour, which on a phone reads
+ * as a tap that does nothing — and this is the first list a customer sees.
+ */
 export function RecentActivity({
   transactions,
   rate = 0,
@@ -21,6 +31,8 @@ export function RecentActivity({
   transactions: Transaction[];
   rate?: number;
 }) {
+  const [open, setOpen] = useState<Transaction | null>(null);
+
   return (
     <Card as="article" id="activity">
       <CardHead className="mb-2">
@@ -47,50 +59,69 @@ export function RecentActivity({
             return (
               <li
                 key={txn.id}
-                className="-mx-2.5 flex items-center gap-3 rounded-md border-b border-[var(--line-soft)] px-2.5 py-3 transition-colors last:border-b-0 hover:bg-ink-800 max-[720px]:-mx-2 max-[720px]:gap-[11px] max-[720px]:px-2"
+                className="border-b border-[var(--line-soft)] last:border-b-0"
               >
-                <span
-                  className={`grid size-[34px] flex-none place-items-center rounded-sm max-[720px]:size-8 ${
-                    positive ? "bg-[var(--up-soft)] text-up" : "bg-[rgba(148,168,214,0.09)] text-mist-400"
-                  }`}
+                <button
+                  type="button"
+                  onClick={() => setOpen(txn)}
+                  aria-label={`${txn.label}, ${txnStatus(txn.status).label}. Open details`}
+                  className="-mx-2.5 flex w-[calc(100%+20px)] items-center gap-3 rounded-md px-2.5 py-3 text-left transition-colors hover:bg-ink-800 max-[720px]:-mx-2 max-[720px]:w-[calc(100%+16px)] max-[720px]:gap-[11px] max-[720px]:px-2"
                 >
-                  <Icon name={TXN_ICON[txn.type] ?? "list"} size={16} />
-                </span>
-
-                <span className="grid min-w-0 flex-1 gap-[3px]">
-                  <span className="truncate text-sm font-medium max-[720px]:text-[0.8125rem]">{txn.label}</span>
-                  <span className="flex items-center gap-[7px] text-xs text-mist-500 max-[400px]:flex-wrap max-[400px]:gap-x-1.5 max-[400px]:gap-y-0">
-                    {formatDate(txn.occurred_at)}
-                    {txn.method && (
-                      <>
-                        <span className="opacity-60">·</span>
-                        {txn.method}
-                      </>
-                    )}
-                  </span>
-                </span>
-
-                <span className="grid flex-none justify-items-end gap-1">
                   <span
-                    className={`text-sm font-semibold tracking-[-0.015em] tabular-nums ${
-                      txn.status === "cancelled"
-                        ? "text-mist-500 line-through decoration-[1.5px]"
-                        : positive
-                          ? "text-up"
-                          : "text-mist-200"
+                    className={`grid size-[34px] flex-none place-items-center rounded-sm max-[720px]:size-8 ${
+                      positive ? "bg-[var(--up-soft)] text-up" : "bg-[rgba(148,168,214,0.09)] text-mist-400"
                     }`}
                   >
-                    <Figure naira={amount} rate={rate} signed />
+                    <Icon name={TXN_ICON[txn.type] ?? "list"} size={16} />
                   </span>
-                  <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
-                    <span className={`size-[5px] rounded-full ${txnStatus(txn.status).dot}`} />
-                    {txnStatus(txn.status).label}
+
+                  <span className="grid min-w-0 flex-1 gap-[3px]">
+                    <span className="truncate text-sm font-medium max-[720px]:text-[0.8125rem]">
+                      {txn.label}
+                    </span>
+                    <span className="flex items-center gap-[7px] truncate text-xs text-mist-500 max-[400px]:flex-wrap max-[400px]:gap-x-1.5 max-[400px]:gap-y-0">
+                      {formatDate(txn.occurred_at)}
+                      {txn.method && (
+                        <>
+                          <span className="opacity-60 max-[400px]:hidden">·</span>
+                          <span className="truncate">{txn.method}</span>
+                        </>
+                      )}
+                    </span>
                   </span>
-                </span>
+
+                  <span className="grid flex-none justify-items-end gap-1">
+                    <span
+                      className={`text-sm font-semibold tracking-[-0.015em] tabular-nums ${
+                        txn.status === "cancelled"
+                          ? "text-mist-500 line-through decoration-[1.5px]"
+                          : positive
+                            ? "text-up"
+                            : "text-mist-200"
+                      }`}
+                    >
+                      <Figure naira={amount} rate={rate} signed />
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
+                      <span className={`size-[5px] rounded-full ${txnStatus(txn.status).dot}`} />
+                      {txnStatus(txn.status).label}
+                    </span>
+                  </span>
+
+                  <Icon
+                    name="chevronRight"
+                    size={15}
+                    className="flex-none text-mist-500"
+                  />
+                </button>
               </li>
             );
           })}
         </ul>
+      )}
+
+      {open && (
+        <TransactionDetail txn={open} rate={rate} onClose={() => setOpen(null)} />
       )}
     </Card>
   );
