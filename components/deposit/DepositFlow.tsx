@@ -28,12 +28,15 @@ export function DepositFlow({
   networks,
   destinations,
   rate = 0,
+  userId,
 }: {
   methods: DepositMethod[];
   networks: DepositNetwork[];
   destinations: DepositDestination[];
   /** Naira per dollar; zero states the floor in naira alone. */
   rate?: number;
+  /** Whose folder a receipt goes into. Read on the server. */
+  userId: string;
 }) {
   const [method, setMethod] = useState<DepositMethod | null>(null);
   const methodNetworks = method ? networks.filter((n) => n.method_id === method.id) : [];
@@ -230,6 +233,7 @@ export function DepositFlow({
             asset={method.asset_code}
             minimum={minimum}
             rate={rate}
+            userId={userId}
           />
         </div>
       ) : (

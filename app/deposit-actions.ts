@@ -27,9 +27,6 @@ export interface DepositActionState {
   amount?: number | null;
 }
 
-/** What the proof bucket accepts, mirrored from the bucket's own settings. */
-const PROOF_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp", "application/pdf"];
-const PROOF_MAX_BYTES = 5 * 1024 * 1024;
 
 function readable(message: string): string {
   const cleaned = message.replace(/^.*?:\s*/, "").trim();
@@ -51,7 +48,7 @@ export async function declareTransfer(
     const raw = String(formData.get("amount") ?? "").replace(/[₦,\s]/g, "");
     const amount = Number(raw);
     const txHash = String(formData.get("tx_hash") ?? "").trim() || null;
-    const proof = formData.get("proof");
+    const proofPath = String(formData.get("proof_path") ?? "").trim() || null;
 
     if (!destinationId) return { error: "Choose where you transferred to." };
     if (!raw) return { error: "Enter the amount you transferred." };
@@ -59,32 +56,20 @@ export async function declareTransfer(
       return { error: "Enter the amount you transferred." };
     }
 
-    const supabase = await createClient();
+    /* The receipt is uploaded straight from the browser to storage, not
+       posted through here: a Server Action body is capped at 1MB by default
+       and a phone screenshot is several, so sending the file this way meant
+       the request never arrived and the form sat on "Recording…" for ever.
+       What arrives is the path.
 
-    /* The receipt goes into a private bucket, under a folder named after the
-       customer's own id — which is also what the bucket's policy checks, so
-       a tampered path cannot write into anybody else's folder. The path is
-       stored; the back office signs a link when it wants to look. */
-    let proofPath: string | null = null;
-    if (proof instanceof File && proof.size > 0) {
-      if (!PROOF_TYPES.includes(proof.type)) {
-        return { error: "Attach a PNG, JPG, WEBP or PDF." };
-      }
-      if (proof.size > PROOF_MAX_BYTES) {
-        return { error: "That file is over 5MB. Attach a smaller one." };
-      }
-
-      const suffix = proof.name.includes(".") ? proof.name.split(".").pop() : "bin";
-      const path = `${user.id}/${Date.now()}-${crypto.randomUUID()}.${suffix}`;
-      const { error: uploadError } = await supabase.storage
-        .from("deposit-proofs")
-        .upload(path, proof, { contentType: proof.type, upsert: false });
-
-      if (uploadError) {
-        return { error: "That receipt could not be attached. Try again, or file without it." };
-      }
-      proofPath = path;
+       The bucket's policy already stops anybody writing outside their own
+       folder. This checks the same thing about the string being stored, so
+       a tampered path cannot be filed against somebody else's receipt. */
+    if (proofPath && !proofPath.startsWith(`${user.id}/`)) {
+      return { error: "That receipt could not be attached. Try again, or file without it." };
     }
+
+    const supabase = await createClient();
 
     /* The database re-checks that this destination belongs to the caller, that
        the amount clears the method's minimum, and forces the row to pending;

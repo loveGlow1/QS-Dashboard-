@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
+import { startTransition, useActionState, useRef, useState } from "react";
 import { declareTransfer, type DepositActionState } from "@/app/deposit-actions";
+import { createClient } from "@/lib/supabase/client";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { money, ngnToUsd, usd } from "@/lib/format";
@@ -29,6 +30,7 @@ export function DeclareTransfer({
   asset,
   minimum,
   rate = 0,
+  userId,
 }: {
   destinationId: string;
   /** null for naira; a ticker means the chain needs a transaction hash. */
@@ -37,17 +39,55 @@ export function DeclareTransfer({
   minimum: number;
   /** Naira per dollar; zero states the floor in naira alone. */
   rate?: number;
+  /** Whose folder the receipt goes into. From the server, not the browser. */
+  userId: string;
 }) {
   const [state, action, pending] = useActionState(declareTransfer, INITIAL);
   const [amount, setAmount] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileProblem, setFileProblem] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  /**
+   * The receipt goes straight from here to storage, then only its path is
+   * sent to the action. A Server Action body is capped at 1MB by default and
+   * a phone screenshot is several times that, so posting the file through
+   * the action meant the request never arrived and this form sat on
+   * "Recording…" indefinitely.
+   *
+   * The bucket's policy only lets somebody write into the folder named after
+   * their own id, so the path is not a matter of trust.
+   */
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    data.delete("proof");
+
+    if (file) {
+      setUploading(true);
+      const suffix = file.name.includes(".") ? file.name.split(".").pop() : "bin";
+      const path = `${userId}/${Date.now()}-${crypto.randomUUID()}.${suffix}`;
+      const { error } = await createClient()
+        .storage.from("deposit-proofs")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      setUploading(false);
+
+      if (error) {
+        setFileProblem("That receipt could not be uploaded. Try again, or file without it.");
+        return;
+      }
+      data.set("proof_path", path);
+    }
+
+    startTransition(() => action(data));
+  }
 
   const typed = Number(amount.replace(/[₦,\s]/g, ""));
   const valid = Number.isFinite(typed) && typed > 0;
   const belowMinimum = valid && minimum > 0 && typed < minimum;
-  const ready = valid && !belowMinimum && !pending;
+  const busy = pending || uploading;
+  const ready = valid && !belowMinimum && !busy;
 
   function take(chosen: File | null) {
     if (!chosen) {
@@ -106,7 +146,7 @@ export function DeclareTransfer({
   }
 
   return (
-    <form action={action} className="grid gap-3 border-t border-[var(--line-soft)] pt-4">
+    <form onSubmit={submit} className="grid gap-3 border-t border-[var(--line-soft)] pt-4">
       <input type="hidden" name="destination_id" value={destinationId} />
 
       <div className="grid gap-[7px]">
@@ -249,7 +289,7 @@ export function DeclareTransfer({
         disabled={!ready}
         className="justify-self-start"
       >
-        {pending ? "Recording…" : "I've sent it"}
+        {uploading ? "Uploading receipt…" : pending ? "Recording…" : "I've sent it"}
       </Button>
 
       <p className="text-xs leading-[1.6] text-mist-500">
