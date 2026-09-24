@@ -11,6 +11,7 @@ import {
   getPortfolio,
   getUsdRate,
 } from "@/lib/data";
+import { getUser } from "@/lib/supabase/server";
 import { formatDate, money } from "@/lib/format";
 import type { DepositStatus } from "@/lib/types";
 
@@ -38,6 +39,10 @@ export default async function DepositPage() {
     getUsdRate(),
   ]);
 
+  /* Read here, not in the browser: it decides which storage folder a receipt
+     is written to. */
+  const user = await getUser();
+
   return (
     <>
       <PageHeader title="Deposit" subtitle="Add funds to your account." />
@@ -62,6 +67,7 @@ export default async function DepositPage() {
               networks={networks}
               destinations={destinations}
               rate={rate}
+              userId={user?.id ?? ""}
             />
           </Card>
 
