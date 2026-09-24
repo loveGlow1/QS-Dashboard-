@@ -6,7 +6,7 @@ import { DeclareTransfer } from "@/components/deposit/DeclareTransfer";
 import { DepositMethodCards } from "@/components/deposit/MethodCards";
 import { RequestAddress } from "@/components/deposit/RequestAddress";
 import { Icon } from "@/components/ui/Icon";
-import { money } from "@/lib/format";
+import { money, ngnToUsd, usd } from "@/lib/format";
 import type {
   DepositDestination,
   DepositMethod,
@@ -27,10 +27,13 @@ export function DepositFlow({
   methods,
   networks,
   destinations,
+  rate = 0,
 }: {
   methods: DepositMethod[];
   networks: DepositNetwork[];
   destinations: DepositDestination[];
+  /** Naira per dollar; zero states the floor in naira alone. */
+  rate?: number;
 }) {
   const [method, setMethod] = useState<DepositMethod | null>(null);
   const methodNetworks = method ? networks.filter((n) => n.method_id === method.id) : [];
@@ -173,7 +176,14 @@ export function DepositFlow({
                 value={
                   method.kind === "crypto"
                     ? `${minimum} ${method.asset_code}`
-                    : money(minimum, { decimals: 2 })
+                    : rate > 0
+                      ? usd(ngnToUsd(minimum, rate))
+                      : money(minimum, { decimals: 2 })
+                }
+                sub={
+                  method.kind !== "crypto" && rate > 0
+                    ? money(minimum, { decimals: 2 })
+                    : undefined
                 }
               />
             )}
@@ -219,6 +229,7 @@ export function DepositFlow({
             destinationId={destination.id}
             asset={method.asset_code}
             minimum={minimum}
+            rate={rate}
           />
         </div>
       ) : (
@@ -242,12 +253,22 @@ export function DepositFlow({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: string;
+  /** The same figure in naira, under the dollars. */
+  sub?: string;
+}) {
   return (
     <div className="flex items-baseline justify-between gap-3 bg-ink-800 px-[13px] py-3">
       <dt className="text-xs text-mist-500">{label}</dt>
-      <dd className="text-right text-[0.8125rem] font-medium tabular-nums text-mist-200">
+      <dd className="grid justify-items-end text-right text-[0.8125rem] font-medium tabular-nums text-mist-200">
         {value}
+        {sub && <span className="text-xs font-normal text-mist-500">{sub}</span>}
       </dd>
     </div>
   );

@@ -5,7 +5,7 @@ import { useActionState, useRef, useState } from "react";
 import { declareTransfer, type DepositActionState } from "@/app/deposit-actions";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { money } from "@/lib/format";
+import { money, ngnToUsd, usd } from "@/lib/format";
 
 const INITIAL: DepositActionState = { error: null };
 
@@ -28,12 +28,15 @@ export function DeclareTransfer({
   destinationId,
   asset,
   minimum,
+  rate = 0,
 }: {
   destinationId: string;
   /** null for naira; a ticker means the chain needs a transaction hash. */
   asset: string | null;
   /** The method's own floor, the same one the database enforces. */
   minimum: number;
+  /** Naira per dollar; zero states the floor in naira alone. */
+  rate?: number;
 }) {
   const [state, action, pending] = useActionState(declareTransfer, INITIAL);
   const [amount, setAmount] = useState("");
@@ -126,7 +129,12 @@ export function DeclareTransfer({
         {belowMinimum ? (
           <p className="text-xs leading-[1.6] text-warn">
             The smallest deposit is{" "}
-            {asset ? `${minimum} ${asset}` : money(minimum, { decimals: 2 })}.
+            {asset
+              ? `${minimum} ${asset}`
+              : rate > 0
+                ? `${usd(ngnToUsd(minimum, rate))} (${money(minimum, { decimals: 2 })})`
+                : money(minimum, { decimals: 2 })}
+            .
           </p>
         ) : (
           <p className="text-xs leading-[1.6] text-mist-500">

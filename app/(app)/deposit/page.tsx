@@ -9,6 +9,7 @@ import {
   getDepositNetworks,
   getDeposits,
   getPortfolio,
+  getUsdRate,
 } from "@/lib/data";
 import { formatDate, money } from "@/lib/format";
 import type { DepositStatus } from "@/lib/types";
@@ -28,12 +29,13 @@ const STATUS: Record<DepositStatus, { label: string; dot: string; text: string }
 };
 
 export default async function DepositPage() {
-  const [methods, networks, destinations, deposits, portfolio] = await Promise.all([
+  const [methods, networks, destinations, deposits, portfolio, rate] = await Promise.all([
     getDepositMethods(),
     getDepositNetworks(),
     getDepositDestinations(),
     getDeposits(),
     getPortfolio("1M"),
+    getUsdRate(),
   ]);
 
   return (
@@ -55,7 +57,12 @@ export default async function DepositPage() {
 
         <div className="grid gap-4">
           <Card as="article">
-            <DepositFlow methods={methods} networks={networks} destinations={destinations} />
+            <DepositFlow
+              methods={methods}
+              networks={networks}
+              destinations={destinations}
+              rate={rate}
+            />
           </Card>
 
           <Card as="article">
