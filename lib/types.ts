@@ -92,6 +92,9 @@ export interface Transaction {
   reference: string | null;
   occurred_at: string;
   created_at: string;
+  /** Path of the receipt in the private bucket, when a deposit carried one.
+      Not a URL — a link is signed on demand and expires. */
+  receipt_path?: string | null;
 }
 
 export interface PortfolioSnapshot {
