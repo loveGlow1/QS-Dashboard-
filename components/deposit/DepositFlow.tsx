@@ -201,15 +201,10 @@ export function DepositFlow({
               <span className="grid size-10 flex-none place-items-center rounded-lg border border-[var(--em-line)] bg-[var(--em-soft)] text-em-300">
                 <Icon name="file" size={18} />
               </span>
-              <span className="grid gap-1">
-                <span className="text-[0.875rem] font-semibold tracking-[-0.01em] text-mist-50">
-                  Attach a screenshot of your transfer
-                </span>
-                <span className="text-[0.8125rem] leading-[1.6] text-mist-400">
-                  Send from an account in your own name, then add the receipt
-                  below with the amount. It is how your payment is matched to
-                  you.
-                </span>
+              <span className="self-center text-[0.8125rem] leading-[1.65] text-mist-300">
+                Transfer from an account in your own name, then tell us the
+                amount below and attach the receipt so your deposit can be
+                matched to your account.
               </span>
             </div>
           )}
