@@ -42,13 +42,16 @@ export function TransactionTable({
 
   return (
     <>
-      <nav aria-label="Filter transactions" className="mb-5 flex flex-wrap gap-2">
+      <nav
+        aria-label="Filter transactions"
+        className="mb-5 flex flex-wrap gap-2 max-[720px]:-mx-[var(--dash-pad)] max-[720px]:w-[calc(100%+var(--dash-pad)*2)] max-[720px]:flex-nowrap max-[720px]:snap-x max-[720px]:snap-proximity max-[720px]:overflow-x-auto max-[720px]:px-[var(--dash-pad)] max-[720px]:[scrollbar-width:none] max-[720px]:[&::-webkit-scrollbar]:hidden"
+      >
         {filters.map((f) => (
           <Link
             key={f}
             href={f === "all" ? "/transactions" : `/transactions?type=${f}`}
             aria-current={f === active ? "page" : undefined}
-            className={`inline-flex h-[34px] items-center rounded-full border px-3.5 text-[0.8125rem] font-medium transition-colors ${
+            className={`inline-flex h-[34px] flex-none items-center whitespace-nowrap rounded-full border px-3.5 text-[0.8125rem] font-medium transition-colors max-[720px]:h-11 max-[720px]:snap-start ${
               f === active
                 ? "border-[var(--accent-line)] bg-[var(--accent-soft)] text-accent-300"
                 : "border-[var(--line)] bg-ink-800 text-mist-400 hover:border-[var(--line-strong)] hover:text-mist-50"
@@ -82,46 +85,49 @@ export function TransactionTable({
                     type="button"
                     onClick={() => setOpen(txn)}
                     aria-label={`${txn.label}, ${txn.status}. Open details`}
-                    className="-mx-2.5 flex w-[calc(100%+20px)] items-center gap-3 rounded-md px-2.5 py-3.5 text-left transition-colors hover:bg-ink-800"
+                    className="-mx-2.5 flex w-[calc(100%+20px)] items-center gap-3 rounded-md px-2.5 py-3.5 text-left transition-colors hover:bg-ink-800 max-[720px]:-mx-2 max-[720px]:w-[calc(100%+16px)] max-[720px]:gap-[11px] max-[720px]:px-2"
                   >
-                  <span
-                    className={`grid size-[34px] flex-none place-items-center rounded-sm ${
-                      positive ? "bg-[var(--up-soft)] text-up" : "bg-[rgba(148,168,214,0.09)] text-mist-400"
-                    }`}
-                  >
-                    <Icon name={TXN_ICON[txn.type] ?? "list"} size={16} />
-                  </span>
-
-                  <span className="grid min-w-0 flex-1 gap-[3px]">
-                    <span className="truncate text-sm font-medium">{txn.label}</span>
-                    <span className="flex items-center gap-[7px] text-xs text-mist-500 max-[400px]:flex-wrap max-[400px]:gap-x-1.5 max-[400px]:gap-y-0">
-                      {formatDate(txn.occurred_at)}
-                      {txn.method && (
-                        <>
-                          <span className="opacity-60">·</span>
-                          {txn.method}
-                        </>
-                      )}
-                    </span>
-                  </span>
-
-                  <span className="grid flex-none justify-items-end gap-1">
                     <span
-                      className={`text-sm font-semibold tracking-[-0.015em] tabular-nums ${
-                        txn.status === "cancelled"
-                          ? "text-mist-500 line-through decoration-[1.5px]"
-                          : positive
-                            ? "text-up"
-                            : "text-mist-200"
+                      className={`grid size-[34px] flex-none place-items-center rounded-sm max-[720px]:size-8 ${
+                        positive ? "bg-[var(--up-soft)] text-up" : "bg-[rgba(148,168,214,0.09)] text-mist-400"
                       }`}
                     >
-                      <Figure naira={amount} rate={rate} signed />
+                      <Icon name={TXN_ICON[txn.type] ?? "list"} size={16} />
                     </span>
-                    <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
-                      <span className={`size-[5px] rounded-full ${txnStatus(txn.status).dot}`} />
-                      {txnStatus(txn.status).label}
+
+                    <span className="grid min-w-0 flex-1 gap-[3px]">
+                      <span className="truncate text-sm font-medium max-[720px]:text-[0.8125rem]">
+                        {txn.label}
+                      </span>
+                      <span className="flex items-center gap-[7px] truncate text-xs text-mist-500 max-[400px]:flex-wrap max-[400px]:gap-x-1.5 max-[400px]:gap-y-0">
+                        {formatDate(txn.occurred_at)}
+                        {txn.method && (
+                          <>
+                            <span className="opacity-60 max-[400px]:hidden">·</span>
+                            <span className="truncate">{txn.method}</span>
+                          </>
+                        )}
+                      </span>
                     </span>
+
+                    <span className="grid flex-none justify-items-end gap-1">
+                      <span
+                        className={`text-sm font-semibold tracking-[-0.015em] tabular-nums ${
+                          txn.status === "cancelled"
+                            ? "text-mist-500 line-through decoration-[1.5px]"
+                            : positive
+                              ? "text-up"
+                              : "text-mist-200"
+                        }`}
+                      >
+                        <Figure naira={amount} rate={rate} signed />
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-mist-500">
+                        <span className={`size-[5px] rounded-full ${txnStatus(txn.status).dot}`} />
+                        {txnStatus(txn.status).label}
+                      </span>
                     </span>
+
                     <Icon
                       name="chevronRight"
                       size={15}
